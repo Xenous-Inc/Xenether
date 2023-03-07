@@ -1,42 +1,48 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
+import colors from '@assets/styles/colors';
+
 SplashScreen.preventAutoHideAsync();
+
 export default function App() {
     const [fontsLoaded] = useFonts({
-        ExpandedBold: require('./src/assets/fonts/RFDewiExpanded-Bold.ttf'),
-        ExpandedSemiblod: require('./src/assets/fonts/RFDewiExpanded-Semibold.ttf'),
-        ExpandedUltrabold: require('./src/assets/fonts/RFDewiExpanded-Ultrabold.ttf'),
-        ExtendedBold: require('./src/assets/fonts/RFDewiExtended-Bold.ttf'),
-        ExtendedRegular: require('./src/assets/fonts/RFDewiExtended-Regular.ttf'),
-        ExtendedSemiblod: require('./src/assets/fonts/RFDewiExtended-Semibold.ttf'),
-        ProTextMedium: require('./src/assets/fonts/SFProText-Medium.ttf'),
-        ProTextBold: require('./src/assets/fonts/SFProText-Bold.ttf'),
-        ProTextSemibold: require('./src/assets/fonts/SFProText-Semibold.ttf'),
+        ExpandedBold: require('@assets/fonts/RFDewiExpanded-Bold.ttf'),
+        ExpandedSemiblod: require('@assets/fonts/RFDewiExpanded-Semibold.ttf'),
+        ExpandedUltrabold: require('@assets/fonts/RFDewiExpanded-Ultrabold.ttf'),
+        ExtendedBold: require('@assets/fonts/RFDewiExtended-Bold.ttf'),
+        ExtendedRegular: require('@assets/fonts/RFDewiExtended-Regular.ttf'),
+        ExtendedSemiblod: require('@assets/fonts/RFDewiExtended-Semibold.ttf'),
+        ProTextMedium: require('@assets/fonts/SFProText-Medium.ttf'),
+        ProTextBold: require('@assets/fonts/SFProText-Bold.ttf'),
+        ProTextSemibold: require('@assets/fonts/SFProText-Semibold.ttf'),
     });
+
     const onLayoutRootView = useCallback(async () => {
         if (fontsLoaded) {
             await SplashScreen.hideAsync();
         }
     }, [fontsLoaded]);
+
     if (!fontsLoaded) {
         return null;
     }
+
     return (
         <View style={styles.container} onLayout={onLayoutRootView}>
-            <Text> Open up App js to start working on your app!</Text>
+            <Text style={{ fontFamily: 'ExpandedUltrabold' }}> Open up App js to start working on your app!</Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    // eslint-disable-next-line react-native/no-color-literals
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.WHITE,
         alignItems: 'center',
         justifyContent: 'center',
     },
