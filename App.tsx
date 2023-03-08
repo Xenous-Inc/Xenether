@@ -1,8 +1,6 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
+import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
@@ -33,11 +31,7 @@ export default function App() {
         return null;
     }
 
-    return (
-        <View style={styles.container} onLayout={onLayoutRootView}>
-            <Text style={{ fontFamily: 'ExpandedUltrabold' }}> Open up App js to start working on your app!</Text>
-        </View>
-    );
+    return <View style={styles.container} onLayout={onLayoutRootView} />;
 }
 
 const styles = StyleSheet.create({
