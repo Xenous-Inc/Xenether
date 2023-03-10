@@ -40,7 +40,9 @@ export const WeatherIcon: React.FC<{ weatherType: WeatherType }> = props => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        weight: '20%',
-        height: '20%',
+        width: 45,
+        height: 45,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
