@@ -8,8 +8,6 @@ export enum WeatherType {
 
 interface IImageData {
     src: number;
-    w: number;
-    h: number;
 }
 
 type WeatherToImage = {
@@ -19,13 +17,9 @@ type WeatherToImage = {
 const Images: WeatherToImage = {
     [WeatherType.Sunny]: {
         src: require('@assets/icons/sun.png'),
-        w: 35,
-        h: 35,
     },
     [WeatherType.Thunderstorm]: {
         src: require('@assets/icons/thunderstorm.png'),
-        w: 42,
-        h: 33,
     },
 };
 
@@ -33,7 +27,7 @@ export const WeatherIcon: React.FC<{ weatherType: WeatherType }> = props => {
     const image = Images[props.weatherType];
     return (
         <View style={styles.wrapper}>
-            <Image source={image.src} style={{ width: image.w, height: image.h }} />
+            <Image source={image.src} style={styles.img} />
         </View>
     );
 };
@@ -44,5 +38,8 @@ const styles = StyleSheet.create({
         height: 45,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    img: {
+        resizeMode: 'contain',
     },
 });
