@@ -1,43 +1,46 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
-enum Weathertype {
+export enum WeatherType {
     Sunny,
     Thunderstorm,
 }
 
-export function WeatherIcon(type: Weathertype) {
-    switch (type) {
-        case Weathertype.Sunny:
-            return (
-                <View>
-                    <Image source={require('@assets/icons/sun.png')} style={styles.sun} />
-                </View>
-            );
-            break;
-        case Weathertype.Thunderstorm:
-            return (
-                <View>
-                    <Image source={require('@assets/icons/thunderstorm.png')} style={styles.thunderstorm} />
-                </View>
-            );
-            break;
-        default:
-            return <Text>Missed</Text>;
-    }
+interface IImageData {
+    src: number;
+    w: number;
+    h: number;
 }
 
-export default function UseWeatherIcons() {
-    return WeatherIcon(Weathertype.Thunderstorm);
-}
+type WeatherToImage = {
+    [key in WeatherType]: IImageData;
+};
+
+const Images: WeatherToImage = {
+    [WeatherType.Sunny]: {
+        src: require('@assets/icons/sun.png'),
+        w: 35,
+        h: 35,
+    },
+    [WeatherType.Thunderstorm]: {
+        src: require('@assets/icons/thunderstorm.png'),
+        w: 42,
+        h: 33,
+    },
+};
+
+export const WeatherIcon: React.FC<{ weatherType: WeatherType }> = props => {
+    const image = Images[props.weatherType];
+    return (
+        <View style={styles.wrapper}>
+            <Image source={image.src} style={{ width: image.w, height: image.h }} />
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
-    sun: {
-        width: 35,
-        height: 35,
-    },
-    thunderstorm: {
-        width: 41,
-        height: 33,
+    wrapper: {
+        weight: '20%',
+        height: '20%',
     },
 });
