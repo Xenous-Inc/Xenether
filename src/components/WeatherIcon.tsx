@@ -40,6 +40,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     img: {
+        marginTop: 10,
+        marginBottom: 10,
         resizeMode: 'contain',
     },
 });
