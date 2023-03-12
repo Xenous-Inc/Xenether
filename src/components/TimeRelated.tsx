@@ -1,33 +1,33 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { WeatherType, WeatherIcon } from '@components/WeatherIcon';
-import { eachHourOfInterval, set, getHours, getDate } from 'date-fns';
+import { getHours } from 'date-fns';
 
-const NowDate = new Date();
-
-const ArrayOfHours = eachHourOfInterval({
-    start: NowDate,
-    end: set(NowDate, { date: getDate(NowDate) + 1 }),
-});
-
-const Hours = new Array(ArrayOfHours.length);
-
-for (let i = 0; i < ArrayOfHours.length; i++) {
-    if (i === 0) {
-        Hours[i] = 'Сейчас';
-    } else if (getHours(ArrayOfHours[i]) < 10) {
-        Hours[i] = '0' + getHours(ArrayOfHours[i]).toString() + ':00';
-    } else {
-        Hours[i] = getHours(ArrayOfHours[i]).toString() + ':00';
-    }
+interface IProps {
+    time: string;
+    weatherType: WeatherType;
+    temperature: number;
 }
 
-export const TimeRelated: React.FC<{ indexOfComponent: number; weatherType: WeatherType; temp: number }> = props => {
+const currentDate = new Date();
+
+function ISO8601ToHours(inputStr: string) {
+    const Date = inputStr.split(' ', 2);
+    const Hours = Date[1].split(':', 1);
+
+    if (+Hours === getHours(currentDate)) {
+        return 'Сейчас';
+    }
+
+    return Hours + ':00';
+}
+
+const TimeRelated: React.FC<IProps> = props => {
     return (
         <View style={styles.wrapper}>
-            <Text style={styles.uptext}>{Hours[props.indexOfComponent]}</Text>
-            <WeatherIcon weatherType={props.weatherType} />
-            <Text style={styles.downtext}>{props.temp.toString() + '\u00B0'}</Text>
+            <Text style={styles.uptext}>{ISO8601ToHours(props.time)}</Text>
+            <WeatherIcon weatherType={props.weatherType} style={{ marginVertical: 1 }} />
+            <Text style={styles.downtext}>{props.temperature.toString() + '\u00B0'}</Text>
         </View>
     );
 };
@@ -52,3 +52,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+export default TimeRelated;
