@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { WeatherType, WeatherIcon } from '@components/WeatherIcon';
 import { getHours } from 'date-fns';
 
-interface IProps {
+export interface IProps {
     time: string;
     weatherType: WeatherType;
     temperature: number;
@@ -11,35 +11,38 @@ interface IProps {
 
 const currentDate = new Date();
 
-function ISO8601ToHours(inputStr: string) {
-    const Date = inputStr.split(' ', 2);
-    const Hours = Date[1].split(':', 1);
+const SetHours = (timeData: string) => {
+    const hoursValue = getHours(new Date(timeData));
 
-    if (+Hours === getHours(currentDate)) {
+    if (hoursValue === getHours(currentDate)) {
         return 'Сейчас';
     }
-
-    return Hours + ':00';
-}
+    if (hoursValue < 10) {
+        return '0' + hoursValue + ':00';
+    }
+    return hoursValue + ':00';
+};
 
 const TimeRelated: React.FC<IProps> = props => {
     return (
         <View style={styles.wrapper}>
-            <Text style={styles.uptext}>{ISO8601ToHours(props.time)}</Text>
-            <WeatherIcon weatherType={props.weatherType} style={{ marginVertical: 1 }} />
-            <Text style={styles.downtext}>{props.temperature.toString() + '\u00B0'}</Text>
+            <Text style={styles.timeInfo}>{SetHours(props.time)}</Text>
+            <View style={styles.icon}>
+                <WeatherIcon weatherType={props.weatherType} />
+            </View>
+            <Text style={styles.temperatureInfo}>{props.temperature.toString() + '\u00B0'}</Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    uptext: {
+    timeInfo: {
         fontSize: 12,
         fontFamily: 'ExtendedSemiblod',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    downtext: {
+    temperatureInfo: {
         fontSize: 12,
         fontFamily: 'ExtendedSemiblod',
         alignItems: 'center',
@@ -50,6 +53,9 @@ const styles = StyleSheet.create({
         height: 81,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    icon: {
+        marginVertical: 1,
     },
 });
 
