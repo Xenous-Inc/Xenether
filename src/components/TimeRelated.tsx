@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { WeatherType, WeatherIcon } from '@components/WeatherIcon';
-import { getHours } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
+import { signs } from '@utils/constants';
 
 export interface IProps {
     time: string;
@@ -9,18 +10,11 @@ export interface IProps {
     temperature: number;
 }
 
-const currentDate = new Date();
-
 const SetHours = (timeData: string) => {
-    const hoursValue = getHours(new Date(timeData));
+    const currentDate = new Date();
+    const inputDate = new Date(timeData);
 
-    if (hoursValue === getHours(currentDate)) {
-        return 'Сейчас';
-    }
-    if (hoursValue < 10) {
-        return '0' + hoursValue + ':00';
-    }
-    return hoursValue + ':00';
+    return isSameDay(inputDate, currentDate) ? 'Сейчас' : format(new Date(timeData), 'HH:mm');
 };
 
 const TimeRelated: React.FC<IProps> = props => {
@@ -28,9 +22,9 @@ const TimeRelated: React.FC<IProps> = props => {
         <View style={styles.wrapper}>
             <Text style={styles.timeInfo}>{SetHours(props.time)}</Text>
             <View style={styles.icon}>
-                <WeatherIcon weatherType={props.weatherType} />
+                <WeatherIcon weatherType={props.weatherType} style={styles.icon} />
             </View>
-            <Text style={styles.temperatureInfo}>{props.temperature.toString() + '\u00B0'}</Text>
+            <Text style={styles.temperatureInfo}>{props.temperature.toString() + signs.CELSIUS}</Text>
         </View>
     );
 };
