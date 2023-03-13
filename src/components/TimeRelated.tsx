@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { WeatherType, WeatherIcon } from '@components/WeatherIcon';
-import { format, isSameDay } from 'date-fns';
+import { getHours, format } from 'date-fns';
 import { signs } from '@utils/constants';
 
 export interface IProps {
@@ -11,10 +11,9 @@ export interface IProps {
 }
 
 const SetHours = (timeData: string) => {
-    const currentDate = new Date();
-    const inputDate = new Date(timeData);
-
-    return isSameDay(inputDate, currentDate) ? 'Сейчас' : format(new Date(timeData), 'HH:mm');
+    const currentHour = getHours(new Date());
+    const inputHours = getHours(new Date(timeData));
+    return inputHours === currentHour ? 'Сейчас' : format(new Date(timeData), 'HH:mm');
 };
 
 const TimeRelated: React.FC<IProps> = props => {
