@@ -8,3 +8,7 @@ export const conditions = {
     HAIL: 'Возможен град',
     NOT_WARNINGS: 'Предупреждений нет',
 };
+
+export const signs = {
+    CELSIUS: '\u00B0',
+};

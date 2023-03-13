@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import colors from '@styles/colors';
-import { format, getDay } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { WeatherIcon, WeatherType } from '@components/WeatherIcon';
+import { signs } from '@utils/constants';
 
 export interface IProps {
     date: string;
@@ -14,11 +15,8 @@ export interface IProps {
 
 const getWeekDay = (incomingDate: string) => {
     const currentDate = new Date();
-    const weekNumberFromApi = getDay(new Date(incomingDate)).toString();
-    const currentWeekNumber = getDay(currentDate).toString();
-    return weekNumberFromApi === currentWeekNumber
-        ? 'Сегодня'
-        : format(new Date(weekNumberFromApi), 'cccc', { locale: ru });
+    const incomingDate1 = new Date(incomingDate);
+    return isSameDay(currentDate, incomingDate1) ? 'Сегодня' : format(incomingDate1, 'cccc', { locale: ru });
 };
 
 export const DateRelated: React.FC<IProps> = props => {
@@ -26,14 +24,14 @@ export const DateRelated: React.FC<IProps> = props => {
         <View style={styles.container}>
             <View>
                 <Text style={styles.weekNumber}>{getWeekDay(props.date)}</Text>
-                <Text style={styles.dateNumber}>{format(new Date(props.date), 'dd MMMM', { locale: ru })}</Text>
+                <Text style={styles.dateNumber}>{format(new Date(props.date), 'd MMMM', { locale: ru })}</Text>
             </View>
             <View style={styles.icon}>
                 <WeatherIcon weatherType={props.weatherType} />
             </View>
             <View style={styles.temperatureContainer}>
-                <Text style={styles.afternoon}>{props.dayTemp + '\u00B0'}</Text>
-                <Text style={styles.night}>{props.nightTemp + '\u00B0'}</Text>
+                <Text style={styles.afternoon}>{props.dayTemp + signs.CELSIUS}</Text>
+                <Text style={styles.night}>{props.nightTemp + signs.CELSIUS}</Text>
             </View>
         </View>
     );
