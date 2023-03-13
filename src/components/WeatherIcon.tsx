@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, ViewProps } from 'react-native';
 
 export enum WeatherType {
     Sunny,
@@ -23,10 +23,11 @@ const Images: WeatherToImage = {
     },
 };
 
-export const WeatherIcon: React.FC<{ weatherType: WeatherType }> = props => {
-    const image = Images[props.weatherType];
+export const WeatherIcon: React.FC<{ weatherType: WeatherType } & ViewProps> = props => {
+    const { weatherType, style, ...viewProps } = props;
+    const image = Images[weatherType];
     return (
-        <View style={styles.wrapper}>
+        <View style={[styles.wrapper, style]} {...viewProps}>
             <Image source={image.src} style={styles.img} />
         </View>
     );
