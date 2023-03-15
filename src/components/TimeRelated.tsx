@@ -11,9 +11,9 @@ export interface IProps {
 }
 
 const SetHours = (timeData: string) => {
-    const currentHour = new Date();
-    const inputHours = new Date(timeData);
-    return isSameHour(inputHours, currentHour) ? 'Сейчас' : format(inputHours, 'HH:mm');
+    const currentDate = new Date();
+    const inputDate = new Date(timeData);
+    return isSameHour(inputDate, currentDate) ? 'Сейчас' : format(inputDate, 'HH:mm');
 };
 
 const TimeRelated: React.FC<IProps> = props => {
