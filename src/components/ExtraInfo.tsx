@@ -1,103 +1,80 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { signs, caseOfCategories, unitMeasure } from '@utils/constants';
+import { signs, extraInfoType, unitMeasure } from '@utils/constants';
 import colors from '@styles/colors';
 
-export enum Category {
+export enum ExtraInfoType {
     Precipitation,
     Visibility,
-    FeelingTemp,
-    Ownership,
+    realFeel,
+    Humidity,
 }
 
 type CategoryToIcon = {
-    [key in Category]: IIconData;
+    [key in ExtraInfoType]: IIconData;
 };
 
 interface IIconData {
     src: number;
+    extroInfoTitle: string;
+    extroInfoComment: string;
 }
 
 export interface IProps {
-    catergory: Category;
+    catergory: ExtraInfoType;
     digitalValue: number;
+    comment?: string;
 }
 
 const Icons: CategoryToIcon = {
-    [Category.Precipitation]: {
+    [ExtraInfoType.Precipitation]: {
         src: require('@assets/icons/water_drop_outline_20.png'),
+        extroInfoTitle: extraInfoType.PRECIPITATION,
+        extroInfoComment: 'Ничего не ожидается в ближайшие 10 дней',
     },
-    [Category.Visibility]: {
+    [ExtraInfoType.Visibility]: {
         src: require('@assets/icons/view_outline_28.png'),
+        extroInfoTitle: extraInfoType.VISIBILITY,
+        extroInfoComment: 'Видимость снижена из-за дыма',
     },
-    [Category.FeelingTemp]: {
+    [ExtraInfoType.realFeel]: {
         src: require('@assets/icons/thermometer.png'),
+        extroInfoTitle: extraInfoType.REAL_FEEL,
+        extroInfoComment: 'Дождь может стать прохладнее',
     },
-    [Category.Ownership]: {
+    [ExtraInfoType.Humidity]: {
         src: require('@assets/icons/fog_16.png'),
+        extroInfoTitle: extraInfoType.HUMIDITY,
+        extroInfoComment: 'Точка росы\nсейчас: 8' + signs.PERCENT,
     },
 };
 
-const SetTitle = (titleCategory: Category) => {
+const SetUnitMeasure = (titleCategory: ExtraInfoType) => {
     switch (titleCategory) {
-        case Category.Precipitation:
-            return caseOfCategories.PRECIPITATION;
-        case Category.Visibility:
-            return caseOfCategories.VISIBILITY;
-        case Category.FeelingTemp:
-            return caseOfCategories.FEELING_TEMP;
-        case Category.Ownership:
-            return caseOfCategories.OWNERSHIP;
-        default:
-            return;
-    }
-};
-
-const SetUnitMeasure = (titleCategory: Category) => {
-    switch (titleCategory) {
-        case Category.Precipitation:
+        case ExtraInfoType.Precipitation:
             return unitMeasure.MILLIMETERS;
-        case Category.Visibility:
+        case ExtraInfoType.Visibility:
             return unitMeasure.KILOMETERS;
-        case Category.FeelingTemp:
+        case ExtraInfoType.realFeel:
             return signs.CELSIUS;
-        case Category.Ownership:
-            return signs.INTEREST;
+        case ExtraInfoType.Humidity:
+            return signs.PERCENT;
         default:
             return;
-    }
-};
-
-const SetComment = (titleCategory: Category) => {
-    switch (titleCategory) {
-        case Category.Precipitation:
-            return 'Ничего не ожидается в ближайшие 10 дней';
-        case Category.Visibility:
-            return 'Видимость снижена из-за дыма';
-        case Category.FeelingTemp:
-            return 'Дождь может стать прохладнее';
-        case Category.Ownership:
-            return 'Точка росы\nсейчас: 8' + signs.INTEREST;
-        default:
-            return;
-    }
-};
-
-const CheckOnPrecipitation = (titleCategory: Category) => {
-    if (titleCategory === Category.Precipitation) {
-        return <Text style={styles.nearestTime}>за 24 часа</Text>;
     }
 };
 
 export const ExtraInfo: React.FC<IProps> = props => {
-    const image = Icons[props.catergory];
+    const extraInfoData = Icons[props.catergory];
     return (
         <View style={styles.container}>
-            <Text style={styles.category}>{SetTitle(props.catergory)}</Text>
-            <Image source={image.src} style={styles.icon} />
-            <Text style={styles.basicDate}>{props.digitalValue + SetUnitMeasure(props.catergory)} </Text>
-            <View>{CheckOnPrecipitation(props.catergory)}</View>
-            <Text style={styles.terms}>{SetComment(props.catergory)}</Text>
+            <View style={styles.head}>
+                <Image source={extraInfoData.src} style={styles.icon} />
+                <Text style={styles.category}>{extraInfoData.extroInfoTitle}</Text>
+            </View>
+            <Text style={styles.mainInfo}>{props.digitalValue + SetUnitMeasure(props.catergory)} </Text>
+            <Text style={styles.nearestTime}>{props.comment}</Text>
+            <Text style={styles.terms}>{extraInfoData.extroInfoComment}</Text>
         </View>
     );
 };
@@ -110,23 +87,26 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         position: 'relative',
     },
+    head: {
+        flexDirection: 'row',
+    },
     icon: {
-        marginTop: -14,
-        marginLeft: 13,
+        marginTop: 13,
+        marginLeft: 12,
         opacity: 0.5,
     },
     category: {
         opacity: 0.5,
         fontFamily: 'ExtendedSemiblod',
         fontSize: 11,
-        marginLeft: 33,
-        marginTop: 12,
+        marginLeft: 5,
+        marginTop: 15,
     },
-    basicDate: {
+    mainInfo: {
         fontFamily: 'ExtendedBold',
         fontSize: 32,
         marginLeft: 17,
-        marginTop: 14,
+        marginTop: 13,
         transform: [{ scaleX: 1.1 }],
     },
     nearestTime: {
