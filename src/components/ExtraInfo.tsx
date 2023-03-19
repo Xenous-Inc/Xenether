@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         width: '37.5%',
         height: 152,
         borderRadius: 16,
-        position: 'relative',
+        justifyContent: 'space-between',
     },
     head: {
         flexDirection: 'row',
@@ -111,9 +111,8 @@ const styles = StyleSheet.create({
         color: colors.GRAY,
         textAlign: 'left',
         fontSize: 11,
-        marginLeft: 5,
+        marginLeft: 4,
         padding: 5,
-        marginTop: 105,
-        position: 'absolute',
+        marginTop: 10,
     },
 });
