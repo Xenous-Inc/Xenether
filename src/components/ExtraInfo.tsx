@@ -10,7 +10,7 @@ export enum ExtraInfoType {
     Humidity,
 }
 
-type CategoryToData = {
+type TypeToData = {
     [key in ExtraInfoType]: IComponentData;
 };
 
@@ -27,7 +27,7 @@ export interface IExtraInfoProps {
     digitalValue: number;
 }
 
-const Icons: CategoryToData = {
+const Icons: TypeToData = {
     [ExtraInfoType.Precipitation]: {
         src: require('@assets/icons/water_drop_outline_20.png'),
         extroInfoTitle: ExtraInfoHead.PRECIPITATION,
