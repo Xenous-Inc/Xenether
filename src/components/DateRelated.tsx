@@ -4,7 +4,7 @@ import colors from '@styles/colors';
 import { format, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { WeatherIcon, WeatherType } from '@components/WeatherIcon';
-import { signs } from '@utils/constants';
+import { Signs } from '@utils/constants';
 
 export interface IProps {
     date: string;
@@ -30,8 +30,8 @@ export const DateRelated: React.FC<IProps> = props => {
                 <WeatherIcon weatherType={props.weatherType} />
             </View>
             <View style={styles.temperatureContainer}>
-                <Text style={styles.afternoon}>{props.dayTemp + signs.CELSIUS}</Text>
-                <Text style={styles.night}>{props.nightTemp + signs.CELSIUS}</Text>
+                <Text style={styles.afternoon}>{props.dayTemp + Signs.CELSIUS}</Text>
+                <Text style={styles.night}>{props.nightTemp + Signs.CELSIUS}</Text>
             </View>
         </View>
     );

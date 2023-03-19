@@ -1,70 +1,61 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { signs, extraInfoType, unitMeasure } from '@utils/constants';
+import { Signs, ExtraInfoHead, UnitMeasure } from '@utils/constants';
 import colors from '@styles/colors';
 
 export enum ExtraInfoType {
     Precipitation,
     Visibility,
-    realFeel,
+    RealFeel,
     Humidity,
 }
 
-type CategoryToIcon = {
-    [key in ExtraInfoType]: IIconData;
+type CategoryToData = {
+    [key in ExtraInfoType]: IComponentData;
 };
 
-interface IIconData {
+interface IComponentData {
     src: number;
     extroInfoTitle: string;
     extroInfoComment: string;
+    additionalInfo?: string;
+    unitMeasure: string;
 }
 
-export interface IProps {
+export interface IExtraInfoProps {
     catergory: ExtraInfoType;
     digitalValue: number;
-    comment?: string;
 }
 
-const Icons: CategoryToIcon = {
+const Icons: CategoryToData = {
     [ExtraInfoType.Precipitation]: {
         src: require('@assets/icons/water_drop_outline_20.png'),
-        extroInfoTitle: extraInfoType.PRECIPITATION,
+        extroInfoTitle: ExtraInfoHead.PRECIPITATION,
         extroInfoComment: 'Ничего не ожидается в ближайшие 10 дней',
+        additionalInfo: 'за 24 часа',
+        unitMeasure: UnitMeasure.MILLIMETERS,
     },
     [ExtraInfoType.Visibility]: {
         src: require('@assets/icons/view_outline_28.png'),
-        extroInfoTitle: extraInfoType.VISIBILITY,
+        extroInfoTitle: ExtraInfoHead.VISIBILITY,
         extroInfoComment: 'Видимость снижена из-за дыма',
+        unitMeasure: UnitMeasure.KILOMETERS,
     },
-    [ExtraInfoType.realFeel]: {
+    [ExtraInfoType.RealFeel]: {
         src: require('@assets/icons/thermometer.png'),
-        extroInfoTitle: extraInfoType.REAL_FEEL,
+        extroInfoTitle: ExtraInfoHead.REAL_FEEL,
         extroInfoComment: 'Дождь может стать прохладнее',
+        unitMeasure: Signs.CELSIUS,
     },
     [ExtraInfoType.Humidity]: {
         src: require('@assets/icons/fog_16.png'),
-        extroInfoTitle: extraInfoType.HUMIDITY,
-        extroInfoComment: 'Точка росы\nсейчас: 8' + signs.PERCENT,
+        extroInfoTitle: ExtraInfoHead.HUMIDITY,
+        extroInfoComment: 'Точка росы\nсейчас: 8' + Signs.PERCENT,
+        unitMeasure: Signs.PERCENT,
     },
 };
 
-const SetUnitMeasure = (titleCategory: ExtraInfoType) => {
-    switch (titleCategory) {
-        case ExtraInfoType.Precipitation:
-            return unitMeasure.MILLIMETERS;
-        case ExtraInfoType.Visibility:
-            return unitMeasure.KILOMETERS;
-        case ExtraInfoType.realFeel:
-            return signs.CELSIUS;
-        case ExtraInfoType.Humidity:
-            return signs.PERCENT;
-        default:
-            return;
-    }
-};
-
-export const ExtraInfo: React.FC<IProps> = props => {
+export const ExtraInfo: React.FC<IExtraInfoProps> = props => {
     const extraInfoData = Icons[props.catergory];
     return (
         <View style={styles.container}>
@@ -72,8 +63,8 @@ export const ExtraInfo: React.FC<IProps> = props => {
                 <Image source={extraInfoData.src} style={styles.icon} />
                 <Text style={styles.category}>{extraInfoData.extroInfoTitle}</Text>
             </View>
-            <Text style={styles.mainInfo}>{props.digitalValue + SetUnitMeasure(props.catergory)} </Text>
-            <Text style={styles.nearestTime}>{props.comment}</Text>
+            <Text style={styles.mainInfo}>{props.digitalValue + extraInfoData.unitMeasure} </Text>
+            <Text style={styles.nearestTime}>{extraInfoData.additionalInfo}</Text>
             <Text style={styles.terms}>{extraInfoData.extroInfoComment}</Text>
         </View>
     );
