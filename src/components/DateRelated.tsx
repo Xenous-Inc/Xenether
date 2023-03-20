@@ -6,7 +6,7 @@ import { ru } from 'date-fns/locale';
 import { WeatherIcon, WeatherType } from '@components/WeatherIcon';
 import { Signs } from '@utils/constants';
 
-export interface IProps {
+export interface IDataProps {
     date: string;
     weatherType: WeatherType;
     dayTemp: number;
@@ -19,7 +19,7 @@ const getWeekDay = (incomingDate: string) => {
     return isSameDay(currentDate, incomingDate1) ? 'Сегодня' : format(incomingDate1, 'cccc', { locale: ru });
 };
 
-export const DateRelated: React.FC<IProps> = props => {
+export const DateRelated: React.FC<IDataProps> = props => {
     return (
         <View style={styles.container}>
             <View>
