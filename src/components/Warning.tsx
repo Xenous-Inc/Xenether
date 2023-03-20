@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import colors from '@styles/colors';
-import { conditions } from '@utils/constants';
+import { Conditions } from '@utils/constants';
 
 export enum WarningType {
     Thunderstorm,
@@ -16,28 +16,28 @@ export enum WarningType {
 const getWarningText = (War: WarningType) => {
     switch (War) {
         case WarningType.Thunderstorm:
-            return conditions.THUNDERSTORM;
+            return Conditions.THUNDERSTORM;
 
         case WarningType.StrongWind:
-            return conditions.STRONG_WIND;
+            return Conditions.STRONG_WIND;
 
         case WarningType.Snowstorm:
-            return conditions.SNOWSTORM;
+            return Conditions.SNOWSTORM;
 
         case WarningType.Rain:
-            return conditions.RAIN;
+            return Conditions.RAIN;
 
         case WarningType.Fog:
-            return conditions.FOG;
+            return Conditions.FOG;
 
         case WarningType.LittleWind:
-            return conditions.LITTLE_WIND;
+            return Conditions.LITTLE_WIND;
 
         case WarningType.Hail:
-            return conditions.HAIL;
+            return Conditions.HAIL;
 
         default:
-            return conditions.NOT_WARNINGS;
+            return Conditions.NOT_WARNINGS;
     }
 };
 

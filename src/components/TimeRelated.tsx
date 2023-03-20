@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { WeatherType, WeatherIcon } from '@components/WeatherIcon';
 import { format, isSameHour } from 'date-fns';
-import { signs } from '@utils/constants';
+import { Signs } from '@utils/constants';
 
 export interface IProps {
     time: string;
@@ -23,7 +23,7 @@ const TimeRelated: React.FC<IProps> = props => {
             <View style={styles.icon}>
                 <WeatherIcon weatherType={props.weatherType} style={styles.icon} />
             </View>
-            <Text style={styles.temperatureInfo}>{props.temperature.toString() + signs.CELSIUS}</Text>
+            <Text style={styles.temperatureInfo}>{props.temperature.toString() + Signs.CELSIUS}</Text>
         </View>
     );
 };
