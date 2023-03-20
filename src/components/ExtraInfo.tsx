@@ -16,8 +16,8 @@ type TypeToData = {
 
 interface IComponentData {
     src: number;
-    extroInfoTitle: string;
-    extroInfoComment: string;
+    title: string;
+    comment: string;
     additionalInfo?: string;
     unitMeasure: string;
 }
@@ -27,45 +27,45 @@ export interface IExtraInfoProps {
     digitalValue: number;
 }
 
-const Icons: TypeToData = {
+const Data: TypeToData = {
     [ExtraInfoType.Precipitation]: {
         src: require('@assets/icons/water_drop_outline_20.png'),
-        extroInfoTitle: ExtraInfoHead.PRECIPITATION,
-        extroInfoComment: 'Ничего не ожидается в ближайшие 10 дней',
+        title: ExtraInfoHead.PRECIPITATION,
+        comment: 'Ничего не ожидается в ближайшие 10 дней',
         additionalInfo: 'за 24 часа',
         unitMeasure: UnitMeasure.MILLIMETERS,
     },
     [ExtraInfoType.Visibility]: {
         src: require('@assets/icons/view_outline_28.png'),
-        extroInfoTitle: ExtraInfoHead.VISIBILITY,
-        extroInfoComment: 'Видимость снижена из-за дыма',
+        title: ExtraInfoHead.VISIBILITY,
+        comment: 'Видимость снижена из-за дыма',
         unitMeasure: UnitMeasure.KILOMETERS,
     },
     [ExtraInfoType.RealFeel]: {
         src: require('@assets/icons/thermometer.png'),
-        extroInfoTitle: ExtraInfoHead.REAL_FEEL,
-        extroInfoComment: 'Дождь может стать прохладнее',
+        title: ExtraInfoHead.REAL_FEEL,
+        comment: 'Дождь может стать прохладнее',
         unitMeasure: Signs.CELSIUS,
     },
     [ExtraInfoType.Humidity]: {
         src: require('@assets/icons/fog_16.png'),
-        extroInfoTitle: ExtraInfoHead.HUMIDITY,
-        extroInfoComment: 'Точка росы\nсейчас: 8' + Signs.PERCENT,
+        title: ExtraInfoHead.HUMIDITY,
+        comment: 'Точка росы\nсейчас: 8' + Signs.PERCENT,
         unitMeasure: Signs.PERCENT,
     },
 };
 
 export const ExtraInfo: React.FC<IExtraInfoProps> = props => {
-    const extraInfoData = Icons[props.catergory];
+    const extraInfoData = Data[props.catergory];
     return (
         <View style={styles.container}>
             <View style={styles.head}>
                 <Image source={extraInfoData.src} style={styles.icon} />
-                <Text style={styles.category}>{extraInfoData.extroInfoTitle}</Text>
+                <Text style={styles.category}>{extraInfoData.title}</Text>
             </View>
             <Text style={styles.mainInfo}>{props.digitalValue + extraInfoData.unitMeasure} </Text>
             <Text style={styles.nearestTime}>{extraInfoData.additionalInfo}</Text>
-            <Text style={styles.terms}>{extraInfoData.extroInfoComment}</Text>
+            <Text style={styles.terms}>{extraInfoData.comment}</Text>
         </View>
     );
 };
@@ -73,7 +73,7 @@ export const ExtraInfo: React.FC<IExtraInfoProps> = props => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.LIGHT_GRAY,
-        width: '37.5%',
+        width: '47%',
         height: 152,
         borderRadius: 16,
         justifyContent: 'space-between',
@@ -111,8 +111,7 @@ const styles = StyleSheet.create({
         color: colors.GRAY,
         textAlign: 'left',
         fontSize: 11,
-        marginLeft: 4,
-        padding: 5,
-        marginTop: 10,
+        marginHorizontal: 10,
+        marginBottom: 10,
     },
 });

@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
 import colors from '@styles/colors';
+import { ExtraInfo, ExtraInfoType } from '@components/ExtraInfo';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,7 +31,11 @@ export default function App() {
         return null;
     }
 
-    return <View style={styles.container} onLayout={onLayoutRootView} />;
+    return (
+        <View style={styles.container} onLayout={onLayoutRootView}>
+            <ExtraInfo catergory={ExtraInfoType.Precipitation} digitalValue={0} />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
