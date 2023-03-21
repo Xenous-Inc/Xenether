@@ -20,9 +20,7 @@ const TimeRelated: React.FC<ITimeProps> = props => {
     return (
         <View style={styles.wrapper}>
             <Text style={styles.timeInfo}>{SetHours(props.time)}</Text>
-            <View style={styles.icon}>
-                <WeatherIcon weatherType={props.weatherType} style={styles.icon} />
-            </View>
+            <WeatherIcon weatherType={props.weatherType} style={styles.icon} />
             <Text style={styles.temperatureInfo}>{props.temperature.toString() + Signs.CELSIUS}</Text>
         </View>
     );

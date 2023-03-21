@@ -3,51 +3,49 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { Warning, WarningType } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { ITimeProps } from '@components/TimeRelated';
-import { DateRelated, IDataProps } from '@components/DateRelated';
+import { DateRelated, IDateProps } from '@components/DateRelated';
 import colors from '@styles/colors';
 import { ExtraInfo, IExtraInfoProps } from './ExtraInfo';
+import { BottomSheetStyle } from '@styles/constants';
 
 export interface IWeatherComponent {
     warningType: WarningType;
-    arrayOfParameterTimeRelated: Array<ITimeProps>;
-    arrayOfParameterDateRelated: Array<IDataProps>;
-    arrayOfParameterExtraInfo: Array<IExtraInfoProps>;
+    timeRelatedArray: Array<ITimeProps>;
+    dateRelatedArray: Array<IDateProps>;
+    extraInfoArray: Array<IExtraInfoProps>;
 }
 
-const SetTimeRelatedComponents = (arrayOfParameterTimeRelated: Array<ITimeProps>) => {
-    const ArrayTimeRelatedComponents = arrayOfParameterTimeRelated.map(element => {
+const getTimeRelatedComponents = (timeRelatedArray: Array<ITimeProps>) => {
+    return timeRelatedArray.map((element, index) => {
         return (
             <TimeRelated
                 time={element.time}
                 weatherType={element.weatherType}
                 temperature={element.temperature}
-                key={element.time}
+                key={index}
             />
         );
     });
-    return ArrayTimeRelatedComponents;
 };
 
-const SetDateRelatedComponents = (arrayOfParameterDateRelated: Array<IDataProps>) => {
-    const ArrayDateRelatedComponents = arrayOfParameterDateRelated.map(element => {
+const getDateRelatedComponents = (dateRelatedArray: Array<IDateProps>) => {
+    return dateRelatedArray.map((element, index) => {
         return (
             <DateRelated
                 date={element.date}
                 weatherType={element.weatherType}
                 dayTemp={element.dayTemp}
                 nightTemp={element.nightTemp}
-                key={element.date}
+                key={index}
             />
         );
     });
-    return ArrayDateRelatedComponents;
 };
 
-const SetExtraInfoComponents = (arrayOfParameterExtraInfo: Array<IExtraInfoProps>) => {
-    const ArrayOfExtraInfoComponents = arrayOfParameterExtraInfo.map(element => {
-        return <ExtraInfo catergory={element.catergory} digitalValue={element.digitalValue} key={element.catergory} />;
+const getExtraInfoComponents = (extraInfoArray: Array<IExtraInfoProps>) => {
+    return extraInfoArray.map((element, index) => {
+        return <ExtraInfo type={element.type} digitalValue={element.digitalValue} key={index} />;
     });
-    return ArrayOfExtraInfoComponents;
 };
 
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
@@ -57,14 +55,10 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
                 <Warning warningType={props.warningType} />
             </View>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <View style={styles.timeRelatedContainer}>
-                    {SetTimeRelatedComponents(props.arrayOfParameterTimeRelated)}
-                </View>
+                <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(props.timeRelatedArray)}</View>
             </ScrollView>
-            <View style={styles.dateRelatedContainer}>
-                {SetDateRelatedComponents(props.arrayOfParameterDateRelated)}
-            </View>
-            <View style={styles.extraInfoContainer}>{SetExtraInfoComponents(props.arrayOfParameterExtraInfo)}</View>
+            <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(props.dateRelatedArray)}</View>
+            <View style={styles.extraInfoContainer}>{getExtraInfoComponents(props.extraInfoArray)}</View>
         </ScrollView>
     );
 };
@@ -78,18 +72,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 35,
         marginTop: 15,
-        width: '100%',
-        marginHorizontal: 42,
+        marginHorizontal: BottomSheetStyle.BOTTOM_SHEET_HORIZONTAL_OFFSET,
     },
     timeRelatedContainer: {
-        marginHorizontal: 5,
+        marginHorizontal: BottomSheetStyle.BOTTOM_SHEET_HORIZONTAL_OFFSET,
         marginBottom: 10,
         flexDirection: 'row',
-        overflow: 'hidden',
+        columnGap: 7,
     },
     dateRelatedContainer: {
-        backgroundColor: colors.WHITE,
-        paddingTop: 25,
+        marginTop: 25,
+        paddingHorizontal: BottomSheetStyle.BOTTOM_SHEET_HORIZONTAL_OFFSET,
     },
     extraInfoContainer: {
         backgroundColor: colors.WHITE,
