@@ -23,7 +23,7 @@ interface IComponentData {
 }
 
 export interface IExtraInfoProps {
-    catergory: ExtraInfoType;
+    type: ExtraInfoType;
     digitalValue: number;
 }
 
@@ -56,7 +56,7 @@ const Data: TypeToData = {
 };
 
 export const ExtraInfo: React.FC<IExtraInfoProps> = props => {
-    const extraInfoData = Data[props.catergory];
+    const extraInfoData = Data[props.type];
     return (
         <View style={styles.container}>
             <View style={styles.head}>

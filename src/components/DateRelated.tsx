@@ -6,7 +6,7 @@ import { ru } from 'date-fns/locale';
 import { WeatherIcon, WeatherType } from '@components/WeatherIcon';
 import { Signs } from '@utils/constants';
 
-export interface IProps {
+export interface IDateProps {
     date: string;
     weatherType: WeatherType;
     dayTemp: number;
@@ -19,7 +19,7 @@ const getWeekDay = (incomingDate: string) => {
     return isSameDay(currentDate, incomingDate1) ? 'Сегодня' : format(incomingDate1, 'cccc', { locale: ru });
 };
 
-export const DateRelated: React.FC<IProps> = props => {
+export const DateRelated: React.FC<IDateProps> = props => {
     return (
         <View style={styles.container}>
             <View>
@@ -49,16 +49,15 @@ const styles = StyleSheet.create({
     },
     dateNumber: {
         fontFamily: 'ExtendedRegular',
-        marginHorizontal: 25,
         fontSize: 12,
         paddingVertical: 4,
     },
     weekNumber: {
         fontFamily: 'ExtendedBold',
-        marginHorizontal: 25,
         paddingVertical: 3,
         fontSize: 16,
         transform: [{ scaleY: 1.1 }],
+        textTransform: 'capitalize',
     },
     icon: {
         position: 'absolute',
@@ -70,17 +69,16 @@ const styles = StyleSheet.create({
     },
     temperatureContainer: {
         flexDirection: 'row',
-        marginHorizontal: 25,
     },
     afternoon: {
         fontFamily: 'ExtendedBold',
         fontSize: 20,
-        paddingHorizontal: 6,
+        marginRight: 6,
     },
     night: {
         color: colors.GRAY,
         fontSize: 16,
         fontFamily: 'ExtendedBold',
-        marginVertical: 5,
+        marginTop: 5,
     },
 });

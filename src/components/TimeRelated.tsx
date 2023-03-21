@@ -4,7 +4,7 @@ import { WeatherType, WeatherIcon } from '@components/WeatherIcon';
 import { format, isSameHour } from 'date-fns';
 import { Signs } from '@utils/constants';
 
-export interface IProps {
+export interface ITimeProps {
     time: string;
     weatherType: WeatherType;
     temperature: number;
@@ -16,13 +16,11 @@ const SetHours = (timeData: string) => {
     return isSameHour(inputDate, currentDate) ? 'Сейчас' : format(inputDate, 'HH:mm');
 };
 
-const TimeRelated: React.FC<IProps> = props => {
+const TimeRelated: React.FC<ITimeProps> = props => {
     return (
         <View style={styles.wrapper}>
             <Text style={styles.timeInfo}>{SetHours(props.time)}</Text>
-            <View style={styles.icon}>
-                <WeatherIcon weatherType={props.weatherType} style={styles.icon} />
-            </View>
+            <WeatherIcon weatherType={props.weatherType} style={styles.icon} />
             <Text style={styles.temperatureInfo}>{props.temperature.toString() + Signs.CELSIUS}</Text>
         </View>
     );
