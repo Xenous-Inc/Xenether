@@ -6,7 +6,7 @@ import { ITimeProps } from '@components/TimeRelated';
 import { DateRelated, IDateProps } from '@components/DateRelated';
 import colors from '@styles/colors';
 import { ExtraInfo, IExtraInfoProps } from './ExtraInfo';
-import { BOTTOM_SHEET_HORIZONTAL_OFFSET } from '@styles/constants';
+import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 
 export interface IWeatherComponent {
     warningType: WarningType;
@@ -72,17 +72,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 35,
         marginTop: 15,
-        marginHorizontal: BOTTOM_SHEET_HORIZONTAL_OFFSET,
+        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     timeRelatedContainer: {
-        marginHorizontal: BOTTOM_SHEET_HORIZONTAL_OFFSET,
+        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
         marginBottom: 10,
         flexDirection: 'row',
         columnGap: 7,
     },
     dateRelatedContainer: {
         marginTop: 25,
-        paddingHorizontal: BOTTOM_SHEET_HORIZONTAL_OFFSET,
+        paddingHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     extraInfoContainer: {
         backgroundColor: colors.WHITE,

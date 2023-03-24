@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, ImageBackground, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { Signs } from '@utils/constants';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import colors from '@styles/colors';
-import { BOTTOM_SHEET_HORIZONTAL_OFFSET } from '@styles/constants';
+import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { ru } from 'date-fns/locale';
 
 const image = {
@@ -22,7 +22,7 @@ const getlocalTime = (timeZone: string) => {
 
 export const MainScreen: React.FC<IMainScreen> = props => {
     return (
-        <ImageBackground source={image.src} style={styles.backgroundImage}>
+        <ImageBackground source={image.src} style={styles.wrapperBackground} imageStyle={styles.backgroundImage}>
             <View style={styles.wrapperOfLocalInfo}>
                 <Text style={styles.locationContent}>{props.location}</Text>
                 <Text style={styles.timeContent}>{getlocalTime(props.timeZone)}</Text>
@@ -33,14 +33,17 @@ export const MainScreen: React.FC<IMainScreen> = props => {
 };
 
 const styles = StyleSheet.create({
-    backgroundImage: {
-        left: 30,
+    wrapperBackground: {
         height: '100%',
-        width: '120%',
+        width: '100%',
+    },
+    backgroundImage: {
+        width: '140%',
+        height: '100%',
     },
     wrapperOfLocalInfo: {
         marginTop: 60,
-        marginLeft: BOTTOM_SHEET_HORIZONTAL_OFFSET + 4,
+        marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
     locationContent: {
         color: colors.WHITE,
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
     },
     timeContent: {
+        marginTop: 10,
         color: colors.WHITE,
         fontFamily: 'ExpandedSemiBold',
         fontSize: 14,
@@ -56,7 +60,7 @@ const styles = StyleSheet.create({
         fontFamily: 'ExpandedBold',
         fontSize: 80,
         color: colors.WHITE,
-        marginTop: 28,
-        marginLeft: BOTTOM_SHEET_HORIZONTAL_OFFSET + 4,
+        marginTop: 18,
+        marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
 });
