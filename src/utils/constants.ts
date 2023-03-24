@@ -25,3 +25,8 @@ export const UnitMeasure = {
     MILLIMETERS: ' мм',
     KILOMETERS: ' км',
 };
+
+export const BottomSheetButtons = {
+    WEATHER: 'Погода',
+    CLOTHES: 'Одежда',
+};

@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Warning, WarningType } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { ITimeProps } from '@components/TimeRelated';
 import { DateRelated, IDateProps } from '@components/DateRelated';
 import colors from '@styles/colors';
 import { ExtraInfo, IExtraInfoProps } from './ExtraInfo';
-import { BOTTOM_SHEET_HORIZONTAL_OFFSET } from '@styles/constants';
+import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 export interface IWeatherComponent {
     warningType: WarningType;
@@ -50,16 +51,16 @@ const getExtraInfoComponents = (extraInfoArray: Array<IExtraInfoProps>) => {
 
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
     return (
-        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.scrollContainer}>
             <View style={styles.warningContainer}>
                 <Warning warningType={props.warningType} />
             </View>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(props.timeRelatedArray)}</View>
-            </ScrollView>
+            </BottomSheetScrollView>
             <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(props.dateRelatedArray)}</View>
             <View style={styles.extraInfoContainer}>{getExtraInfoComponents(props.extraInfoArray)}</View>
-        </ScrollView>
+        </View>
     );
 };
 
@@ -72,17 +73,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 35,
         marginTop: 15,
-        marginHorizontal: BOTTOM_SHEET_HORIZONTAL_OFFSET,
+        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     timeRelatedContainer: {
-        marginHorizontal: BOTTOM_SHEET_HORIZONTAL_OFFSET,
+        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
         marginBottom: 10,
         flexDirection: 'row',
         columnGap: 7,
     },
     dateRelatedContainer: {
         marginTop: 25,
-        paddingHorizontal: BOTTOM_SHEET_HORIZONTAL_OFFSET,
+        paddingHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     extraInfoContainer: {
         backgroundColor: colors.WHITE,
