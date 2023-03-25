@@ -10,8 +10,8 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
     const [fontsLoaded] = useFonts({
         ExpandedBold: require('@assets/fonts/RFDewiExpanded-Bold.ttf'),
-        ExpandedSemiblod: require('@assets/fonts/RFDewiExpanded-Semibold.ttf'),
-        ExpandedUltrabold: require('@assets/fonts/RFDewiExpanded-Ultrabold.ttf'),
+        ExpandedSemiBold: require('@assets/fonts/RFDewiExpanded-Semibold.ttf'),
+        ExpandedUltraBold: require('@assets/fonts/RFDewiExpanded-Ultrabold.ttf'),
         ExtendedBold: require('@assets/fonts/RFDewiExtended-Bold.ttf'),
         ExtendedRegular: require('@assets/fonts/RFDewiExtended-Regular.ttf'),
         ExtendedSemiblod: require('@assets/fonts/RFDewiExtended-Semibold.ttf'),

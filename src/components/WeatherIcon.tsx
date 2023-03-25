@@ -22,6 +22,7 @@ const Images: WeatherToImage = {
         src: require('@assets/icons/thunderstorm.png'),
     },
 };
+
 export const WeatherIcon: React.FC<{ weatherType: WeatherType } & ViewProps> = props => {
     const { weatherType, style, ...viewProps } = props;
     const image = Images[weatherType];

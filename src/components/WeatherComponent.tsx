@@ -66,7 +66,7 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
 
 const styles = StyleSheet.create({
     scrollContainer: {
-        paddingVertical: 20,
+        paddingVertical: 10,
         width: '100%',
     },
     warningContainer: {
