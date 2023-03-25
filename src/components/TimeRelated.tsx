@@ -29,13 +29,13 @@ const TimeRelated: React.FC<ITimeProps> = props => {
 const styles = StyleSheet.create({
     timeInfo: {
         fontSize: 12,
-        fontFamily: 'ExtendedSemiblod',
+        fontFamily: 'ExtendedSemiBold',
         alignItems: 'center',
         justifyContent: 'center',
     },
     temperatureInfo: {
         fontSize: 12,
-        fontFamily: 'ExtendedSemiblod',
+        fontFamily: 'ExtendedSemiBold',
         alignItems: 'center',
         justifyContent: 'center',
     },

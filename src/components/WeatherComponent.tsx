@@ -9,6 +9,7 @@ import { ExtraInfo, IExtraInfoProps } from './ExtraInfo';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
+
 export interface IWeatherComponent {
     warningType: WarningType;
     timeRelatedArray: Array<ITimeProps>;
