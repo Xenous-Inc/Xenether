@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         marginHorizontal: -8,
         flex: 1,
         fontSize: 16,
-        fontFamily: 'ExpandedSemiblod',
+        fontFamily: 'ExpandedSemiBold',
         color: colors.WHITE,
         transform: [{ scaleY: 1.1 }],
     },

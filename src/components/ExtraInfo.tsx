@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     },
     category: {
         opacity: 0.5,
-        fontFamily: 'ExtendedSemiblod',
+        fontFamily: 'ExtendedSemiBold',
         fontSize: 11,
         marginLeft: 5,
         marginTop: 15,
