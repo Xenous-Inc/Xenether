@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         transform: [{ scaleX: 1.1 }],
     },
     nearestTime: {
-        fontFamily: 'ExtendedSemiblod',
+        fontFamily: 'ExtendedSemiBold',
         fontSize: 12,
         marginLeft: 10,
         marginTop: 2,
