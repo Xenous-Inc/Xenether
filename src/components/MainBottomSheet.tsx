@@ -1,23 +1,22 @@
-import React, { useMemo, useRef, useCallback, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import colors from '@styles/colors';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { WeatherComponent } from '@components/WeatherComponent';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
-import { MainBottomSheet } from '@utils/constants';
+import { MainBottomSheetTitles } from '@utils/constants';
 import { IWeatherComponent } from '@components/WeatherComponent';
 
-export const Sheet: React.FC<IWeatherComponent> = props => {
+export const MainBottomSheet: React.FC<IWeatherComponent> = props => {
     const sheetRef = useRef<BottomSheet>(null);
 
     const snapPoints = useMemo(() => ['29%', '96%'], []);
 
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
+    const [sectionIsWeather, setSectionIsWeather] = useState(true);
 
-    const [isSectionWeather, setIsSectionWeather] = useState(true);
-
+    const changeSection = (isWeather: boolean) => {
+        sectionIsWeather !== isWeather && setSectionIsWeather(isWeather);
+    };
     return (
         <BottomSheet
             ref={sheetRef}
@@ -25,34 +24,31 @@ export const Sheet: React.FC<IWeatherComponent> = props => {
             index={0}
             enableHandlePanningGesture={false}
             handleIndicatorStyle={styles.handleIndicator}
-            onChange={handleSheetChanges}
         >
             <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={() => setIsSectionWeather(true)}>
-                    <Text style={[styles.weather, { color: isSectionWeather ? colors.BLACK : colors.GRAY }]}>
-                        {MainBottomSheet.WEATHER}
+                <TouchableOpacity onPress={() => changeSection(true)}>
+                    <Text style={[styles.weather, { color: sectionIsWeather ? colors.BLACK : colors.GRAY }]}>
+                        {MainBottomSheetTitles.WEATHER}
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsSectionWeather(false)}>
-                    <Text style={[styles.clothes, { color: !isSectionWeather ? colors.BLACK : colors.GRAY }]}>
-                        {MainBottomSheet.CLOTHES}
+                <TouchableOpacity onPress={() => changeSection(false)}>
+                    <Text style={[styles.clothes, { color: !sectionIsWeather ? colors.BLACK : colors.GRAY }]}>
+                        {MainBottomSheetTitles.CLOTHES}
                     </Text>
                 </TouchableOpacity>
             </View>
-            {isSectionWeather ? (
-                <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+            <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+                {sectionIsWeather ? (
                     <WeatherComponent
                         warningType={props.warningType}
                         timeRelatedArray={props.timeRelatedArray}
                         dateRelatedArray={props.dateRelatedArray}
                         extraInfoArray={props.extraInfoArray}
                     />
-                </BottomSheetScrollView>
-            ) : (
-                <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+                ) : (
                     <></>
-                </BottomSheetScrollView>
-            )}
+                )}
+            </BottomSheetScrollView>
         </BottomSheet>
     );
 };

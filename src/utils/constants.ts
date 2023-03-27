@@ -26,7 +26,7 @@ export const UnitMeasure = {
     KILOMETERS: ' км',
 };
 
-export const MainBottomSheet = {
+export const MainBottomSheetTitles = {
     WEATHER: 'Погода',
     CLOTHES: 'Одежда',
 };
