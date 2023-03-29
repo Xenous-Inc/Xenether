@@ -10,7 +10,7 @@ import { IWeatherComponent } from '@components/WeatherComponent';
 export const MainBottomSheet: React.FC<IWeatherComponent> = props => {
     const sheetRef = useRef<BottomSheet>(null);
 
-    const snapPoints = useMemo(() => ['29%', '96%'], []);
+    const snapPoints = useMemo(() => ['30%', '96%'], []);
 
     const [sectionIsWeather, setSectionIsWeather] = useState(true);
 
