@@ -63,33 +63,33 @@ const initialArgument = {
     ],
 };
 
-const getlocalTime = (timeZone: string) => {
+const getLocalTime = (timeZone: string) => {
     const currentDate = new Date();
     return format(utcToZonedTime(currentDate, timeZone), 'HH:mm', { locale: ru });
 };
 
 export const MainScreen: React.FC<IMainScreen> = props => {
-    const [isWeatherData, setIsWeatherData] = useState(initialArgument);
+    const [weatherData, setWeatherData] = useState(initialArgument);
 
     return (
-        <ImageBackground source={image.src} style={styles.wrraper} imageStyle={styles.backgroundImage}>
+        <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
             <View style={styles.wrapperOfLocalInfo}>
                 <Text style={styles.locationContent}>{props.location}</Text>
-                <Text style={styles.timeContent}>{getlocalTime(props.timeZone)}</Text>
+                <Text style={styles.timeContent}>{getLocalTime(props.timeZone)}</Text>
             </View>
             <Text style={styles.temperatureContent}>{props.temperature + Signs.CELSIUS}</Text>
             <MainBottomSheet
-                warningType={isWeatherData.warningType}
-                timeRelatedArray={isWeatherData.timeRelatedArr}
-                dateRelatedArray={isWeatherData.dateRelatedArray}
-                extraInfoArray={isWeatherData.extraInfoArray}
+                warningType={weatherData.warningType}
+                timeRelatedArray={weatherData.timeRelatedArr}
+                dateRelatedArray={weatherData.dateRelatedArray}
+                extraInfoArray={weatherData.extraInfoArray}
             />
         </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-    wrraper: {
+    wrapper: {
         width: '100%',
         height: '100%',
     },
