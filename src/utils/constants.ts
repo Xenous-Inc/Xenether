@@ -30,3 +30,23 @@ export const MainBottomSheetTitles = {
     WEATHER: 'Погода',
     CLOTHES: 'Одежда',
 };
+
+export const SettingScreenTitles = {
+    SETTING: 'Настройки',
+    WEATHER: 'ПОГОДА',
+    APP: 'ПРИЛОЖЕНИЕ',
+    DECOR: 'ОФОРМЛЕНИЕ',
+};
+
+export const SettingScreenContentText = {
+    DEGREES: 'Градусы',
+    CITIES: 'Города',
+    NOTICE: 'Уведомления',
+};
+
+export const SettingScreenTheme = {
+    SYSTEM: 'Системная',
+    SYSTEM_COMMENT: 'Такая же, как\nна устройстве',
+    BLACK: 'Тёмная',
+    LIGHT: 'Светлая',
+};
