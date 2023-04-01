@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Switch } from 'react-native';
+import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 
-export const SettingsScreen: React.FC = () => {
-    const [typeCelsius, setTypeCelsius] = useState(true);
+export interface ISettingScreen {
+    isCelisius: boolean;
+    isNoticeOn: boolean;
+    isSystemTheme: boolean;
+}
 
-    const [isEnabled, setIsEnabled] = useState(false);
+export const SettingsScreen: React.FC<ISettingScreen> = props => {
+    const [typeCelsius, setTypeCelsius] = useState(props.isCelisius);
+
+    const [isEnabled, setIsEnabled] = useState(props.isNoticeOn);
 
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-    const [systemTheme, setSystemTheme] = useState(true);
-    const [blackTheme, setBlackTheme] = useState(true);
-
-    const changeType = (isCelisius: boolean) => {
-        typeCelsius !== isCelisius && setTypeCelsius(isCelisius);
-    };
+    const [systemTheme, setSystemTheme] = useState(props.isSystemTheme);
+    const isDarkTheme = props.isSystemTheme ? true : false;
+    const [blackTheme, setBlackTheme] = useState(isDarkTheme);
 
     const changeTheme = (isSystem: boolean, isBlack: boolean) => {
         systemTheme !== isSystem && setSystemTheme(isSystem);
@@ -24,52 +28,61 @@ export const SettingsScreen: React.FC = () => {
     };
 
     return (
-        <View style={styles.wrapperScreen}>
+        <View style={styles.wrapper}>
             <View style={styles.headScreen}>
                 <View style={styles.iconBack}>
                     <TouchableOpacity>
                         <Image source={require('@assets/icons/back-icon.png')} />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.titleOfScreen}>{SettingScreenTitles.SETTING}</Text>
+                <Text style={styles.head__title}>{SettingScreenTitles.SETTING}</Text>
             </View>
 
             <Text style={styles.titleOfCategory}>{SettingScreenTitles.WEATHER}</Text>
             <View style={styles.sections}>
-                <View style={styles.degrees}>
+                <TouchableOpacity
+                    style={styles.degrees}
+                    onPress={() => (typeCelsius ? setTypeCelsius(!props.isCelisius) : setTypeCelsius(props.isCelisius))}
+                >
                     <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
                     <View style={styles.buttonsDegreesContainer}>
-                        <TouchableOpacity onPress={() => changeType(true)}>
-                            <Text style={[styles.buttonsDegress, { color: typeCelsius ? colors.BLACK : colors.GRAY }]}>
-                                {Signs.CELSIUS + 'F'}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => changeType(false)}>
-                            <Text style={[styles.buttonsDegress, { color: !typeCelsius ? colors.BLACK : colors.GRAY }]}>
-                                {Signs.CELSIUS + 'C'}
-                            </Text>
-                        </TouchableOpacity>
+                        <Text style={[styles.buttonsDegress, { color: !typeCelsius ? colors.BLACK : colors.GRAY }]}>
+                            {Signs.CELSIUS + 'F'}
+                        </Text>
+                        <Text style={[styles.buttonsDegress, { color: typeCelsius ? colors.BLACK : colors.GRAY }]}>
+                            {Signs.CELSIUS + 'C'}
+                        </Text>
                     </View>
-                </View>
-                <View style={styles.cities}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.cities}>
                     <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
                     <View style={styles.buttonsCities}>
-                        <TouchableOpacity>
-                            <Image source={require('@assets/icons/icon-button.png')} />
-                        </TouchableOpacity>
+                        <Image source={require('@assets/icons/icon-button.png')} />
                     </View>
-                </View>
+                </TouchableOpacity>
             </View>
             <Text style={styles.titleOfCategory}>{SettingScreenTitles.APP}</Text>
             <View style={styles.sections}>
                 <View style={styles.notifications}>
                     <Text style={styles.contentText}>{SettingScreenContentText.NOTICE}</Text>
-                    <Switch
-                        trackColor={{ false: colors.GRAY, true: colors.LIGHT_ORANGE }}
-                        thumbColor={colors.WHITE}
-                        onValueChange={toggleSwitch}
-                        value={isEnabled}
-                        style={styles.switch}
+                    <SwitchToggle
+                        switchOn={isEnabled}
+                        onPress={() => toggleSwitch()}
+                        containerStyle={{
+                            width: 39,
+                            height: 18,
+                            borderRadius: 50,
+                            padding: 5,
+                            marginRight: 15,
+                        }}
+                        circleStyle={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 20,
+                        }}
+                        backgroundColorOn={colors.LIGHT_ORANGE}
+                        backgroundColorOff={colors.LIGHT_GRAY}
+                        circleColorOff={colors.WHITE}
                     />
                 </View>
             </View>
@@ -133,7 +146,7 @@ export const SettingsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    wrapperScreen: {
+    wrapper: {
         backgroundColor: colors.EXTRA_LIGHT_GRAY,
         width: '100%',
         height: '100%',
@@ -146,12 +159,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         columnGap: 80,
     },
-    titleOfScreen: {
+    head__title: {
         fontFamily: 'ExpandedBold',
         fontSize: 20,
     },
     iconBack: {
-        marginLeft: 40,
+        marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
     contentText: {
         marginLeft: 20,
@@ -165,7 +178,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 12,
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: 185,
+        justifyContent: 'space-between',
         marginBottom: 0.6,
     },
     cities: {
@@ -182,11 +195,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.WHITE,
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: 140,
+        justifyContent: 'space-between',
         borderRadius: 12,
-    },
-    switch: {
-        marginRight: 10,
     },
     buttonsDecoration: {
         alignItems: 'center',
@@ -201,6 +211,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         columnGap: 12,
+        marginRight: 16,
     },
     buttonsDegress: {
         fontFamily: 'ExtendedSemiBold',
@@ -222,7 +233,7 @@ const styles = StyleSheet.create({
         marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     buttonsSystem: {
-        width: 150,
+        width: '44%',
         height: 95,
         borderRadius: 15,
         backgroundColor: colors.EXTRA_LIGHT_GRAY,
@@ -243,7 +254,7 @@ const styles = StyleSheet.create({
         color: colors.GRAY,
     },
     buttonsTheme: {
-        width: 66,
+        width: '32%',
         height: 98,
         alignItems: 'center',
         borderRadius: 15,
