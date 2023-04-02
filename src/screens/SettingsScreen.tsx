@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, Switch } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
@@ -42,7 +42,7 @@ export const SettingsScreen: React.FC<ISettingScreen> = props => {
             <View style={styles.sections}>
                 <TouchableOpacity
                     style={styles.degrees}
-                    onPress={() => (typeCelsius ? setTypeCelsius(!props.isCelisius) : setTypeCelsius(props.isCelisius))}
+                    onPress={() => (typeCelsius ? setTypeCelsius(false) : setTypeCelsius(true))}
                 >
                     <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
                     <View style={styles.buttonsDegreesContainer}>
