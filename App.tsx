@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
 import colors from '@styles/colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { CityComponent } from '@components/CityComponent';
 
 SplashScreen.preventAutoHideAsync();
 
