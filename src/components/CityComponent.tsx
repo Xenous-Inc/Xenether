@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import { ru } from 'date-fns/locale';
@@ -9,10 +9,6 @@ export interface ICityComponent {
     location: string;
     timeZone: string;
 }
-const getLocalTime = (timeZone: string) => {
-    const currentDate = new Date();
-    return format(utcToZonedTime(currentDate, timeZone), 'HH:mm', { locale: ru });
-};
 
 const initialCityData = {
     weatherType: 'Облачно',
@@ -24,12 +20,23 @@ const initialCityData = {
 
 export const CityComponent: React.FC<ICityComponent> = props => {
     const [cityData, setCityData] = useState(initialCityData);
+    const [currentTime, setCurrentDate] = useState(new Date());
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setCurrentDate(new Date());
+        }, 60000);
+        return () => {
+            clearInterval(intervalId);
+        };
+    });
     return (
         <ImageBackground source={cityData.image} style={styles.wrapper} imageStyle={styles.backgroundImage}>
             <View style={styles.mainContent}>
                 <View>
                     <Text style={styles.city_title}>{props.location}</Text>
-                    <Text style={styles.time}>{getLocalTime(props.timeZone)}</Text>
+                    <Text style={styles.time}>
+                        {format(utcToZonedTime(currentTime, props.timeZone), 'HH:mm', { locale: ru })}
+                    </Text>
                 </View>
                 <Text style={styles.temperature}>{cityData.temperature + Signs.CELSIUS}</Text>
             </View>
@@ -46,8 +53,8 @@ export const CityComponent: React.FC<ICityComponent> = props => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        width: '87%',
-        height: '13%',
+        width: '100%',
+        height: 103,
     },
     backgroundImage: {
         borderRadius: 16,
@@ -65,7 +72,7 @@ const styles = StyleSheet.create({
     bottomContent: {
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: 125,
+        justifyContent: 'space-between',
         marginHorizontal: 15,
     },
     city_title: {

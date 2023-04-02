@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
@@ -32,7 +32,11 @@ export default function App() {
         return null;
     }
 
-    return <GestureHandlerRootView style={styles.container} onLayout={onLayoutRootView} />;
+    return (
+        <GestureHandlerRootView style={styles.container} onLayout={onLayoutRootView}>
+            <CityComponent location={'Омск'} timeZone={'Asia/Omsk'} />
+        </GestureHandlerRootView>
+    );
 }
 
 const styles = StyleSheet.create({
