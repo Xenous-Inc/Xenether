@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { utcToZonedTime, format } from 'date-fns-tz';
+import { isSameMinute } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import colors from '@styles/colors';
 import { Signs } from '@utils/constants';
@@ -23,8 +24,8 @@ export const CityComponent: React.FC<ICityComponent> = props => {
     const [currentTime, setCurrentDate] = useState(new Date());
     useEffect(() => {
         const intervalId = setInterval(() => {
-            setCurrentDate(new Date());
-        }, 60000);
+            isSameMinute(currentTime, new Date()) ? setCurrentDate(currentTime) : setCurrentDate(new Date());
+        }, 1);
         return () => {
             clearInterval(intervalId);
         };
