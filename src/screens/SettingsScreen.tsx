@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
@@ -8,24 +9,55 @@ import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 export interface ISettingScreen {
     isCelisius: boolean;
     isNoticeOn: boolean;
-    isSystemTheme: boolean;
 }
+const getThemeValue = () => {
+    const [isDarkTheme, setIsDarkTheme] = useState(true);
+
+    useEffect(() => {
+        const getCurrentTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        return () => {
+            setIsDarkTheme(getCurrentTheme);
+        };
+    }, []);
+    return isDarkTheme;
+};
 
 export const SettingsScreen: React.FC<ISettingScreen> = props => {
     const [typeCelsius, setTypeCelsius] = useState(props.isCelisius);
 
     const [isEnabled, setIsEnabled] = useState(props.isNoticeOn);
 
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const [isSystemTheme, setIsSystemTheme] = useState(true);
 
-    const [systemTheme, setSystemTheme] = useState(props.isSystemTheme);
-    const isDarkTheme = props.isSystemTheme ? true : false;
-    const [blackTheme, setBlackTheme] = useState(isDarkTheme);
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-    const changeTheme = (isSystem: boolean, isBlack: boolean) => {
-        systemTheme !== isSystem && setSystemTheme(isSystem);
-        blackTheme !== isBlack && setBlackTheme(isBlack);
+    const setTheme = (themeValue: string) => {
+        AsyncStorage.setItem('theme', themeValue);
     };
+
+    async function renderTheme() {
+        let currentTheme = 'system';
+        if ((await AsyncStorage.getItem('theme')) === 'system') {
+            setIsSystemTheme(true);
+            setIsDarkTheme(false);
+        } else if ((await AsyncStorage.getItem('theme')) === 'dark') {
+            setIsSystemTheme(false);
+            setIsDarkTheme(true);
+            currentTheme = 'dark';
+        } else {
+            setIsSystemTheme(false);
+            setIsDarkTheme(false);
+            currentTheme = 'light';
+        }
+        return await AsyncStorage.setItem('theme', currentTheme);
+    }
+
+    useEffect(() => {
+        renderTheme();
+    });
+
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
     return (
         <View style={styles.wrapper}>
@@ -54,6 +86,7 @@ export const SettingsScreen: React.FC<ISettingScreen> = props => {
                         </Text>
                     </View>
                 </TouchableOpacity>
+                <View style={styles.divider} />
                 <TouchableOpacity style={styles.cities}>
                     <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
                     <View style={styles.buttonsCities}>
@@ -83,6 +116,7 @@ export const SettingsScreen: React.FC<ISettingScreen> = props => {
                         backgroundColorOn={colors.LIGHT_ORANGE}
                         backgroundColorOff={colors.LIGHT_GRAY}
                         circleColorOff={colors.WHITE}
+                        duration={50}
                     />
                 </View>
             </View>
@@ -93,14 +127,15 @@ export const SettingsScreen: React.FC<ISettingScreen> = props => {
                         style={[
                             styles.buttonsSystem,
                             {
-                                borderColor:
-                                    (systemTheme && !blackTheme) || systemTheme ? colors.LIGHT_ORANGE : colors.WHITE,
+                                borderColor: isSystemTheme && !isDarkTheme ? colors.LIGHT_ORANGE : colors.WHITE,
                             },
                         ]}
                     >
                         <TouchableOpacity
                             onPress={() => {
-                                changeTheme(true, false);
+                                setIsSystemTheme(true);
+                                setIsDarkTheme(false);
+                                setTheme('system');
                             }}
                         >
                             <Text style={styles.systemHead}>{SettingScreenTheme.SYSTEM}</Text>
@@ -111,12 +146,14 @@ export const SettingsScreen: React.FC<ISettingScreen> = props => {
                         <View
                             style={[
                                 styles.buttonsTheme,
-                                { borderColor: !systemTheme && blackTheme ? colors.LIGHT_ORANGE : colors.WHITE },
+                                { borderColor: !isSystemTheme && isDarkTheme ? colors.LIGHT_ORANGE : colors.WHITE },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    changeTheme(false, true);
+                                    setIsSystemTheme(false);
+                                    setIsDarkTheme(true);
+                                    setTheme('dark');
                                 }}
                             >
                                 <Image style={styles.iconMoon} source={require('@assets/icons/icon-moon.png')} />
@@ -126,12 +163,14 @@ export const SettingsScreen: React.FC<ISettingScreen> = props => {
                         <View
                             style={[
                                 styles.buttonsTheme,
-                                { borderColor: !systemTheme && !blackTheme ? colors.LIGHT_ORANGE : colors.WHITE },
+                                { borderColor: !isSystemTheme && !isDarkTheme ? colors.LIGHT_ORANGE : colors.WHITE },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    changeTheme(false, false);
+                                    setIsSystemTheme(false);
+                                    setIsDarkTheme(false);
+                                    setTheme('light');
                                 }}
                             >
                                 <Image style={styles.iconSun} source={require('@assets/icons/icon-sun.png')} />
@@ -152,19 +191,20 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     headScreen: {
-        width: '100%',
+        width: '50%',
         marginTop: 40,
         marginBottom: 44,
         flexDirection: 'row',
         alignItems: 'center',
-        columnGap: 80,
+        justifyContent: 'space-between',
+        marginHorizontal: 30,
     },
     head__title: {
         fontFamily: 'ExpandedBold',
         fontSize: 20,
     },
     iconBack: {
-        marginLeft: MAIN_HORIZONTAL_OFFSET,
+        marginRight: 82,
     },
     contentText: {
         marginLeft: 20,
@@ -179,7 +219,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 0.6,
     },
     cities: {
         height: 40,
@@ -188,7 +227,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 12,
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: 235,
+        justifyContent: 'space-between',
     },
     notifications: {
         height: 50,
@@ -218,7 +257,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     buttonsCities: {
-        marginRight: 10,
+        marginRight: 16,
         opacity: 0.5,
     },
     titleOfCategory: {
@@ -284,5 +323,8 @@ const styles = StyleSheet.create({
         fontFamily: 'ExtendedSemiBold',
         fontSize: 11,
         color: colors.GRAY,
+    },
+    divider: {
+        height: 1,
     },
 });
