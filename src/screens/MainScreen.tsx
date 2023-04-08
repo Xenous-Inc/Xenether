@@ -9,6 +9,7 @@ import { MainBottomSheet } from '@components/MainBottomSheet';
 import { WeatherType } from '@components/WeatherIcon';
 import { ExtraInfoType } from '@components/ExtraInfo';
 import { WarningType } from '@components/Warning';
+import { IWeatherComponent } from '@components/WeatherComponent';
 
 const image = {
     src: require('@assets/icons/background-image.png'),
@@ -18,11 +19,13 @@ export interface IMainScreen {
     location: string;
     timeZone: string;
     temperature: number;
+    index: number;
+    selectedIndex: number;
 }
 
-const initialArgument = {
+const initialArgument: IWeatherComponent = {
     warningType: WarningType.Thunderstorm,
-    timeRelatedArr: [
+    timeRelatedArray: [
         { time: '2023-03-19 20:00:00.000', weatherType: WeatherType.Sunny, temperature: 12 },
         { time: '2022-09-27 21:00:00.000', weatherType: WeatherType.Thunderstorm, temperature: 12 },
         { time: '2022-09-27 22:00:00.000', weatherType: WeatherType.Sunny, temperature: 12 },
@@ -78,12 +81,7 @@ export const MainScreen: React.FC<IMainScreen> = props => {
                 <Text style={styles.timeContent}>{getLocalTime(props.timeZone)}</Text>
             </View>
             <Text style={styles.temperatureContent}>{props.temperature + Signs.CELSIUS}</Text>
-            <MainBottomSheet
-                warningType={weatherData.warningType}
-                timeRelatedArray={weatherData.timeRelatedArr}
-                dateRelatedArray={weatherData.dateRelatedArray}
-                extraInfoArray={weatherData.extraInfoArray}
-            />
+            <MainBottomSheet index={props.index} selectedIndex={props.selectedIndex} weather={weatherData} />
         </ImageBackground>
     );
 };
@@ -117,6 +115,6 @@ const styles = StyleSheet.create({
         fontSize: 80,
         color: colors.WHITE,
         marginTop: 18,
-        marginLeft: MAIN_HORIZONTAL_OFFSET,
+        marginLeft: 28,
     },
 });
