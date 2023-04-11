@@ -24,8 +24,10 @@ export const CityComponent: React.FC<ICityComponent> = props => {
     const [currentTime, setCurrentDate] = useState(new Date());
     useEffect(() => {
         const intervalId = setInterval(() => {
-            isSameMinute(currentTime, new Date()) ? setCurrentDate(currentTime) : setCurrentDate(new Date());
-        }, 1);
+            if (!isSameMinute(currentTime, new Date())) {
+                setCurrentDate(new Date());
+            }
+        }, 1000);
         return () => {
             clearInterval(intervalId);
         };
