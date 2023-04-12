@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import colors from '@styles/colors';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -7,16 +7,31 @@ import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { MainBottomSheetTitles } from '@utils/constants';
 import { IWeatherComponent } from '@components/WeatherComponent';
 
-export const MainBottomSheet: React.FC<IWeatherComponent> = props => {
+export interface IMainBottomSheetProps {
+    weather: IWeatherComponent;
+    index: number;
+    selectedIndex: number;
+}
+
+export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
+    const { index, selectedIndex, weather } = props;
+
     const sheetRef = useRef<BottomSheet>(null);
 
     const snapPoints = useMemo(() => ['30%', '96%'], []);
 
     const [sectionIsWeather, setSectionIsWeather] = useState(true);
 
+    useEffect(() => {
+        if (index !== selectedIndex) {
+            sheetRef.current?.snapToIndex(0);
+        }
+    }, [selectedIndex, index]);
+
     const changeSection = (isWeather: boolean) => {
         sectionIsWeather !== isWeather && setSectionIsWeather(isWeather);
     };
+
     return (
         <BottomSheet
             ref={sheetRef}
@@ -40,10 +55,10 @@ export const MainBottomSheet: React.FC<IWeatherComponent> = props => {
             <BottomSheetScrollView showsVerticalScrollIndicator={false}>
                 {sectionIsWeather ? (
                     <WeatherComponent
-                        warningType={props.warningType}
-                        timeRelatedArray={props.timeRelatedArray}
-                        dateRelatedArray={props.dateRelatedArray}
-                        extraInfoArray={props.extraInfoArray}
+                        warningType={weather.warningType}
+                        timeRelatedArray={weather.timeRelatedArray}
+                        dateRelatedArray={weather.dateRelatedArray}
+                        extraInfoArray={weather.extraInfoArray}
                     />
                 ) : (
                     <></>
