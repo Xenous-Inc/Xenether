@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
         fontSize: 80,
         color: colors.WHITE,
         marginTop: 18,
-        marginLeft: 28,
+        marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
 });
