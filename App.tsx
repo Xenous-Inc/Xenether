@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useCallback } from 'react';
-import colors from '@styles/colors';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React, { useCallback } from 'react';
 import { MainScreen } from '@screens/MainScreen';
-import PagerView from 'react-native-pager-view';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+import { View } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-    const [currentIndex, setCurrentIndex] = useState(0);
-
     const [fontsLoaded] = useFonts({
         ExpandedBold: require('@assets/fonts/RFDewiExpanded-Bold.ttf'),
         ExpandedSemiBold: require('@assets/fonts/RFDewiExpanded-Semibold.ttf'),
@@ -36,38 +30,8 @@ export default function App() {
     }
 
     return (
-        <PagerView
-            style={{ flex: 1 }}
-            initialPage={0}
-            onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
-        >
-            <GestureHandlerRootView style={styles.container} onLayout={onLayoutRootView}>
-                <MainScreen
-                    index={0}
-                    selectedIndex={currentIndex}
-                    location='Омск'
-                    timeZone={'Asia/Omsk'}
-                    temperature={15}
-                />
-            </GestureHandlerRootView>
-            <GestureHandlerRootView style={styles.container} onLayout={onLayoutRootView}>
-                <MainScreen
-                    index={1}
-                    selectedIndex={currentIndex}
-                    location='Москва'
-                    timeZone={'Europe/Moscow'}
-                    temperature={-3}
-                />
-            </GestureHandlerRootView>
-        </PagerView>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+            <MainScreen />
+        </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.WHITE,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
