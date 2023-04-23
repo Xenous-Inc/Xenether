@@ -1,181 +1,216 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 
-export interface ISettingScreen {
-    isCelisius: boolean;
-    isNoticeOn: boolean;
-}
-const getThemeValue = () => {
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+export const SettingsScreen: React.FC = () => {
+    enum ThemeType {
+        System = 'system',
+        Light = 'light',
+        Dark = 'dark',
+    }
+    enum UnitsType {
+        Celsius = 'celsius',
+        Fahrenheits = 'fahrenheits',
+    }
+    enum SwitcherStatus {
+        On = 'on',
+        Off = 'off',
+    }
+    const [typeCelsius, setTypeCelsius] = useState(true);
 
-    useEffect(() => {
-        const getCurrentTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [isEnabled, setIsEnabled] = useState(true);
 
-        return () => {
-            setIsDarkTheme(getCurrentTheme);
-        };
-    }, []);
-    return isDarkTheme;
-};
+    const [isTheme, setIsTheme] = useState(ThemeType.System);
 
-export const SettingsScreen: React.FC<ISettingScreen> = props => {
-    const [typeCelsius, setTypeCelsius] = useState(props.isCelisius);
+    const SystemTheme = useColorScheme();
 
-    const [isEnabled, setIsEnabled] = useState(props.isNoticeOn);
-
-    const [isSystemTheme, setIsSystemTheme] = useState(true);
-
-    const [isDarkTheme, setIsDarkTheme] = useState(false);
-
-    const setTheme = (themeValue: string) => {
+    const setTheme = (themeValue: ThemeType) => {
         AsyncStorage.setItem('theme', themeValue);
     };
 
-    async function renderTheme() {
-        let currentTheme = 'system';
-        if ((await AsyncStorage.getItem('theme')) === 'system') {
-            setIsSystemTheme(true);
-            setIsDarkTheme(false);
-        } else if ((await AsyncStorage.getItem('theme')) === 'dark') {
-            setIsSystemTheme(false);
-            setIsDarkTheme(true);
-            currentTheme = 'dark';
+    const setUnits = (unitValue: UnitsType) => {
+        AsyncStorage.setItem('units', unitValue);
+    };
+
+    const setSwitcher = (switcherValue: SwitcherStatus) => {
+        AsyncStorage.setItem('switcher', switcherValue);
+    };
+
+    async function renderUnits() {
+        const currentUnits = await AsyncStorage.getItem('units');
+        if (currentUnits === 'celsius') {
+            setTypeCelsius(false);
         } else {
-            setIsSystemTheme(false);
-            setIsDarkTheme(false);
-            currentTheme = 'light';
+            setTypeCelsius(true);
+        }
+        return await AsyncStorage.setItem('units', currentUnits);
+    }
+
+    async function renderTheme() {
+        const currentTheme = await AsyncStorage.getItem('theme');
+        if (currentTheme === ThemeType.System) {
+            setIsTheme(ThemeType.System);
+        } else if (currentTheme === ThemeType.Dark) {
+            setIsTheme(ThemeType.Dark);
+        } else {
+            setIsTheme(ThemeType.Light);
         }
         return await AsyncStorage.setItem('theme', currentTheme);
+    }
+    async function renderSwitcher() {
+        const switcherStatus = await AsyncStorage.getItem('switcher');
+        if (switcherStatus === SwitcherStatus.On) {
+            setIsEnabled(true);
+        } else {
+            setIsEnabled(false);
+        }
+        return AsyncStorage.setItem('switcher', switcherStatus);
     }
 
     useEffect(() => {
         renderTheme();
+        renderUnits();
+        renderSwitcher();
     });
 
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const toggleSwitch = () => setIsEnabled(!isEnabled);
 
     return (
         <View style={styles.wrapper}>
             <View style={styles.headScreen}>
-                <View style={styles.iconBack}>
-                    <TouchableOpacity>
-                        <Image source={require('@assets/icons/back-icon.png')} />
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.iconBack}>
+                    <Image source={require('@assets/icons/back-icon.png')} />
+                </TouchableOpacity>
                 <Text style={styles.head__title}>{SettingScreenTitles.SETTING}</Text>
             </View>
 
-            <Text style={styles.titleOfCategory}>{SettingScreenTitles.WEATHER}</Text>
-            <View style={styles.sections}>
-                <TouchableOpacity
-                    style={styles.degrees}
-                    onPress={() => (typeCelsius ? setTypeCelsius(false) : setTypeCelsius(true))}
-                >
-                    <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
-                    <View style={styles.buttonsDegreesContainer}>
-                        <Text style={[styles.buttonsDegress, { color: !typeCelsius ? colors.BLACK : colors.GRAY }]}>
-                            {Signs.CELSIUS + 'F'}
-                        </Text>
-                        <Text style={[styles.buttonsDegress, { color: typeCelsius ? colors.BLACK : colors.GRAY }]}>
-                            {Signs.CELSIUS + 'C'}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-                <View style={styles.divider} />
-                <TouchableOpacity style={styles.cities}>
-                    <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
-                    <View style={styles.buttonsCities}>
-                        <Image source={require('@assets/icons/icon-button.png')} />
-                    </View>
-                </TouchableOpacity>
-            </View>
-            <Text style={styles.titleOfCategory}>{SettingScreenTitles.APP}</Text>
-            <View style={styles.sections}>
-                <View style={styles.notifications}>
-                    <Text style={styles.contentText}>{SettingScreenContentText.NOTICE}</Text>
-                    <SwitchToggle
-                        switchOn={isEnabled}
-                        onPress={() => toggleSwitch()}
-                        containerStyle={{
-                            width: 39,
-                            height: 18,
-                            borderRadius: 50,
-                            padding: 5,
-                            marginRight: 15,
+            <View style={styles.bodyScreen}>
+                <Text style={styles.titleOfCategory}>{SettingScreenTitles.WEATHER}</Text>
+                <View style={styles.sections}>
+                    <TouchableOpacity
+                        style={styles.degrees}
+                        onPress={() => {
+                            if (typeCelsius) {
+                                setTypeCelsius(false);
+                                setUnits(UnitsType.Celsius);
+                            } else {
+                                setTypeCelsius(true);
+                                setUnits(UnitsType.Fahrenheits);
+                            }
                         }}
-                        circleStyle={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: 20,
-                        }}
-                        backgroundColorOn={colors.LIGHT_ORANGE}
-                        backgroundColorOff={colors.LIGHT_GRAY}
-                        circleColorOff={colors.WHITE}
-                        duration={50}
-                    />
-                </View>
-            </View>
-            <Text style={styles.titleOfCategory}>{SettingScreenTitles.DECOR}</Text>
-            <View style={styles.sections}>
-                <View style={styles.buttonsDecoration}>
-                    <View
-                        style={[
-                            styles.buttonsSystem,
-                            {
-                                borderColor: isSystemTheme && !isDarkTheme ? colors.LIGHT_ORANGE : colors.WHITE,
-                            },
-                        ]}
                     >
-                        <TouchableOpacity
+                        <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
+                        <View style={styles.buttonsDegreesContainer}>
+                            <Text style={[styles.buttonsDegress, { color: typeCelsius ? colors.BLACK : colors.GRAY }]}>
+                                {Signs.CELSIUS + 'F'}
+                            </Text>
+                            <Text style={[styles.buttonsDegress, { color: !typeCelsius ? colors.BLACK : colors.GRAY }]}>
+                                {Signs.CELSIUS + 'C'}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                    <View style={styles.divider} />
+                    <TouchableOpacity style={styles.cities}>
+                        <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
+                        <View style={styles.buttonsCities}>
+                            <Image source={require('@assets/icons/icon-button.png')} />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.titleOfCategory}>{SettingScreenTitles.APP}</Text>
+                <View style={styles.sections}>
+                    <View style={styles.notifications}>
+                        <Text style={styles.contentText}>{SettingScreenContentText.NOTICE}</Text>
+                        <SwitchToggle
+                            switchOn={isEnabled}
                             onPress={() => {
-                                setIsSystemTheme(true);
-                                setIsDarkTheme(false);
-                                setTheme('system');
+                                if (isEnabled) {
+                                    setSwitcher(SwitcherStatus.Off);
+                                    toggleSwitch();
+                                } else {
+                                    setSwitcher(SwitcherStatus.On);
+                                    toggleSwitch();
+                                }
                             }}
-                        >
-                            <Text style={styles.systemHead}>{SettingScreenTheme.SYSTEM}</Text>
-                            <Text style={styles.systemComment}>{SettingScreenTheme.SYSTEM_COMMENT}</Text>
-                        </TouchableOpacity>
+                            containerStyle={{
+                                width: 39,
+                                height: 18,
+                                borderRadius: 50,
+                                padding: 5,
+                                marginRight: 15,
+                            }}
+                            circleStyle={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: 20,
+                            }}
+                            backgroundColorOn={colors.LIGHT_ORANGE}
+                            backgroundColorOff={colors.LIGHT_GRAY}
+                            circleColorOff={colors.WHITE}
+                            duration={50}
+                        />
                     </View>
-                    <View style={styles.buttonsThemeContainer}>
+                </View>
+                <Text style={styles.titleOfCategory}>{SettingScreenTitles.DECOR}</Text>
+                <View style={styles.sections}>
+                    <View style={styles.buttonsDecoration}>
                         <View
                             style={[
-                                styles.buttonsTheme,
-                                { borderColor: !isSystemTheme && isDarkTheme ? colors.LIGHT_ORANGE : colors.WHITE },
+                                styles.buttonsSystem,
+                                {
+                                    borderColor: isTheme === ThemeType.System ? colors.LIGHT_ORANGE : colors.WHITE,
+                                },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    setIsSystemTheme(false);
-                                    setIsDarkTheme(true);
-                                    setTheme('dark');
+                                    setIsTheme(ThemeType.System);
+                                    setTheme(ThemeType.System);
                                 }}
                             >
-                                <Image style={styles.iconMoon} source={require('@assets/icons/icon-moon.png')} />
-                                <Text style={styles.textTheme}>{SettingScreenTheme.BLACK}</Text>
+                                <Text style={styles.systemHead}>{SettingScreenTheme.SYSTEM}</Text>
+                                <Text style={styles.systemComment}>{SettingScreenTheme.SYSTEM_COMMENT}</Text>
                             </TouchableOpacity>
                         </View>
-                        <View
-                            style={[
-                                styles.buttonsTheme,
-                                { borderColor: !isSystemTheme && !isDarkTheme ? colors.LIGHT_ORANGE : colors.WHITE },
-                            ]}
-                        >
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setIsSystemTheme(false);
-                                    setIsDarkTheme(false);
-                                    setTheme('light');
-                                }}
+                        <View style={styles.buttonsThemeContainer}>
+                            <View
+                                style={[
+                                    styles.buttonsTheme,
+                                    { borderColor: isTheme === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE },
+                                ]}
                             >
-                                <Image style={styles.iconSun} source={require('@assets/icons/icon-sun.png')} />
-                                <Text style={styles.textTheme}>{SettingScreenTheme.LIGHT}</Text>
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setIsTheme(ThemeType.Dark);
+                                        setTheme(ThemeType.Dark);
+                                    }}
+                                >
+                                    <Image style={styles.iconMoon} source={require('@assets/icons/icon-moon.png')} />
+                                    <Text style={styles.textTheme}>{SettingScreenTheme.BLACK}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View
+                                style={[
+                                    styles.buttonsTheme,
+                                    {
+                                        borderColor: isTheme === ThemeType.Light ? colors.LIGHT_ORANGE : colors.WHITE,
+                                    },
+                                ]}
+                            >
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setIsTheme(ThemeType.Light);
+                                        setTheme(ThemeType.Light);
+                                    }}
+                                >
+                                    <Image style={styles.iconSun} source={require('@assets/icons/icon-sun.png')} />
+                                    <Text style={styles.textTheme}>{SettingScreenTheme.LIGHT}</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -191,20 +226,25 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     headScreen: {
-        width: '50%',
         marginTop: 40,
         marginBottom: 44,
-        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        marginHorizontal: 30,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        columnGap: MAIN_HORIZONTAL_OFFSET,
+    },
+    bodyScreen: {
+        marginTop: 100,
     },
     head__title: {
         fontFamily: 'ExpandedBold',
         fontSize: 20,
+        marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
     iconBack: {
-        marginRight: 82,
+        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     contentText: {
         marginLeft: 20,
