@@ -20,11 +20,11 @@ export const SettingsScreen: React.FC = () => {
         On = 'on',
         Off = 'off',
     }
-    const [typeCelsius, setTypeCelsius] = useState(true);
+    const [typeUnits, setTypeUnits] = useState(UnitsType.Celsius);
 
-    const [isEnabled, setIsEnabled] = useState(true);
+    const [switcherState, setSwitcherState] = useState(SwitcherStatus.On);
 
-    const [isTheme, setIsTheme] = useState(ThemeType.System);
+    const [themeData, setThemeData] = useState(ThemeType.System);
 
     const SystemTheme = useColorScheme();
 
@@ -40,44 +40,33 @@ export const SettingsScreen: React.FC = () => {
         AsyncStorage.setItem('switcher', switcherValue);
     };
 
-    async function renderUnits() {
-        const currentUnits = await AsyncStorage.getItem('units');
-        if (currentUnits === 'celsius') {
-            setTypeCelsius(false);
-        } else {
-            setTypeCelsius(true);
-        }
-        return await AsyncStorage.setItem('units', currentUnits);
-    }
+    const renderUnits = async () => {
+        const currentUnits = (await AsyncStorage.getItem('units')) as UnitsType;
 
-    async function renderTheme() {
-        const currentTheme = await AsyncStorage.getItem('theme');
-        if (currentTheme === ThemeType.System) {
-            setIsTheme(ThemeType.System);
-        } else if (currentTheme === ThemeType.Dark) {
-            setIsTheme(ThemeType.Dark);
-        } else {
-            setIsTheme(ThemeType.Light);
-        }
-        return await AsyncStorage.setItem('theme', currentTheme);
-    }
-    async function renderSwitcher() {
-        const switcherStatus = await AsyncStorage.getItem('switcher');
-        if (switcherStatus === SwitcherStatus.On) {
-            setIsEnabled(true);
-        } else {
-            setIsEnabled(false);
-        }
-        return AsyncStorage.setItem('switcher', switcherStatus);
-    }
+        setTypeUnits(currentUnits);
+    };
+
+    const renderTheme = async () => {
+        const currentTheme = (await AsyncStorage.getItem('theme')) as ThemeType;
+
+        setThemeData(currentTheme);
+    };
+    const renderSwitcher = async () => {
+        const switcherStatus = (await AsyncStorage.getItem('switcher')) as SwitcherStatus;
+        setSwitcherState(switcherStatus);
+    };
 
     useEffect(() => {
         renderTheme();
         renderUnits();
         renderSwitcher();
-    });
+    }, []);
 
-    const toggleSwitch = () => setIsEnabled(!isEnabled);
+    const toggleSwitch = () => {
+        if (switcherState === SwitcherStatus.Off) {
+            setSwitcherState(SwitcherStatus.On);
+        } else setSwitcherState(SwitcherStatus.Off);
+    };
 
     return (
         <View style={styles.wrapper}>
@@ -94,21 +83,31 @@ export const SettingsScreen: React.FC = () => {
                     <TouchableOpacity
                         style={styles.degrees}
                         onPress={() => {
-                            if (typeCelsius) {
-                                setTypeCelsius(false);
-                                setUnits(UnitsType.Celsius);
-                            } else {
-                                setTypeCelsius(true);
+                            if (typeUnits === UnitsType.Celsius) {
+                                setTypeUnits(UnitsType.Fahrenheits);
                                 setUnits(UnitsType.Fahrenheits);
+                            } else {
+                                setTypeUnits(UnitsType.Celsius);
+                                setUnits(UnitsType.Celsius);
                             }
                         }}
                     >
                         <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
                         <View style={styles.buttonsDegreesContainer}>
-                            <Text style={[styles.buttonsDegress, { color: typeCelsius ? colors.BLACK : colors.GRAY }]}>
+                            <Text
+                                style={[
+                                    styles.buttonsDegress,
+                                    { color: typeUnits === UnitsType.Fahrenheits ? colors.BLACK : colors.GRAY },
+                                ]}
+                            >
                                 {Signs.CELSIUS + 'F'}
                             </Text>
-                            <Text style={[styles.buttonsDegress, { color: !typeCelsius ? colors.BLACK : colors.GRAY }]}>
+                            <Text
+                                style={[
+                                    styles.buttonsDegress,
+                                    { color: typeUnits === UnitsType.Celsius ? colors.BLACK : colors.GRAY },
+                                ]}
+                            >
                                 {Signs.CELSIUS + 'C'}
                             </Text>
                         </View>
@@ -126,9 +125,9 @@ export const SettingsScreen: React.FC = () => {
                     <View style={styles.notifications}>
                         <Text style={styles.contentText}>{SettingScreenContentText.NOTICE}</Text>
                         <SwitchToggle
-                            switchOn={isEnabled}
+                            switchOn={switcherState === SwitcherStatus.On}
                             onPress={() => {
-                                if (isEnabled) {
+                                if (switcherState === SwitcherStatus.On) {
                                     setSwitcher(SwitcherStatus.Off);
                                     toggleSwitch();
                                 } else {
@@ -162,13 +161,13 @@ export const SettingsScreen: React.FC = () => {
                             style={[
                                 styles.buttonsSystem,
                                 {
-                                    borderColor: isTheme === ThemeType.System ? colors.LIGHT_ORANGE : colors.WHITE,
+                                    borderColor: themeData === ThemeType.System ? colors.LIGHT_ORANGE : colors.WHITE,
                                 },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    setIsTheme(ThemeType.System);
+                                    setThemeData(ThemeType.System);
                                     setTheme(ThemeType.System);
                                 }}
                             >
@@ -180,12 +179,12 @@ export const SettingsScreen: React.FC = () => {
                             <View
                                 style={[
                                     styles.buttonsTheme,
-                                    { borderColor: isTheme === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE },
+                                    { borderColor: themeData === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        setIsTheme(ThemeType.Dark);
+                                        setThemeData(ThemeType.Dark);
                                         setTheme(ThemeType.Dark);
                                     }}
                                 >
@@ -197,13 +196,13 @@ export const SettingsScreen: React.FC = () => {
                                 style={[
                                     styles.buttonsTheme,
                                     {
-                                        borderColor: isTheme === ThemeType.Light ? colors.LIGHT_ORANGE : colors.WHITE,
+                                        borderColor: themeData === ThemeType.Light ? colors.LIGHT_ORANGE : colors.WHITE,
                                     },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        setIsTheme(ThemeType.Light);
+                                        setThemeData(ThemeType.Light);
                                         setTheme(ThemeType.Light);
                                     }}
                                 >
