@@ -42,7 +42,7 @@ export const MainScreen = () => {
             const weather = await getWeather(coords);
 
             if (weather === null) return;
-            if (locations.some(val => val.id === weather.id)) {
+            if (!locations.some(val => val.id === weather.id)) {
                 const temp: ILocation = {
                     location: weather.name,
                     locationId: weather.id,
