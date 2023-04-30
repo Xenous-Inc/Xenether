@@ -40,7 +40,7 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
             enableHandlePanningGesture={false}
             handleIndicatorStyle={styles.handleIndicator}
         >
-            <View style={styles.buttonContainer}>
+            <View style={styles.buttonContainer} >
                 <TouchableOpacity onPress={() => changeSection(true)}>
                     <Text style={[styles.weather, { color: sectionIsWeather ? colors.BLACK : colors.GRAY }]}>
                         {MainBottomSheetTitles.WEATHER}
