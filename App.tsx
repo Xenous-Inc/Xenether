@@ -3,6 +3,8 @@ import { MainScreen } from '@screens/MainScreen';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { View } from 'react-native';
+import { Provider } from 'react-redux';
+import store from './src/store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,8 +32,10 @@ export default function App() {
     }
 
     return (
+        <Provider store={store}>
         <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
             <MainScreen />
         </View>
+        </Provider>
     );
 }
