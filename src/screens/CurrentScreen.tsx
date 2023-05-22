@@ -65,7 +65,6 @@ const initialArgument: IWeatherComponent = {
         { type: ExtraInfoType.Humidity, digitalValue: 12 },
     ],
 };
-
 const getLocalTime = (timeZone: string) => {
     const currentDate = new Date();
     return format(utcToZonedTime(currentDate, timeZone), 'HH:mm', { locale: ru });
@@ -76,9 +75,11 @@ export const CurrentScreen: React.FC<ICurrentScreen> = props => {
 
     return (
         <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
-            <View style={styles.wrapperOfLocalInfo}>
-                <Text style={styles.locationContent}>{props.location}</Text>
-                <Text style={styles.timeContent}>{getLocalTime(props.timeZone)}</Text>
+            <View style={styles.wrapperHeader}>
+                <View style={styles.wrapperOfLocalInfo}>
+                    <Text style={styles.locationContent}>{props.location}</Text>
+                    <Text style={styles.timeContent}>{getLocalTime(props.timeZone)}</Text>
+                </View>
             </View>
             <Text style={styles.temperatureContent}>{props.temperature + Signs.CELSIUS}</Text>
             <MainBottomSheet index={props.index} selectedIndex={props.selectedIndex} weather={weatherData} />
@@ -87,6 +88,10 @@ export const CurrentScreen: React.FC<ICurrentScreen> = props => {
 };
 
 const styles = StyleSheet.create({
+    wrapperHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
     wrapper: {
         width: '100%',
         height: '100%',

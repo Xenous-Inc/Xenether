@@ -6,7 +6,7 @@ import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenThem
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 
-export const SettingsScreen: React.FC = () => {
+export const SettingsScreen: React.FC = props => {
     enum ThemeType {
         System = 'system',
         Light = 'light',
@@ -56,6 +56,8 @@ export const SettingsScreen: React.FC = () => {
         setSwitcherState(switcherStatus);
     };
 
+    const { navigation } = props;
+
     useEffect(() => {
         renderTheme();
         renderUnits();
@@ -71,7 +73,7 @@ export const SettingsScreen: React.FC = () => {
     return (
         <View style={styles.wrapper}>
             <View style={styles.headScreen}>
-                <TouchableOpacity style={styles.iconBack}>
+                <TouchableOpacity style={styles.iconBack} onPress={() => navigation.goBack()}>
                     <Image source={require('@assets/icons/back-icon.png')} />
                 </TouchableOpacity>
                 <Text style={styles.head__title}>{SettingScreenTitles.SETTING}</Text>

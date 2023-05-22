@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     warningContainer: {
         justifyContent: 'center',
         marginBottom: 35,
-        marginTop: 15,
+        marginTop: 10,
         marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     timeRelatedContainer: {

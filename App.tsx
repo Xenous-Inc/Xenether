@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
-import { MainScreen } from '@screens/MainScreen';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { View } from 'react-native';
+import { AppNavigator } from '@navigation/AppNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,8 +30,8 @@ export default function App() {
     }
 
     return (
-        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-            <MainScreen />
-        </View>
+        <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
+            <AppNavigator />
+        </SafeAreaProvider>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import colors from '@styles/colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PagerView from 'react-native-pager-view';
@@ -8,13 +8,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LOCATIONS } from '@storage/constants';
 import { ILocation } from '@storage/types';
 import * as Location from 'expo-location';
+import { Screens, Stacks } from '@navigation/constants';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { TAppStackParams } from '@navigation/AppNavigator';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { TMainStackParams } from '@navigation/stacks/MainStack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
 
-export const MainScreen = () => {
+export const MainScreen: React.FC<
+    CompositeScreenProps<
+        NativeStackScreenProps<TMainStackParams, typeof Screens.Main.MAIN>,
+        NativeStackScreenProps<TAppStackParams>
+    >
+> = props => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const [locations, setLocations] = useState([]);
+
+    const { navigation } = props;
+    const insets = useSafeAreaInsets();
 
     const getDataFromStorage = async () => {
         const locationsRaw = await AsyncStorage.getItem(LOCATIONS);
@@ -77,35 +91,56 @@ export const MainScreen = () => {
     const updateStorage = async (array: Array<ILocation>) => {
         await AsyncStorage.setItem(LOCATIONS, JSON.stringify(array));
     };
-
     return (
-        <PagerView
-            style={{ flex: 1 }}
-            initialPage={0}
-            onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
-        >
-            {locations.map((val, index) => {
-                return (
-                    <GestureHandlerRootView style={styles.container} key={index}>
-                        <CurrentScreen
-                            index={index}
-                            selectedIndex={currentIndex}
-                            location={val.location}
-                            timeZone={'Asia/Omsk'}
-                            temperature={15}
-                        />
-                    </GestureHandlerRootView>
-                );
-            })}
-        </PagerView>
+        <>
+            <TouchableOpacity
+                style={[styles.containerButton, { top: insets.top + 32 }]}
+                onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.MAIN })}
+            >
+                <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
+            </TouchableOpacity>
+            <PagerView
+                style={{ flex: 1 }}
+                initialPage={0}
+                onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
+            >
+                {locations.map((val, index) => {
+                    return (
+                        <GestureHandlerRootView style={styles.container} key={index}>
+                            <CurrentScreen
+                                index={index}
+                                selectedIndex={currentIndex}
+                                location={val.location}
+                                timeZone={'Asia/Omsk'}
+                                temperature={15}
+                            />
+                        </GestureHandlerRootView>
+                    );
+                })}
+            </PagerView>
+        </>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: colors.WHITE,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    containerButton: {
+        alignItems: 'center',
+        backgroundColor: colors.LIGHT_WHITE,
+        width: 52,
+        height: 52,
+        borderRadius: 15,
+        position: 'absolute',
+        zIndex: 1,
+        right: 20,
+    },
+    iconSettings: {
+        marginTop: 14,
+        width: 22,
+        height: 22,
     },
 });
