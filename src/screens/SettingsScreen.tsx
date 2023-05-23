@@ -5,8 +5,13 @@ import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { TSettingsStackParams } from '@navigation/stacks/SettingsStack';
+import { Screens } from '@navigation/constants';
 
-export const SettingsScreen: React.FC = () => {
+export const SettingsScreen: React.FC<
+    NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.MAIN>
+> = props => {
     enum ThemeType {
         System = 'system',
         Light = 'light',
@@ -56,6 +61,8 @@ export const SettingsScreen: React.FC = () => {
         setSwitcherState(switcherStatus);
     };
 
+    const { navigation } = props;
+
     useEffect(() => {
         renderTheme();
         renderUnits();
@@ -71,7 +78,7 @@ export const SettingsScreen: React.FC = () => {
     return (
         <View style={styles.wrapper}>
             <View style={styles.headScreen}>
-                <TouchableOpacity style={styles.iconBack}>
+                <TouchableOpacity style={styles.iconBack} onPress={() => navigation.goBack()}>
                     <Image source={require('@assets/icons/back-icon.png')} />
                 </TouchableOpacity>
                 <Text style={styles.head__title}>{SettingScreenTitles.SETTING}</Text>
