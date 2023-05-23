@@ -5,8 +5,13 @@ import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { TSettingsStackParams } from '@navigation/stacks/SettingsStack';
+import { Screens } from '@navigation/constants';
 
-export const SettingsScreen: React.FC = props => {
+export const SettingsScreen: React.FC<
+    NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.MAIN>
+> = props => {
     enum ThemeType {
         System = 'system',
         Light = 'light',
