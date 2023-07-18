@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, MutableRefObject } from 'react';
 import colors from '@styles/colors';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
-export const AutoComplate: React.FC = () => {
+interface IAutoComplate {
+    refInput: MutableRefObject<TextInput>;
+}
+
+export const AutoComplate: React.FC<IAutoComplate> = props => {
     const [dataWeather, setDataWeather] = useState<string[]>(['Tomato', 'Apple', 'Banana']); // exp.for test
 
     const [filteredData, setFilteredData] = useState([]);
@@ -37,6 +41,7 @@ export const AutoComplate: React.FC = () => {
         <View>
             <Image style={styles.iconSearch} source={require('@assets/icons/search-icon.png')} />
             <Autocomplete
+                ref={props.refInput}
                 autoCapitalize='none'
                 autoCorrect={false}
                 style={styles.textInput}

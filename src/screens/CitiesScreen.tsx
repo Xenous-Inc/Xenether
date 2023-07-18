@@ -3,10 +3,21 @@ import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { AutoComplate } from '../components/AutoComplate';
-import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    TouchableWithoutFeedback,
+    Keyboard,
+    TextInput,
+} from 'react-native';
 
 export const CitiesScreen: React.FC = () => {
     const sheetRef = useRef<BottomSheet>(null);
+
+    const refInput = useRef<TextInput>(null);
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -16,11 +27,6 @@ export const CitiesScreen: React.FC = () => {
         sheetRef.current?.snapToIndex(index);
         setIsOpen(true);
     }, []);
-
-    const backAction = () => {
-        sheetRef.current.close();
-        setIsOpen(false);
-    };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -33,7 +39,10 @@ export const CitiesScreen: React.FC = () => {
                     <View style={styles.bodyScreen}>
                         <TouchableOpacity
                             style={[styles.buttonCities, { opacity: isOpen ? 0.3 : 1 }]}
-                            onPress={() => handleSnapPress(0)}
+                            onPress={() => {
+                                handleSnapPress(0);
+                                refInput.current.focus();
+                            }}
                         >
                             <Image source={require('@assets/icons/search-icon.png')} style={styles.search_icon} />
                             <Text style={styles.search_title}>Поиск города</Text>
@@ -44,15 +53,15 @@ export const CitiesScreen: React.FC = () => {
                     ref={sheetRef}
                     snapPoints={snapPoints}
                     enablePanDownToClose={true}
-                    onClose={() => setIsOpen(false)}
+                    onClose={() => {
+                        setIsOpen(false);
+                        Keyboard.dismiss();
+                    }}
                     index={-1}
                 >
                     <BottomSheetView>
-                        <TouchableOpacity style={styles.close_sheet} onPress={() => backAction()}>
-                            <Image source={require('@assets/icons/close-sheet.png')} />
-                        </TouchableOpacity>
                         <Text style={styles.bottomSheet_title}>Поиск города</Text>
-                        <AutoComplate />
+                        <AutoComplate refInput={refInput} />
                     </BottomSheetView>
                 </BottomSheet>
             </View>
@@ -113,11 +122,7 @@ const styles = StyleSheet.create({
     bottomSheet_title: {
         fontFamily: 'ExtendedBold',
         fontSize: 24,
-        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
-    },
-    close_sheet: {
-        height: 23,
-        alignItems: 'flex-end',
+        marginTop: 10,
         marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
 });
