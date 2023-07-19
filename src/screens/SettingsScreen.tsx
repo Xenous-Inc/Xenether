@@ -127,7 +127,7 @@ export const SettingsScreen: React.FC<
                     <View style={styles.divider} />
                     <TouchableOpacity
                         style={styles.cities}
-                        onPress={() => navigation.navigate(Stacks.CITIES, { screen: Screens.Cities.MAIN })}
+                        onPress={() => navigation.navigate(Stacks.CITIES, { screen: Screens.Settings.CITIES })}
                     >
                         <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
                         <View style={styles.buttonsCities}>
