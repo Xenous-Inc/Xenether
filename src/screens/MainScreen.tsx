@@ -28,6 +28,7 @@ export const MainScreen: React.FC<
     const [locations, setLocations] = useState([]);
 
     const { navigation } = props;
+
     const insets = useSafeAreaInsets();
 
     const getDataFromStorage = async () => {

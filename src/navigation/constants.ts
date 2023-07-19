@@ -9,5 +9,6 @@ export const Screens = {
     },
     Settings: {
         MAIN: 'SEETINGS_SCREEN' as const,
+        CITIES: 'CITIES_SCREEN' as const,
     },
 };
