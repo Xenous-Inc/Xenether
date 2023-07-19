@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { AutoComplate } from '../components/AutoComplate';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screens } from '@navigation/constants';
-import { TCitiesStackParams } from '@navigation/stacks/CitiesStack';
+import { TSettingsStackParams } from '@navigation/stacks/SettingsStack';
 import {
     View,
     Text,
@@ -17,7 +17,9 @@ import {
     TextInput,
 } from 'react-native';
 
-export const CitiesScreen: React.FC<NativeStackScreenProps<TCitiesStackParams, typeof Screens.Cities.MAIN>> = props => {
+export const CitiesScreen: React.FC<
+    NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.CITIES>
+> = props => {
     const { navigation } = props;
     const sheetRef = useRef<BottomSheet>(null);
 
@@ -36,12 +38,13 @@ export const CitiesScreen: React.FC<NativeStackScreenProps<TCitiesStackParams, t
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wrapper}>
                 <View style={{ backgroundColor: isOpen ? colors.EXTRA_LIGHT_GRAY : colors.LIGHT_GRAY }}>
-                    <TouchableOpacity style={styles.headScreen} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity style={styles.wrapperIcon} onPress={() => navigation.goBack()}>
                         <Image source={require('@assets/icons/back-icon.png')} style={styles.iconBack} />
-                        <Text style={styles.head__title}>Города</Text>
                     </TouchableOpacity>
+                    <Text style={styles.head__title}>Города</Text>
                     <View style={styles.bodyScreen}>
                         <TouchableOpacity
+                            disabled={isOpen}
                             style={[styles.buttonCities, { opacity: isOpen ? 0.3 : 1 }]}
                             onPress={() => {
                                 handleSnapPress(0);
@@ -79,16 +82,12 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: colors.LIGHT_GRAY,
     },
-    headScreen: {
-        marginTop: 40,
-        marginBottom: 44,
+    wrapperIcon: {
+        marginTop: 59,
         alignItems: 'center',
         position: 'absolute',
-        left: 0,
-        right: 0,
+        marginLeft: 15,
         flexDirection: 'row',
-        columnGap: MAIN_HORIZONTAL_OFFSET,
-        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     iconBack: {
         marginHorizontal: MAIN_HORIZONTAL_OFFSET,
@@ -96,7 +95,8 @@ const styles = StyleSheet.create({
     head__title: {
         fontFamily: 'ExpandedBold',
         fontSize: 20,
-        marginLeft: 33,
+        marginTop: 55,
+        marginLeft: 147,
     },
     buttonCities: {
         width: '90%',
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     },
     bodyScreen: {
         height: '100%',
-        marginTop: 100,
+        marginTop: 35,
         alignItems: 'center',
     },
     search_title: {

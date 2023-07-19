@@ -127,7 +127,7 @@ export const SettingsScreen: React.FC<
                     <View style={styles.divider} />
                     <TouchableOpacity
                         style={styles.cities}
-                        onPress={() => navigation.navigate(Stacks.CITIES, { screen: Screens.Settings.CITIES })}
+                        onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.CITIES })}
                     >
                         <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
                         <View style={styles.buttonsCities}>
@@ -255,10 +255,14 @@ const styles = StyleSheet.create({
     head__title: {
         fontFamily: 'ExpandedBold',
         fontSize: 20,
-        marginLeft: MAIN_HORIZONTAL_OFFSET,
+        marginLeft: -8,
     },
     iconBack: {
         marginHorizontal: MAIN_HORIZONTAL_OFFSET,
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     contentText: {
         marginLeft: 20,
