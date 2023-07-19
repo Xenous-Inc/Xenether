@@ -3,6 +3,9 @@ import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { AutoComplate } from '../components/AutoComplate';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Screens } from '@navigation/constants';
+import { TCitiesStackParams } from '@navigation/stacks/CitiesStack';
 import {
     View,
     Text,
@@ -14,7 +17,8 @@ import {
     TextInput,
 } from 'react-native';
 
-export const CitiesScreen: React.FC = () => {
+export const CitiesScreen: React.FC<NativeStackScreenProps<TCitiesStackParams, typeof Screens.Cities.MAIN>> = props => {
+    const { navigation } = props;
     const sheetRef = useRef<BottomSheet>(null);
 
     const refInput = useRef<TextInput>(null);
@@ -32,7 +36,7 @@ export const CitiesScreen: React.FC = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wrapper}>
                 <View style={{ backgroundColor: isOpen ? colors.EXTRA_LIGHT_GRAY : colors.LIGHT_GRAY }}>
-                    <TouchableOpacity style={styles.headScreen}>
+                    <TouchableOpacity style={styles.headScreen} onPress={() => navigation.goBack()}>
                         <Image source={require('@assets/icons/back-icon.png')} style={styles.iconBack} />
                         <Text style={styles.head__title}>Города</Text>
                     </TouchableOpacity>
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
     head__title: {
         fontFamily: 'ExpandedBold',
         fontSize: 20,
-        marginLeft: 40,
+        marginLeft: 33,
     },
     buttonCities: {
         width: '90%',

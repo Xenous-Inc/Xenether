@@ -5,12 +5,17 @@ import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
+import { TAppStackParams } from '@navigation/AppNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TSettingsStackParams } from '@navigation/stacks/SettingsStack';
-import { Screens } from '@navigation/constants';
+import { Screens, Stacks } from '@navigation/constants';
+import { CompositeScreenProps } from '@react-navigation/native';
 
 export const SettingsScreen: React.FC<
-    NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.MAIN>
+    CompositeScreenProps<
+        NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.MAIN>,
+        NativeStackScreenProps<TAppStackParams>
+    >
 > = props => {
     enum ThemeType {
         System = 'system',
@@ -120,7 +125,10 @@ export const SettingsScreen: React.FC<
                         </View>
                     </TouchableOpacity>
                     <View style={styles.divider} />
-                    <TouchableOpacity style={styles.cities}>
+                    <TouchableOpacity
+                        style={styles.cities}
+                        onPress={() => navigation.navigate(Stacks.CITIES, { screen: Screens.Cities.MAIN })}
+                    >
                         <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
                         <View style={styles.buttonsCities}>
                             <Image source={require('@assets/icons/icon-button.png')} />

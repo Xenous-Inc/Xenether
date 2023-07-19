@@ -1,6 +1,7 @@
 export const Stacks = {
     MAIN: 'MAIN_STACK' as const,
     SETTINGS: 'SETTINGS_STACK' as const,
+    CITIES: 'CITIES_STACK' as const,
 };
 
 export const Screens = {
@@ -9,5 +10,8 @@ export const Screens = {
     },
     Settings: {
         MAIN: 'SEETINGS_SCREEN' as const,
+    },
+    Cities: {
+        MAIN: 'CITIES_SCREEN' as const,
     },
 };

@@ -1,7 +1,7 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SettingsScreen } from '@screens/SettingsScreen';
 import { Screens } from '../constants';
+import { SettingsScreen } from '@screens/SettingsScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export type TSettingsStackParams = {
     [Screens.Settings.MAIN]: undefined;

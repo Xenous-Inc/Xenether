@@ -1,7 +1,7 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Screens } from '../constants';
 import { MainScreen } from '@screens/MainScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export type TMainStackParams = {
     [Screens.Main.MAIN]: undefined;
