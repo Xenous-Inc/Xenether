@@ -2,30 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import { isSameMinute } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import colors from '@styles/colors';
 import { Signs } from '@utils/constants';
+import { ICity } from '@storage/types';
 
-export interface ICityComponent {
-    location: string;
-    timeZone: string;
-}
-
-const initialCityData = {
-    weatherType: 'Облачно',
-    temperature: 12,
-    maxTemperature: 12,
-    minTemperature: -3,
-    image: require('@assets/icons/backgroundRain.png'),
+const createCurrentDate = timeZoneValue => {
+    const londonTime = utcToZonedTime(new Date(), 'Europe/London');
+    const currentDate = londonTime.setSeconds(londonTime.getSeconds() + timeZoneValue - 3600);
+    return currentDate;
 };
 
-export const CityComponent: React.FC<ICityComponent> = props => {
-    const [cityData, setCityData] = useState(initialCityData);
-    const [currentTime, setCurrentDate] = useState(new Date());
+export const CityComponent: React.FC<ICity> = props => {
+    const [currentTime, setCurrentDate] = useState(createCurrentDate(props.timeZone));
     useEffect(() => {
         const intervalId = setInterval(() => {
-            if (!isSameMinute(currentTime, new Date())) {
-                setCurrentDate(new Date());
+            if (!isSameMinute(currentTime, createCurrentDate(props.timeZone))) {
+                setCurrentDate(createCurrentDate(props.timeZone));
             }
         }, 1000);
         return () => {
@@ -33,21 +25,25 @@ export const CityComponent: React.FC<ICityComponent> = props => {
         };
     });
     return (
-        <ImageBackground source={cityData.image} style={styles.wrapper} imageStyle={styles.backgroundImage}>
+        <ImageBackground
+            source={require('@assets/icons/backgroundRain.png')} // for example
+            style={styles.wrapper}
+            imageStyle={styles.backgroundImage}
+        >
             <View style={styles.mainContent}>
                 <View>
-                    <Text style={styles.city_title}>{props.location}</Text>
-                    <Text style={styles.time}>
-                        {format(utcToZonedTime(currentTime, props.timeZone), 'HH:mm', { locale: ru })}
-                    </Text>
+                    <Text style={styles.city_title}>{props.nameCity}</Text>
+                    <Text style={styles.time}>{format(currentTime, 'HH:mm')}</Text>
                 </View>
-                <Text style={styles.temperature}>{cityData.temperature + Signs.CELSIUS}</Text>
+                <Text style={styles.temperature}>{props.mainTemp + Signs.CELSIUS}</Text>
             </View>
             <View style={styles.bottomContent}>
-                <Text style={styles.weatherType}>{cityData.weatherType}</Text>
+                <Text style={styles.weatherType}>
+                    {props.description.charAt(0).toUpperCase() + props.description.slice(1)}
+                </Text>
                 <View style={styles.minMaxContainer}>
-                    <Text style={styles.minMaxTemperature}>{'Макс: ' + cityData.maxTemperature + Signs.CELSIUS}</Text>
-                    <Text style={styles.minMaxTemperature}>{'Мин: ' + cityData.minTemperature + Signs.CELSIUS}</Text>
+                    <Text style={styles.minMaxTemperature}>{'Макс: ' + props.maxTemp + Signs.CELSIUS}</Text>
+                    <Text style={styles.minMaxTemperature}>{'Мин: ' + props.minTemp + Signs.CELSIUS}</Text>
                 </View>
             </View>
         </ImageBackground>

@@ -2,6 +2,8 @@ import React, { useState, useEffect, MutableRefObject } from 'react';
 import colors from '@styles/colors';
 import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
+import { useAppDispatch } from '../store/store';
+import { createGetCityAction } from '../store/slices/citySlice';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
@@ -10,14 +12,21 @@ interface IAutoComplate {
 }
 
 export const AutoComplate: React.FC<IAutoComplate> = props => {
-    const [dataWeather, setDataWeather] = useState<string[]>(['Tomato', 'Apple', 'Banana']); // exp.for test
+    const [dataWeather, setDataWeather] = useState<string[]>([
+        'Лондон',
+        'Москва',
+        'Омск',
+        'Аляска',
+        'Новосибирск',
+        'Дубай',
+    ]); // exp.for test
 
     const [filteredData, setFilteredData] = useState([]);
 
     const [selectedValue, setSelectedValue] = useState({});
 
     const [inputText, setInputText] = useState('');
-
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (inputText) {
             fetch('') // API request
@@ -66,6 +75,7 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                             onPress={() => {
                                 setSelectedValue(item);
                                 setFilteredData([]);
+                                dispatch(createGetCityAction(item));
                             }}
                         >
                             <Text style={styles.itemText}>{item}</Text>
