@@ -13,5 +13,5 @@ export interface ICity {
     maxTemp: number;
     description: string;
     mainTemp: number;
-    icon: any;
+    icon: string;
 }

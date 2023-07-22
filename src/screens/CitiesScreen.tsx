@@ -15,6 +15,7 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     TextInput,
+    ScrollView,
 } from 'react-native';
 import { useAppSelector } from '../store/store';
 import { CityComponent } from '@components/CityComponent';
@@ -29,7 +30,7 @@ export const CitiesScreen: React.FC<
 
     const [isOpen, setIsOpen] = useState(false);
 
-    const snapPoints = useMemo(() => ['80%'], []);
+    const snapPoints = useMemo(() => ['81%'], []);
 
     const handleSnapPress = useCallback(index => {
         sheetRef.current?.snapToIndex(index);
@@ -57,22 +58,22 @@ export const CitiesScreen: React.FC<
                             <Image source={require('@assets/icons/search-icon.png')} style={styles.search_icon} />
                             <Text style={styles.search_title}>Поиск города</Text>
                         </TouchableOpacity>
-
-                        {cities.map(city => (
-                            <CityComponent
-                                key={city.nameCity}
-                                nameCity={city.nameCity}
-                                timeZone={city.timeZone}
-                                minTemp={city.minTemp}
-                                maxTemp={city.maxTemp}
-                                description={city.description}
-                                mainTemp={city.mainTemp}
-                                icon={undefined}
-                            />
-                        ))}
+                        <ScrollView style={{ marginTop: 10 }}>
+                            {cities.map(city => (
+                                <CityComponent
+                                    key={city.nameCity}
+                                    nameCity={city.nameCity}
+                                    timeZone={city.timeZone}
+                                    minTemp={city.minTemp}
+                                    maxTemp={city.maxTemp}
+                                    description={city.description}
+                                    mainTemp={city.mainTemp}
+                                    icon={city.icon}
+                                />
+                            ))}
+                        </ScrollView>
                     </View>
                 </View>
-
                 <BottomSheet
                     ref={sheetRef}
                     snapPoints={snapPoints}
