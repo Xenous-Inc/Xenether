@@ -75,3 +75,4 @@ export const IconValue = {
         MIST: '50n',
     },
 };
+

@@ -33,15 +33,18 @@ export const citySlice = createSlice({
         });
         builder.addCase(createGetCityAction.fulfilled, (state, action) => {
             state.status = 'success';
-            state.cities.unshift({
-                nameCity: action.meta.arg,
-                timeZone: action.payload.timeZone,
-                minTemp: action.payload.minTemp,
-                maxTemp: action.payload.maxTemp,
-                description: action.payload.description,
-                mainTemp: action.payload.mainTemp,
-                icon: action.payload.icon,
-            });
+            const isSameCity = state.cities.find(city => city.nameCity === action.meta.arg);
+            if (!isSameCity) {
+                state.cities.unshift({
+                    nameCity: action.meta.arg,
+                    timeZone: action.payload.timeZone,
+                    minTemp: action.payload.minTemp,
+                    maxTemp: action.payload.maxTemp,
+                    description: action.payload.description,
+                    mainTemp: action.payload.mainTemp,
+                    icon: action.payload.icon,
+                });
+            }
         });
     },
 });
