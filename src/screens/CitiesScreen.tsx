@@ -37,7 +37,6 @@ export const CitiesScreen: React.FC<
         setIsOpen(true);
     }, []);
     const { error, status, cities } = useAppSelector(state => state.cities);
-    console.log(error);
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wrapper}>

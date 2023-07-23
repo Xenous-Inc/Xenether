@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground, Image, Pressable } from 'react-native';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import { isSameMinute } from 'date-fns';
 import colors from '@styles/colors';
 import { Signs } from '@utils/constants';
 import { ICity } from '@storage/types';
 import { IconValue } from '@utils/constants';
+import { useAppDispatch } from '../store/store';
+import { removeCity } from '../store/slices/citySlice';
 
 const createCurrentDate = timeZoneValue => {
     const londonTime = utcToZonedTime(new Date(), 'Europe/London');
@@ -56,6 +58,7 @@ const iconSelection = (arg: string) => {
 };
 
 export const CityComponent: React.FC<ICity> = props => {
+    const dispatch = useAppDispatch();
     const [currentTime, setCurrentDate] = useState(createCurrentDate(props.timeZone));
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -69,6 +72,9 @@ export const CityComponent: React.FC<ICity> = props => {
     });
     return (
         <ImageBackground source={iconSelection(props.icon)} style={styles.wrapper} imageStyle={styles.backgroundImage}>
+            <Pressable style={styles.buttonClose} onPress={() => dispatch(removeCity(props.nameCity))}>
+                <Image style={styles.iconClose} source={require('@assets/icons/close-sheet.png')} />
+            </Pressable>
             <View style={styles.mainContent}>
                 <View>
                     <Text style={styles.city_title}>{props.nameCity}</Text>
@@ -143,5 +149,20 @@ const styles = StyleSheet.create({
         fontFamily: 'ExtendedSemiBold',
         fontSize: 12,
         color: colors.WHITE,
+    },
+    buttonClose: {
+        position: 'absolute',
+        backgroundColor: colors.EXTRA_LIGHT_GRAY,
+        borderRadius: 10,
+        width: 17,
+        height: 17,
+        marginLeft: 327,
+        marginTop: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    iconClose: {
+        width: 8,
+        height: 8,
     },
 });
