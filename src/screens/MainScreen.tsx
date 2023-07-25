@@ -33,7 +33,6 @@ export const MainScreen: React.FC<
 
     const getDataFromStorage = async () => {
         const locationsRaw = await AsyncStorage.getItem(LOCATIONS);
-        console.log(locationsRaw);
         const loc = (JSON.parse(locationsRaw) as Array<ILocation>) || [];
         setLocations(loc);
         return loc;

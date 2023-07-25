@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, useColorScheme } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import SwitchToggle from 'react-native-switch-toggle';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
@@ -10,6 +8,12 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TSettingsStackParams } from '@navigation/stacks/SettingsStack';
 import { Screens, Stacks } from '@navigation/constants';
 import { CompositeScreenProps } from '@react-navigation/native';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { SwitcherStatus, UnitsType, ThemeType } from '@storage/constants';
+import { switchToggle } from '../store/slices/noticeSlice';
+import SwitchToggle from 'react-native-switch-toggle';
+import { changeTheme } from '../store/slices/themeSlice';
+import { changeDeg } from '../store/slices/degSlice';
 
 export const SettingsScreen: React.FC<
     CompositeScreenProps<
@@ -17,68 +21,15 @@ export const SettingsScreen: React.FC<
         NativeStackScreenProps<TAppStackParams>
     >
 > = props => {
-    enum ThemeType {
-        System = 'system',
-        Light = 'light',
-        Dark = 'dark',
-    }
-    enum UnitsType {
-        Celsius = 'celsius',
-        Fahrenheits = 'fahrenheits',
-    }
-    enum SwitcherStatus {
-        On = 'on',
-        Off = 'off',
-    }
-    const [typeUnits, setTypeUnits] = useState(UnitsType.Celsius);
-
-    const [switcherState, setSwitcherState] = useState(SwitcherStatus.On);
-
-    const [themeData, setThemeData] = useState(ThemeType.System);
-
     const SystemTheme = useColorScheme();
 
-    const setTheme = (themeValue: ThemeType) => {
-        AsyncStorage.setItem('theme', themeValue);
-    };
+    const dispatch = useAppDispatch();
 
-    const setUnits = (unitValue: UnitsType) => {
-        AsyncStorage.setItem('units', unitValue);
-    };
-
-    const setSwitcher = (switcherValue: SwitcherStatus) => {
-        AsyncStorage.setItem('switcher', switcherValue);
-    };
-
-    const renderUnits = async () => {
-        const currentUnits = (await AsyncStorage.getItem('units')) as UnitsType;
-
-        setTypeUnits(currentUnits);
-    };
-
-    const renderTheme = async () => {
-        const currentTheme = (await AsyncStorage.getItem('theme')) as ThemeType;
-
-        setThemeData(currentTheme);
-    };
-    const renderSwitcher = async () => {
-        const switcherStatus = (await AsyncStorage.getItem('switcher')) as SwitcherStatus;
-        setSwitcherState(switcherStatus);
-    };
+    const { deg } = useAppSelector(state => state.deg);
+    const { notice } = useAppSelector(state => state.notice);
+    const { theme } = useAppSelector(state => state.theme);
 
     const { navigation } = props;
-
-    useEffect(() => {
-        renderTheme();
-        renderUnits();
-        renderSwitcher();
-    }, []);
-
-    const toggleSwitch = () => {
-        if (switcherState === SwitcherStatus.Off) {
-            setSwitcherState(SwitcherStatus.On);
-        } else setSwitcherState(SwitcherStatus.Off);
-    };
 
     return (
         <View style={styles.wrapper}>
@@ -95,13 +46,7 @@ export const SettingsScreen: React.FC<
                     <TouchableOpacity
                         style={styles.degrees}
                         onPress={() => {
-                            if (typeUnits === UnitsType.Celsius) {
-                                setTypeUnits(UnitsType.Fahrenheits);
-                                setUnits(UnitsType.Fahrenheits);
-                            } else {
-                                setTypeUnits(UnitsType.Celsius);
-                                setUnits(UnitsType.Celsius);
-                            }
+                            dispatch(changeDeg());
                         }}
                     >
                         <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
@@ -109,7 +54,7 @@ export const SettingsScreen: React.FC<
                             <Text
                                 style={[
                                     styles.buttonsDegress,
-                                    { color: typeUnits === UnitsType.Fahrenheits ? colors.BLACK : colors.GRAY },
+                                    { color: deg === UnitsType.Fahrenheits ? colors.BLACK : colors.GRAY },
                                 ]}
                             >
                                 {Signs.CELSIUS + 'F'}
@@ -117,7 +62,7 @@ export const SettingsScreen: React.FC<
                             <Text
                                 style={[
                                     styles.buttonsDegress,
-                                    { color: typeUnits === UnitsType.Celsius ? colors.BLACK : colors.GRAY },
+                                    { color: deg === UnitsType.Celsius ? colors.BLACK : colors.GRAY },
                                 ]}
                             >
                                 {Signs.CELSIUS + 'C'}
@@ -140,15 +85,9 @@ export const SettingsScreen: React.FC<
                     <View style={styles.notifications}>
                         <Text style={styles.contentText}>{SettingScreenContentText.NOTICE}</Text>
                         <SwitchToggle
-                            switchOn={switcherState === SwitcherStatus.On}
+                            switchOn={notice === SwitcherStatus.On}
                             onPress={() => {
-                                if (switcherState === SwitcherStatus.On) {
-                                    setSwitcher(SwitcherStatus.Off);
-                                    toggleSwitch();
-                                } else {
-                                    setSwitcher(SwitcherStatus.On);
-                                    toggleSwitch();
-                                }
+                                dispatch(switchToggle());
                             }}
                             containerStyle={{
                                 width: 39,
@@ -176,14 +115,13 @@ export const SettingsScreen: React.FC<
                             style={[
                                 styles.buttonsSystem,
                                 {
-                                    borderColor: themeData === ThemeType.System ? colors.LIGHT_ORANGE : colors.WHITE,
+                                    borderColor: theme === ThemeType.System ? colors.LIGHT_ORANGE : colors.WHITE,
                                 },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    setThemeData(ThemeType.System);
-                                    setTheme(ThemeType.System);
+                                    dispatch(changeTheme(ThemeType.System));
                                 }}
                             >
                                 <Text style={styles.systemHead}>{SettingScreenTheme.SYSTEM}</Text>
@@ -194,13 +132,12 @@ export const SettingsScreen: React.FC<
                             <View
                                 style={[
                                     styles.buttonsTheme,
-                                    { borderColor: themeData === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE },
+                                    { borderColor: theme === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        setThemeData(ThemeType.Dark);
-                                        setTheme(ThemeType.Dark);
+                                        dispatch(changeTheme(ThemeType.Dark));
                                     }}
                                 >
                                     <Image style={styles.iconMoon} source={require('@assets/icons/icon-moon.png')} />
@@ -211,14 +148,13 @@ export const SettingsScreen: React.FC<
                                 style={[
                                     styles.buttonsTheme,
                                     {
-                                        borderColor: themeData === ThemeType.Light ? colors.LIGHT_ORANGE : colors.WHITE,
+                                        borderColor: theme === ThemeType.Light ? colors.LIGHT_ORANGE : colors.WHITE,
                                     },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        setThemeData(ThemeType.Light);
-                                        setTheme(ThemeType.Light);
+                                        dispatch(changeTheme(ThemeType.Light));
                                     }}
                                 >
                                     <Image style={styles.iconSun} source={require('@assets/icons/icon-sun.png')} />

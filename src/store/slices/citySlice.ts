@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, SerializedError } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
 import { ICity } from '@storage/types';
 
 const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
@@ -16,9 +16,12 @@ const initialState: CitiesState = {
 
 export const citySlice = createSlice({
     name: 'cities',
-
     initialState,
-    reducers: {},
+    reducers: {
+        removeCity(state, action: PayloadAction<string>) {
+            state.cities = state.cities.filter(city => city.nameCity !== action.payload);
+        },
+    },
     extraReducers: builder => {
         builder.addCase(createGetCityAction.pending, state => {
             state.status = 'loading';
@@ -30,15 +33,18 @@ export const citySlice = createSlice({
         });
         builder.addCase(createGetCityAction.fulfilled, (state, action) => {
             state.status = 'success';
-            state.cities.unshift({
-                nameCity: action.meta.arg,
-                timeZone: action.payload.timeZone,
-                minTemp: action.payload.minTemp,
-                maxTemp: action.payload.maxTemp,
-                description: action.payload.description,
-                mainTemp: action.payload.mainTemp,
-                icon: action.payload.icon,
-            });
+            const isSameCity = state.cities.find(city => city.nameCity === action.meta.arg);
+            if (!isSameCity) {
+                state.cities.unshift({
+                    nameCity: action.meta.arg,
+                    timeZone: action.payload.timeZone,
+                    minTemp: action.payload.minTemp,
+                    maxTemp: action.payload.maxTemp,
+                    description: action.payload.description,
+                    mainTemp: action.payload.mainTemp,
+                    icon: action.payload.icon,
+                });
+            }
         });
     },
 });
@@ -57,6 +63,8 @@ export const createGetCityAction = createAsyncThunk('cities/fetchData', async (n
         mainTemp: Math.trunc(data.main.temp),
         icon: data.weather[0].icon,
     };
-    console.log(dataCity);
     return dataCity;
 });
+
+export const { removeCity } = citySlice.actions;
+export default citySlice.reducer;
