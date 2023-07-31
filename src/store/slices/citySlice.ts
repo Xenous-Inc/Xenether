@@ -35,7 +35,7 @@ export const citySlice = createSlice({
             state.status = 'success';
             const isSameCity = state.cities.find(city => city.nameCity === action.meta.arg);
             if (!isSameCity) {
-                state.cities.unshift({
+                state.cities.push({
                     nameCity: action.meta.arg,
                     timeZone: action.payload.timeZone,
                     minTemp: action.payload.minTemp,

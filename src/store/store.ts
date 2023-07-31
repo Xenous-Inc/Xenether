@@ -6,6 +6,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import { degSlice } from './slices/degSlice';
 import { noticeSlice } from './slices/noticeSlice';
 import { themeSlice } from './slices/themeSlice';
+import { weatherSlice } from './slices/weatherSlice';
 
 const persistConfig = {
     key: 'root',
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
     deg: degSlice.reducer,
     notice: noticeSlice.reducer,
     theme: themeSlice.reducer,
+    weatherSheet: weatherSlice.reducer,
 });
 
 const persistedReducers = persistReducer(persistConfig, rootReducer);

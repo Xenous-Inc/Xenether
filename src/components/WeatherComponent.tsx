@@ -1,40 +1,39 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Warning, WarningType } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
-import { ITimeProps } from '@components/TimeRelated';
-import { DateRelated, IDateProps } from '@components/DateRelated';
+import { DateRelated } from '@components/DateRelated';
 import colors from '@styles/colors';
-import { ExtraInfo, IExtraInfoProps } from './ExtraInfo';
+import { ExtraInfo } from './ExtraInfo';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { IDailyEl, IExtraData, IHourlyEl, IWeatherData } from '@storage/types';
+import { useAppSelector } from '../store/store';
 
 export interface IWeatherComponent {
     warningType: WarningType;
-    timeRelatedArray: Array<ITimeProps>;
-    dateRelatedArray: Array<IDateProps>;
-    extraInfoArray: Array<IExtraInfoProps>;
+    nameCity: string;
 }
 
-const getTimeRelatedComponents = (timeRelatedArray: Array<ITimeProps>) => {
-    return timeRelatedArray.map((element, index) => {
+const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[]) => {
+    return timeRelatedArray.slice(0, 24).map((element, index) => {
         return (
             <TimeRelated
                 time={element.time}
-                weatherType={element.weatherType}
-                temperature={element.temperature}
+                weatherCode={element.weatherCode}
+                mainTemp={element.mainTemp}
                 key={index}
             />
         );
     });
 };
 
-const getDateRelatedComponents = (dateRelatedArray: Array<IDateProps>) => {
+const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
     return dateRelatedArray.map((element, index) => {
         return (
             <DateRelated
                 date={element.date}
-                weatherType={element.weatherType}
+                weatherCode={element.weatherCode}
                 dayTemp={element.dayTemp}
                 nightTemp={element.nightTemp}
                 key={index}
@@ -43,23 +42,45 @@ const getDateRelatedComponents = (dateRelatedArray: Array<IDateProps>) => {
     });
 };
 
-const getExtraInfoComponents = (extraInfoArray: Array<IExtraInfoProps>) => {
-    return extraInfoArray.map((element, index) => {
-        return <ExtraInfo type={element.type} digitalValue={element.digitalValue} key={index} />;
+const getExtraInfoComponents = (extraInfoArray: IExtraData[]) => {
+    return extraInfoArray.slice(0, 4).map((element, index) => {
+        return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />;
     });
 };
 
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
+    const { error, status, ids, entities } = useAppSelector(state => state.weatherSheet);
+
+    const weather = useMemo<IWeatherData>(() => {
+        return entities[props.nameCity];
+    }, [entities, props.nameCity]);
+
+    const extra = useMemo(() => {
+        return weather?.extra.map(el => {
+            const extraData: IExtraData = {};
+
+            extraData.title = el.precipitation.title;
+            extraData.digitalValue = el.precipitation.digitalValue;
+            // доделать логику вывода extra elements
+
+            return extraData;
+        });
+    }, [weather]);
+
     return (
         <View style={styles.scrollContainer}>
             <View style={styles.warningContainer}>
                 <Warning warningType={props.warningType} />
             </View>
-            <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(props.timeRelatedArray)}</View>
-            </BottomSheetScrollView>
-            <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(props.dateRelatedArray)}</View>
-            <View style={styles.extraInfoContainer}>{getExtraInfoComponents(props.extraInfoArray)}</View>
+            {status === 'success' && weather && extra && (
+                <>
+                    <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                        <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(weather.hourly)}</View>
+                    </BottomSheetScrollView>
+                    <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(weather.daily)}</View>
+                    <View style={styles.extraInfoContainer}>{getExtraInfoComponents(extra)}</View>
+                </>
+            )}
         </View>
     );
 };
