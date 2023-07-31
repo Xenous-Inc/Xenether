@@ -36,7 +36,9 @@ export const CitiesScreen: React.FC<
         sheetRef.current?.snapToIndex(index);
         setIsOpen(true);
     }, []);
+
     const { error, status, cities } = useAppSelector(state => state.cities);
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wrapper}>

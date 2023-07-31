@@ -3,12 +3,12 @@ import { StyleSheet, View, Text } from 'react-native';
 import colors from '@styles/colors';
 import { format, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { WeatherIcon, WeatherType } from '@components/WeatherIcon';
+import { WeatherIcon } from '@components/WeatherIcon';
 import { Signs } from '@utils/constants';
 
 export interface IDateProps {
     date: string;
-    weatherType: WeatherType;
+    weatherCode: number;
     dayTemp: number;
     nightTemp: number;
 }
@@ -23,11 +23,13 @@ export const DateRelated: React.FC<IDateProps> = props => {
     return (
         <View style={styles.container}>
             <View>
-                <Text style={styles.weekNumber}>{getWeekDay(props.date)}</Text>
-                <Text style={styles.dateNumber}>{format(new Date(props.date), 'd MMMM', { locale: ru })}</Text>
+                <Text style={styles.weekNumber}>{getWeekDay(props.date.slice(0, 10))}</Text>
+                <Text style={styles.dateNumber}>
+                    {format(new Date(props.date.slice(0, 10)), 'd MMMM', { locale: ru })}
+                </Text>
             </View>
             <View style={styles.icon}>
-                <WeatherIcon weatherType={props.weatherType} />
+                <WeatherIcon weatherCode={props.weatherCode} />
             </View>
             <View style={styles.temperatureContainer}>
                 <Text style={styles.afternoon}>{props.dayTemp + Signs.CELSIUS}</Text>

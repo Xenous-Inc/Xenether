@@ -2,16 +2,16 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { WeatherComponent } from '@components/WeatherComponent';
-import { IWeatherComponent } from '@components/WeatherComponent';
 
 export interface IMainBottomSheetProps {
-    weather: IWeatherComponent;
+    nameCity: string;
     index: number;
     selectedIndex: number;
+    weatherWarningType: string;
 }
 
 export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
-    const { index, selectedIndex, weather } = props;
+    const { index, selectedIndex, nameCity } = props;
 
     const sheetRef = useRef<BottomSheet>(null);
 
@@ -32,12 +32,7 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
             handleIndicatorStyle={styles.handleIndicator}
         >
             <BottomSheetScrollView showsVerticalScrollIndicator={false}>
-                <WeatherComponent
-                    warningType={weather.warningType}
-                    timeRelatedArray={weather.timeRelatedArray}
-                    dateRelatedArray={weather.dateRelatedArray}
-                    extraInfoArray={weather.extraInfoArray}
-                />
+                <WeatherComponent warningType={props.weatherWarningType} nameCity={nameCity} />
             </BottomSheetScrollView>
         </BottomSheet>
     );

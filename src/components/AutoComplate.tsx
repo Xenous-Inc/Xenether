@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'reac
 import Autocomplete from 'react-native-autocomplete-input';
 import { useAppDispatch } from '../store/store';
 import { createGetCityAction } from '../store/slices/citySlice';
+import { createGetWeatherAction } from '../store/slices/weatherSlice';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
@@ -76,6 +77,7 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                                 setSelectedValue(item);
                                 setFilteredData([]);
                                 dispatch(createGetCityAction(item));
+                                dispatch(createGetWeatherAction(item));
                             }}
                         >
                             <Text style={styles.itemText}>{item}</Text>
