@@ -9,7 +9,7 @@ import { themeSlice } from './slices/themeSlice';
 import { weatherSlice } from './slices/weatherSlice';
 
 const persistConfig = {
-    key: 'root',
+    key: 'path',
     storage: AsyncStorage,
 };
 const rootReducer = combineReducers({
