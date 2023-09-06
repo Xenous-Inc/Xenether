@@ -1,6 +1,6 @@
 import React, { useState, useEffect, MutableRefObject } from 'react';
 import colors from '@styles/colors';
-import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, Platform } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import { useAppDispatch } from '../store/store';
 import { createGetCityAction } from '../store/slices/citySlice';
@@ -34,7 +34,8 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                 .then(response => response.json())
                 .then(result => {
                     setDataWeather(result.map(el => el.LocalizedName));
-                });
+                })
+                .catch(() => {});
         }
     }, [inputText]);
 
@@ -98,6 +99,9 @@ const styles = StyleSheet.create({
     },
     containerFlatList: {
         marginTop: 16,
+        zIndex: Platform.OS === 'android' ? 1 : 0,
+        position: Platform.OS === 'android' ? 'absolute' : 'relative',
+        width: Platform.OS === 'ios' ? '100%' : '111%',
     },
     containerInput: {
         borderWidth: 0,
@@ -118,6 +122,8 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     customList: {
+        marginTop: Platform.OS === 'ios' ? 0 : 59,
+        marginHorizontal: Platform.OS === 'ios' ? 0 : 20,
         borderWidth: 0,
         backgroundColor: colors.LIGHT_GRAY,
         borderRadius: 12,
