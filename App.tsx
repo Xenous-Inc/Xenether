@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import store, { persistor } from './src/store/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { StatusBar } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,6 +35,7 @@ export default function App() {
 
     return (
         <Provider store={store}>
+            <StatusBar backgroundColor='transparent' translucent={true} barStyle='dark-content' />
             <PersistGate loading={null} persistor={persistor}>
                 <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
                     <AppNavigator />
