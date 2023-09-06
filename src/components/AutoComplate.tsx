@@ -1,10 +1,11 @@
 import React, { useState, useEffect, MutableRefObject } from 'react';
 import colors from '@styles/colors';
-import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, Platform } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import { useAppDispatch } from '../store/store';
 import { createGetCityAction } from '../store/slices/citySlice';
 import { createGetWeatherAction } from '../store/slices/weatherSlice';
+import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
@@ -98,6 +99,9 @@ const styles = StyleSheet.create({
     },
     containerFlatList: {
         marginTop: 16,
+        zIndex: Platform.OS === 'android' ? 1 : 0,
+        position: Platform.OS === 'android' ? 'absolute' : 'relative',
+        width: '111%',
     },
     containerInput: {
         borderWidth: 0,
@@ -118,6 +122,8 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     customList: {
+        marginTop: 59,
+        marginHorizontal: 20,
         borderWidth: 0,
         backgroundColor: colors.LIGHT_GRAY,
         borderRadius: 12,
