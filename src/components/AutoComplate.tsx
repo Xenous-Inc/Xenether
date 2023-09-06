@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
         zIndex: Platform.OS === 'android' ? 1 : 0,
         position: Platform.OS === 'android' ? 'absolute' : 'relative',
-        width: '111%',
+        width: Platform.OS === 'ios' ? '100%' : '111%',
     },
     containerInput: {
         borderWidth: 0,
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     customList: {
-        marginTop: 59,
-        marginHorizontal: 20,
+        marginTop: Platform.OS === 'ios' ? 0 : 59,
+        marginHorizontal: Platform.OS === 'ios' ? 0 : 20,
         borderWidth: 0,
         backgroundColor: colors.LIGHT_GRAY,
         borderRadius: 12,
