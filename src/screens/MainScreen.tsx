@@ -55,7 +55,7 @@ export const MainScreen: React.FC<
                 <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
             </TouchableOpacity>
             <PagerView
-                style={{ flex: 1 }}
+                style={{ flex: 1}}
                 initialPage={0}
                 onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
             >
