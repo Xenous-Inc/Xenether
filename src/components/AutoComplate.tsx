@@ -5,7 +5,6 @@ import Autocomplete from 'react-native-autocomplete-input';
 import { useAppDispatch } from '../store/store';
 import { createGetCityAction } from '../store/slices/citySlice';
 import { createGetWeatherAction } from '../store/slices/weatherSlice';
-import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
@@ -35,7 +34,8 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                 .then(response => response.json())
                 .then(result => {
                     setDataWeather(result.map(el => el.LocalizedName));
-                });
+                })
+                .catch(() => {});
         }
     }, [inputText]);
 
