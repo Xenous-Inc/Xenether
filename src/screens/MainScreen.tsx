@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, StatusBar } from 'react-native';
 import colors from '@styles/colors';
 import PagerView from 'react-native-pager-view';
 import { CurrentScreen } from '@screens/CurrentScreen';
@@ -54,8 +54,9 @@ export const MainScreen: React.FC<
             >
                 <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
             </TouchableOpacity>
+            <StatusBar backgroundColor='transparent' translucent={true} barStyle='dark-content' />
             <PagerView
-                style={{ flex: 1 }}
+                style={{ flex: 1}}
                 initialPage={0}
                 onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
             >
