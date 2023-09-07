@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { AutoComplate } from '../components/AutoComplate';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screens } from '@navigation/constants';
@@ -16,6 +16,7 @@ import {
     Keyboard,
     TextInput,
     ScrollView,
+    BackHandler,
 } from 'react-native';
 import { useAppSelector } from '../store/store';
 import { CityComponent } from '@components/CityComponent';
@@ -36,17 +37,37 @@ export const CitiesScreen: React.FC<
         sheetRef.current?.snapToIndex(index);
         setIsOpen(true);
     }, []);
-
     const { error, status, cities } = useAppSelector(state => state.cities);
+
+    useEffect(() => {
+        const backAction = () => {
+            if (isOpen) {
+                sheetRef.current.close();
+                return true;
+            }
+            if (!isOpen) {
+                navigation.goBack();
+                return true;
+            }
+        };
+
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+        return () => backHandler.remove();
+    }, [sheetRef, isOpen]);
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wrapper}>
                 <View style={{ backgroundColor: isOpen ? colors.EXTRA_LIGHT_GRAY : colors.LIGHT_GRAY }}>
-                    <TouchableOpacity style={styles.wrapperIcon} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity
+                        disabled={isOpen}
+                        style={[styles.wrapperIcon, { opacity: isOpen ? 0.3 : 1 }]}
+                        onPress={() => navigation.goBack()}
+                    >
                         <Image source={require('@assets/icons/back-icon.png')} style={styles.iconBack} />
                     </TouchableOpacity>
-                    <Text style={styles.head__title}>Города</Text>
+                    <Text style={[styles.head__title, { opacity: isOpen ? 0.3 : 1 }]}>Города</Text>
                     <View style={styles.bodyScreen}>
                         <TouchableOpacity
                             disabled={isOpen}
