@@ -10,10 +10,10 @@ import { Screens, Stacks } from '@navigation/constants';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { SwitcherStatus, UnitsType, ThemeType } from '@storage/constants';
-import { switchToggle } from '../store/slices/noticeSlice';
+import { switchToggle } from '../store/slices/settingsSlice';
 import SwitchToggle from 'react-native-switch-toggle';
-import { changeTheme } from '../store/slices/themeSlice';
-import { changeDeg } from '../store/slices/degSlice';
+import { changeTheme } from '../store/slices/settingsSlice';
+import { changeDeg } from '../store/slices/settingsSlice';
 
 export const SettingsScreen: React.FC<
     CompositeScreenProps<
@@ -25,9 +25,9 @@ export const SettingsScreen: React.FC<
 
     const dispatch = useAppDispatch();
 
-    const { deg } = useAppSelector(state => state.deg);
-    const { notice } = useAppSelector(state => state.notice);
-    const { theme } = useAppSelector(state => state.theme);
+    const { deg } = useAppSelector(state => state.settings);
+    const { notice } = useAppSelector(state => state.settings);
+    const { theme } = useAppSelector(state => state.settings);
 
     const { navigation } = props;
 

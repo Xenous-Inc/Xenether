@@ -3,10 +3,7 @@ import { TypedUseSelectorHook, useSelector, useDispatch } from 'react-redux';
 import { citySlice } from './slices/citySlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import { degSlice } from './slices/degSlice';
-import { noticeSlice } from './slices/noticeSlice';
-import { themeSlice } from './slices/themeSlice';
-import { weatherSlice } from './slices/weatherSlice';
+import { settingsSlice } from './slices/settingsSlice';
 
 const persistConfig = {
     key: 'root',
@@ -14,10 +11,7 @@ const persistConfig = {
 };
 const rootReducer = combineReducers({
     cities: citySlice.reducer,
-    deg: degSlice.reducer,
-    notice: noticeSlice.reducer,
-    theme: themeSlice.reducer,
-    weatherSheet: weatherSlice.reducer,
+    settings: settingsSlice.reducer,
 });
 
 const persistedReducers = persistReducer(persistConfig, rootReducer);
