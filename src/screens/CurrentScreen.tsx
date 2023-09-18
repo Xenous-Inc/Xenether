@@ -5,12 +5,11 @@ import { utcToZonedTime, format } from 'date-fns-tz';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { MainBottomSheet } from '@components/MainBottomSheet';
-import { WeatherType } from '@components/WeatherIcon';
-import { ExtraInfoType } from '@components/ExtraInfo';
-import { IWeatherComponent } from '@components/WeatherComponent';
-import { ICity } from '@storage/types';
+import { ICityName, Status } from '@storage/types';
 import { isSameMinute } from 'date-fns';
-import { useAppSelector } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { createGetCityAction } from '../store/slices/citySlice';
+import { createGetWeatherAction } from '../store/slices/weatherSlice';
 
 const image = {
     src: require('@assets/icons/background-image.png'),
@@ -64,15 +63,25 @@ const createCurrentDate = timeZoneValue => {
     const currentDate = londonTime.setSeconds(londonTime.getSeconds() + timeZoneValue - 3600);
     return currentDate;
 };
-
-export const CurrentScreen: React.FC<ICity> = props => {
+interface ICurrentScreenProps {
+    name: ICityName;
+    index: number;
+    selectedIndex: number;
+}
+export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     // const [weatherData, setWeatherData] = useState(initialArgument);
 
-    const [currentTime, setCurrentDate] = useState(createCurrentDate(props.timeZone));
+    const weather = useAppSelector(store => store.weather[props.name.nameCity]);
+    console.log(weather);
+
+    const dispatch = useAppDispatch();
+
+
+    const [currentTime, setCurrentDate] = useState(createCurrentDate(weather.data.cityWeather.timeZone));
     useEffect(() => {
         const intervalId = setInterval(() => {
-            if (!isSameMinute(currentTime, createCurrentDate(props.timeZone))) {
-                setCurrentDate(createCurrentDate(props.timeZone));
+            if (!isSameMinute(currentTime, createCurrentDate(weather.data.cityWeather.timeZone))) {
+                setCurrentDate(createCurrentDate(weather.data.cityWeather.timeZone));
             }
         }, 1000);
         return () => {
@@ -84,16 +93,16 @@ export const CurrentScreen: React.FC<ICity> = props => {
         <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
             <View style={styles.wrapperHeader}>
                 <View style={styles.wrapperOfLocalInfo}>
-                    <Text style={styles.locationContent}>{props.nameCity}</Text>
+                    <Text style={styles.locationContent}>{props.name.nameCity}</Text>
                     <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
                 </View>
             </View>
-            <Text style={styles.temperatureContent}>{props.mainTemp + Signs.CELSIUS}</Text>
+            <Text style={styles.temperatureContent}>{weather.data.cityWeather.mainTemp + Signs.CELSIUS}</Text>
             <MainBottomSheet
                 index={props.index}
                 selectedIndex={props.selectedIndex}
-                nameCity={props.nameCity}
-                weatherWarningType={props.description}
+                nameCity={props.name}
+                weatherWarningType={weather.data.cityWeather.description}
             />
         </ImageBackground>
     );

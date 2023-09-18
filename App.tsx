@@ -1,3 +1,5 @@
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { AppRegistry, Text } from 'react-native';
 import React, { useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';

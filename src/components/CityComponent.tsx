@@ -4,10 +4,11 @@ import { utcToZonedTime, format } from 'date-fns-tz';
 import { isSameMinute } from 'date-fns';
 import colors from '@styles/colors';
 import { Signs } from '@utils/constants';
-import { ICity } from '@storage/types';
+import { ICity, ICityName, Status } from '@storage/types';
 import { IconValue } from '@utils/constants';
-import { useAppDispatch } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import { removeCity } from '../store/slices/citySlice';
+import weatherSlice from 'src/store/slices/weatherSlice';
 
 const createCurrentDate = timeZoneValue => {
     const londonTime = utcToZonedTime(new Date(), 'Europe/London');
@@ -57,13 +58,21 @@ const iconSelection = (arg: string) => {
     }
 };
 
-export const CityComponent: React.FC<ICity> = props => {
+interface ICityComponentProps {
+    name: ICityName;
+}
+
+export const CityComponent: React.FC<ICityComponentProps> = props => {
+    const weather = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
+    useEffect(() => {
+        console.log('WEATHER->', weather);
+    }, []);
     const dispatch = useAppDispatch();
-    const [currentTime, setCurrentDate] = useState(createCurrentDate(props.timeZone));
+    const [currentTime, setCurrentDate] = useState(createCurrentDate(weather.data.cityWeather.timeZone)); //timeZone
     useEffect(() => {
         const intervalId = setInterval(() => {
-            if (!isSameMinute(currentTime, createCurrentDate(props.timeZone))) {
-                setCurrentDate(createCurrentDate(props.timeZone));
+            if (!isSameMinute(currentTime, createCurrentDate(weather.data.cityWeather.timeZone))) {
+                setCurrentDate(createCurrentDate(weather.data.cityWeather.timeZone));
             }
         }, 1000);
         return () => {
@@ -71,24 +80,33 @@ export const CityComponent: React.FC<ICity> = props => {
         };
     });
     return (
-        <ImageBackground source={iconSelection(props.icon)} style={styles.wrapper} imageStyle={styles.backgroundImage}>
-            <Pressable style={styles.buttonClose} onPress={() => dispatch(removeCity(props.nameCity))}>
+        <ImageBackground
+            source={iconSelection(props.name.icon)}
+            style={styles.wrapper}
+            imageStyle={styles.backgroundImage}
+        >
+            <Pressable style={styles.buttonClose} onPress={() => dispatch(removeCity(props.name.nameCity))}>
                 <Image style={styles.iconClose} source={require('@assets/icons/close-sheet.png')} />
             </Pressable>
             <View style={styles.mainContent}>
                 <View>
-                    <Text style={styles.city_title}>{props.nameCity}</Text>
+                    <Text style={styles.city_title}>{props.name.nameCity}</Text>
                     <Text style={styles.time}>{format(currentTime, 'HH:mm')}</Text>
                 </View>
-                <Text style={styles.temperature}>{props.mainTemp + Signs.CELSIUS}</Text>
+                <Text style={styles.temperature}>{weather.data.cityWeather.mainTemp + Signs.CELSIUS}</Text>
             </View>
             <View style={styles.bottomContent}>
                 <Text style={styles.weatherType}>
-                    {props.description.charAt(0).toUpperCase() + props.description.slice(1)}
+                    {weather.data.cityWeather.description.charAt(0).toUpperCase() +
+                        weather.data.cityWeather.description.slice(1)}
                 </Text>
                 <View style={styles.minMaxContainer}>
-                    <Text style={styles.minMaxTemperature}>{'Макс: ' + props.maxTemp + Signs.CELSIUS}</Text>
-                    <Text style={styles.minMaxTemperature}>{'Мин: ' + props.minTemp + Signs.CELSIUS}</Text>
+                    <Text style={styles.minMaxTemperature}>
+                        {'Макс: ' + weather.data.cityWeather.maxTemp + Signs.CELSIUS}
+                    </Text>
+                    <Text style={styles.minMaxTemperature}>
+                        {'Мин: ' + weather.data.cityWeather.minTemp + Signs.CELSIUS}
+                    </Text>
                 </View>
             </View>
         </ImageBackground>

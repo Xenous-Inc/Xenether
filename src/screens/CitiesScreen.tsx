@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { useAppSelector } from '../store/store';
 import { CityComponent } from '@components/CityComponent';
+import { IWeatherData, Status } from '@storage/types';
 
 export const CitiesScreen: React.FC<
     NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.CITIES>
@@ -37,8 +38,7 @@ export const CitiesScreen: React.FC<
         sheetRef.current?.snapToIndex(index);
         setIsOpen(true);
     }, []);
-    const { error, status, cities } = useAppSelector(state => state.cities);
-
+    const { data: cities } = useAppSelector(state => state.cities);
     useEffect(() => {
         const backAction = () => {
             if (isOpen) {
@@ -82,16 +82,7 @@ export const CitiesScreen: React.FC<
                         </TouchableOpacity>
                         <ScrollView style={{ marginTop: 10 }}>
                             {cities.map(city => (
-                                <CityComponent
-                                    key={city.nameCity}
-                                    nameCity={city.nameCity}
-                                    timeZone={city.timeZone}
-                                    minTemp={city.minTemp}
-                                    maxTemp={city.maxTemp}
-                                    description={city.description}
-                                    mainTemp={city.mainTemp}
-                                    icon={city.icon}
-                                />
+                                <CityComponent key={city.nameCity} name={city} />
                             ))}
                         </ScrollView>
                     </View>
