@@ -25,9 +25,8 @@ export const SettingsScreen: React.FC<
 
     const dispatch = useAppDispatch();
 
-    const { deg } = useAppSelector(state => state.settings);
-    const { notice } = useAppSelector(state => state.settings);
-    const { theme } = useAppSelector(state => state.settings);
+    const { deg, notice , theme } = useAppSelector(state => state.settings);
+   
 
     const { navigation } = props;
 

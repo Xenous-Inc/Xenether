@@ -18,21 +18,17 @@ export const settingsSlice = createSlice({
     initialState,
     reducers: {
         changeDeg(state) {
-            if (state.deg !== UnitsType.Celsius) {
-                state.deg = UnitsType.Celsius;
-            } else {
-                state.deg = UnitsType.Fahrenheits;
-            }
+           state.deg !== UnitsType.Celsius?
+                state.deg = UnitsType.Celsius : state.deg = UnitsType.Fahrenheits
+            
         },
         changeTheme(state, action: PayloadAction<ThemeType>) {
             state.theme = action.payload;
         },
         switchToggle(state) {
-            if (state.notice !== SwitcherStatus.On) {
-                state.notice = SwitcherStatus.On;
-            } else {
-                state.notice = SwitcherStatus.Off;
-            }
+           state.notice !== SwitcherStatus.On?
+                state.notice = SwitcherStatus.On : state.notice = SwitcherStatus.Off;
+            
         },
     },
 });
