@@ -28,7 +28,7 @@ export const settingsSlice = createSlice({
             state.theme = action.payload;
         },
         switchToggle(state) {
-            if (state.notice != SwitcherStatus.On) {
+            if (state.notice !== SwitcherStatus.On) {
                 state.notice = SwitcherStatus.On;
             } else {
                 state.notice = SwitcherStatus.Off;

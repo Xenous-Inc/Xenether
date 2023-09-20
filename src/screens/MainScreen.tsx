@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import colors from '@styles/colors';
 import PagerView from 'react-native-pager-view';
@@ -10,7 +10,12 @@ import { TAppStackParams } from '@navigation/AppNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { TMainStackParams } from '@navigation/stacks/MainStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAppSelector } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { Status } from '@storage/types';
+import { createGetCityAction } from '../store/slices/citySlice';
+import { createGetWeatherAction } from '../store/slices/weatherSlice';
+import SkeletonLoader from 'expo-skeleton-loader';
+import { PlaceSkeleton } from '@components/PlaceSkeleton';
 
 // const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
 
@@ -26,7 +31,7 @@ export const MainScreen: React.FC<
 
     const insets = useSafeAreaInsets();
 
-    const { error, status, cities } = useAppSelector(state => state.cities);
+    const { error, status, data: cities } = useAppSelector(state => state.cities);
 
     // const getCurrentLocation = async () => {
     //     try {
@@ -55,20 +60,13 @@ export const MainScreen: React.FC<
                 <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
             </TouchableOpacity>
             <PagerView
-                style={{ flex: 1}}
+                style={{ flex: 1 }}
                 initialPage={0}
                 onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
             >
-                {cities.map((city, index) => (
-                    <CurrentScreen
-                        index={index}
-                        selectedIndex={currentIndex}
-                        key={city.nameCity}
-                        nameCity={city.nameCity}
-                        timeZone={city.timeZone}
-                        mainTemp={city.mainTemp}
-                    />
-                ))}
+                { cities? cities.map((city, index) => (
+                    <CurrentScreen key={city.nameCity} name={city} index={index} selectedIndex={currentIndex} />
+                )) :  <PlaceSkeleton/>}
             </PagerView>
         </>
     );

@@ -2,9 +2,10 @@ import React, { useState, useEffect, MutableRefObject } from 'react';
 import colors from '@styles/colors';
 import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, Platform } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
-import { useAppDispatch } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import { createGetCityAction } from '../store/slices/citySlice';
-import { createGetWeatherAction } from '../store/slices/weatherSlice';
+import { createGetWeatherAction, WeatherState } from '../store/slices/weatherSlice';
+import { ICityName } from '@storage/types';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
@@ -20,15 +21,23 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
         'Аляска',
         'Новосибирск',
         'Дубай',
-    ]); // exp.for test
+    ]); // exp.for testrequest
 
     const [filteredData, setFilteredData] = useState([]);
 
     const [selectedValue, setSelectedValue] = useState({});
 
     const [inputText, setInputText] = useState('');
+    //const [weather, setWeather] = useState<WeatherState>({});
     const dispatch = useAppDispatch();
+    const { data: cities } = useAppSelector(store => store.cities);
+    // if (weather.toString() === '{}') {
+    //     dispatch(createGetCityAction(selectedValue.toString()));
+    //     dispatch(createGetWeatherAction(selectedValue.toString()));
+    // }
+
     useEffect(() => {
+        //console.log(weather);
         if (inputText) {
             fetch('') // API request
                 .then(response => response.json())
@@ -38,6 +47,12 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                 .catch(() => {});
         }
     }, [inputText]);
+    
+    useEffect(() => {
+        if (!cities.some(city => city.nameCity === selectedValue.toString())) {
+            dispatch(createGetCityAction(selectedValue.toString()));
+        }
+    }, [selectedValue]);
 
     const findDataWeather = (query: string) => {
         if (query) {
@@ -77,8 +92,6 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                             onPress={() => {
                                 setSelectedValue(item);
                                 setFilteredData([]);
-                                dispatch(createGetCityAction(item));
-                                dispatch(createGetWeatherAction(item));
                             }}
                         >
                             <Text style={styles.itemText}>{item}</Text>

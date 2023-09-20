@@ -1,22 +1,23 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Warning, WarningType } from '@components/Warning';
+import { Warning } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { DateRelated } from '@components/DateRelated';
 import colors from '@styles/colors';
 import { ExtraInfo } from './ExtraInfo';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { IDailyEl, IExtraData, IHourlyEl, IWeatherData } from '@storage/types';
+import { ICityName, IDailyEl, IExtraData, IHourlyEl, Status } from '@storage/types';
 import { useAppSelector } from '../store/store';
+import { PlaceSkeleton } from './PlaceSkeleton';
+import SkeletonLoader from 'expo-skeleton-loader';
 
 export interface IWeatherComponent {
-    warningType: WarningType;
-    nameCity: string;
+    name: ICityName;
 }
 
-const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[]) => {
-    return timeRelatedArray.slice(0, 24).map((element, index) => {
+const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[] | undefined) => {
+   if(timeRelatedArray){ return timeRelatedArray.slice(0, 24).map((element, index) => {
         return (
             <TimeRelated
                 time={element.time}
@@ -25,7 +26,8 @@ const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[]) => {
                 key={index}
             />
         );
-    });
+    });}
+  
 };
 
 const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
@@ -42,50 +44,72 @@ const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
     });
 };
 
-const getExtraInfoComponents = (extraInfoArray: IExtraData[]) => {
+const getExtraInfoComponents = (extraInfoArray: (IExtraData | undefined)[]) => {
     return extraInfoArray.slice(0, 4).map((element, index) => {
-        return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />;
+       if (element) { 
+        return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />
+    }
     });
 };
 
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
-    const { error, status, ids, entities } = useAppSelector(state => state.weatherSheet);
-
-    const weather = useMemo<IWeatherData>(() => {
-        return entities[props.nameCity];
-    }, [entities, props.nameCity]);
+    const { status, error , data: weather}= useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
 
     const extra = useMemo(() => {
-        return weather?.extra.map(el => {
-            const extraData: IExtraData = {};
-
+        if( weather ){
+        return weather.dataWeather.extra.map(el => {
+            if(el.precipitation)
+            {const extraData: IExtraData = {};
+            
             extraData.title = el.precipitation.title;
             extraData.digitalValue = el.precipitation.digitalValue;
             // доделать логику вывода extra elements
 
-            return extraData;
+            return extraData;}
+        
         });
+    }
     }, [weather]);
 
+    if (status === Status.Idle || status === Status.Pending && !weather) {
+        return <PlaceSkeleton />;
+    }
+
+    if (status === Status.Error ) {
+        return (
+            <View style={styles.wrapper}>
+            </View>
+        );
+    }
+    if(weather && extra)
     return (
+
         <View style={styles.scrollContainer}>
             <View style={styles.warningContainer}>
-                <Warning warningType={props.warningType} />
+                  <Warning warningType={weather.cityWeather.description.toUpperCase()}/>
             </View>
-            {status === 'success' && weather && extra && (
-                <>
-                    <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(weather.hourly)}</View>
-                    </BottomSheetScrollView>
-                    <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(weather.daily)}</View>
-                    <View style={styles.extraInfoContainer}>{getExtraInfoComponents(extra)}</View>
-                </>
-            )}
+           
+                
+           <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                     <View style={styles.timeRelatedContainer}>
+                       { getTimeRelatedComponents(weather.dataWeather.hourly)}
+                    </View>
+                    </BottomSheetScrollView> 
+                  <View style={styles.dateRelatedContainer}>
+                        { getDateRelatedComponents(weather.dataWeather.daily)}
+                    </View>
+                 <View style={styles.extraInfoContainer}>{  getExtraInfoComponents(extra) }</View>
+              
+           
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    wrapper: {
+        width: '100%',
+        height: '100%',
+    },
     scrollContainer: {
         paddingVertical: 10,
         width: '100%',
@@ -118,3 +142,22 @@ const styles = StyleSheet.create({
         rowGap: 20,
     },
 });
+
+
+const skeletonStyles = {
+    time: {
+        width: 10,
+        height: 10, // FIXME:set normal values
+    },
+    warning: {
+        borderRadius: 15,
+        marginBottom: 10,
+    },
+    hourly: {
+        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
+        marginTop: 200,
+        flexDirection: 'row',
+        columnGap: 7,
+    },
+
+};

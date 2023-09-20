@@ -1,3 +1,5 @@
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { AppRegistry, Text } from 'react-native';
 import React, { useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -7,6 +9,8 @@ import store, { persistor } from './src/store/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from 'react-native';
+import SkeletonLoader from 'expo-skeleton-loader';
+import colors from '@styles/colors';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,8 +43,10 @@ export default function App() {
             <PersistGate loading={null} persistor={persistor}>
                 <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
                     <AppNavigator />
+                    
                 </SafeAreaProvider>
             </PersistGate>
         </Provider>
+      
     );
 }

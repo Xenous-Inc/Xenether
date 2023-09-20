@@ -4,14 +4,18 @@ import { citySlice } from './slices/citySlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { settingsSlice } from './slices/settingsSlice';
+import { weatherSlice } from './slices/weatherSlice';
 
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
+    blacklist: [weatherSlice.name],
+    whitelist: [settingsSlice.name, citySlice.name],
 };
 const rootReducer = combineReducers({
-    cities: citySlice.reducer,
-    settings: settingsSlice.reducer,
+    [weatherSlice.name]: weatherSlice.reducer,
+    [citySlice.name]: citySlice.reducer,
+    [settingsSlice.name]: settingsSlice.reducer,
 });
 
 const persistedReducers = persistReducer(persistConfig, rootReducer);

@@ -5,12 +5,13 @@ import { utcToZonedTime, format } from 'date-fns-tz';
 import colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { MainBottomSheet } from '@components/MainBottomSheet';
-import { WeatherType } from '@components/WeatherIcon';
-import { ExtraInfoType } from '@components/ExtraInfo';
-import { IWeatherComponent } from '@components/WeatherComponent';
-import { ICity } from '@storage/types';
+import { ICityName, Status } from '@storage/types';
 import { isSameMinute } from 'date-fns';
-import { useAppSelector } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { createGetCityAction } from '../store/slices/citySlice';
+import { createGetWeatherAction } from '../store/slices/weatherSlice';
+import SkeletonLoader from 'expo-skeleton-loader';
+import { PlaceSkeleton } from '@components/PlaceSkeleton';
 
 const image = {
     src: require('@assets/icons/background-image.png'),
@@ -59,42 +60,88 @@ const image = {
 //     ],
 // };
 
-const createCurrentDate = timeZoneValue => {
+const createCurrentDate = (timeZoneValue: number) => {
     const londonTime = utcToZonedTime(new Date(), 'Europe/London');
     const currentDate = londonTime.setSeconds(londonTime.getSeconds() + timeZoneValue - 3600);
     return currentDate;
 };
-
-export const CurrentScreen: React.FC<ICity> = props => {
+interface ICurrentScreenProps {
+    name: ICityName;
+    index: number;
+    selectedIndex: number;
+}
+export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     // const [weatherData, setWeatherData] = useState(initialArgument);
 
-    const [currentTime, setCurrentDate] = useState(createCurrentDate(props.timeZone));
+    const {status, error, data:weather} = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
+
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
+        if(status ===Status.Idle){
+            dispatch(createGetWeatherAction(props.name.nameCity))
+        }
+    }, [status]);
+
+    const [currentTime, setCurrentDate] = useState<number | undefined>( weather? createCurrentDate(weather?.cityWeather.timeZone): undefined);
+
+    useEffect(()=>{
+        if(weather){
+            setCurrentDate( createCurrentDate(weather.cityWeather.timeZone));
+        }
+    },[weather]);
+
+    useEffect(() => {
+        if(currentTime && weather){
         const intervalId = setInterval(() => {
-            if (!isSameMinute(currentTime, createCurrentDate(props.timeZone))) {
-                setCurrentDate(createCurrentDate(props.timeZone));
+            if (!isSameMinute(currentTime, createCurrentDate(weather.cityWeather.timeZone))) {
+                setCurrentDate(createCurrentDate(weather.cityWeather.timeZone));
             }
         }, 1000);
         return () => {
             clearInterval(intervalId);
         };
+    }
     });
+    
+    if (status === Status.Idle || status === Status.Pending && !(weather && currentTime)) {
+        return (
+            <View style={styles.wrapper}>
+                <PlaceSkeleton /> 
+                <MainBottomSheet
+                    index={props.index}
+                    selectedIndex={props.selectedIndex}
+                    nameCity={props.name}
+                />
+            </View> 
+        );
+    }
 
+    if (status === Status.Error ) {
+
+        return (
+            <View style={[styles.wrapper,{alignItems: 'center',  justifyContent: "center" }]}>
+               <Text>{error?.message}</Text>
+            </View>
+        );
+    }
+
+    if(weather && currentTime)
+ 
     return (
-        <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
+       <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
             <View style={styles.wrapperHeader}>
                 <View style={styles.wrapperOfLocalInfo}>
-                    <Text style={styles.locationContent}>{props.nameCity}</Text>
-                    <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
+                    <Text style={styles.locationContent}>{props.name.nameCity}</Text>
+                     <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
                 </View>
             </View>
-            <Text style={styles.temperatureContent}>{props.mainTemp + Signs.CELSIUS}</Text>
-            <MainBottomSheet
+            <Text style={styles.temperatureContent}>{weather.cityWeather.mainTemp + Signs.CELSIUS}</Text> 
+              <MainBottomSheet
                 index={props.index}
                 selectedIndex={props.selectedIndex}
-                nameCity={props.nameCity}
-                weatherWarningType={props.description}
-            />
+                nameCity={props.name}
+            /> 
         </ImageBackground>
     );
 };
@@ -135,3 +182,22 @@ const styles = StyleSheet.create({
         marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
 });
+
+
+const skeletonStyles = {
+    time : {
+        marginTop: 5,
+        width: 100,
+        height: 20,
+        borderRadius: 12,
+        
+    },
+    mainTemp: {
+        marginLeft: MAIN_HORIZONTAL_OFFSET,
+        marginTop: 20,
+        width: 100,
+        height: 100,
+        borderRadius: 12,
+    },
+
+};
