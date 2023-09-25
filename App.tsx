@@ -40,7 +40,7 @@ export default function App() {
     return (
         <Provider store={store}>
             <StatusBar backgroundColor='transparent' translucent={true} barStyle='dark-content' />
-            <PersistGate loading={null} persistor={persistor}>
+            <PersistGate loading={<></>} persistor={persistor}>
                 <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
                     <AppNavigator />
                     
