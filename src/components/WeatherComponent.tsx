@@ -75,13 +75,13 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
         return <PlaceSkeleton />;
     }
 
-    if (status === Status.Error ) {
+    if (status === Status.Error || !weather || !extra ) {
         return (
             <View style={styles.wrapper}>
             </View>
         );
     }
-    if(weather && extra)
+
     return (
 
         <View style={styles.scrollContainer}>
