@@ -38,7 +38,7 @@ export const CitiesScreen: React.FC<
         sheetRef.current?.snapToIndex(index);
         setIsOpen(true);
     }, []);
-    const { data: cities } = useAppSelector(state => state.cities);
+    const { data: cities,status, error } = useAppSelector(state => state.cities);
     useEffect(() => {
         const backAction = () => {
             if (isOpen) {
@@ -55,7 +55,6 @@ export const CitiesScreen: React.FC<
 
         return () => backHandler.remove();
     }, [sheetRef, isOpen]);
-
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wrapper}>
@@ -81,7 +80,7 @@ export const CitiesScreen: React.FC<
                             <Text style={styles.search_title}>Поиск города</Text>
                         </TouchableOpacity>
                         <ScrollView style={{ marginTop: 10 }}>
-                            {cities.map(city => (
+                            {cities?.map(city => (
                                 <CityComponent key={city.nameCity} name={city} />
                             ))}
                         </ScrollView>

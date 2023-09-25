@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, SerializedError} from '@reduxjs/toolkit';
 import { IApiState, ICityName, Status } from '@storage/types';
 
 const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
@@ -7,7 +7,7 @@ type CitiesState = IApiState<Array<ICityName>>;
 const initialState: CitiesState = {
     data: [],
     status: Status.Idle,
-    error: null,
+    error:  undefined,
 };
 
 export const citySlice = createSlice({
@@ -15,13 +15,13 @@ export const citySlice = createSlice({
     initialState,
     reducers: {
         removeCity(state, action: PayloadAction<string>) {
-            state.data = state.data.filter(city => city.nameCity !== action.payload);
+            state.data = state.data?.filter(city => city.nameCity !== action.payload);
         },
     },
     extraReducers: builder => {
         builder.addCase(createGetCityAction.pending, state => {
             state.status = Status.Pending;
-            state.error = null;
+            state.error = undefined;
         });
         builder.addCase(createGetCityAction.rejected, (state, action) => {
             state.status = Status.Error;
@@ -29,9 +29,9 @@ export const citySlice = createSlice({
         });
         builder.addCase(createGetCityAction.fulfilled, (state, action) => {
             state.status = Status.Success;
-            const isSameCity = state.data.find(city => city.nameCity === action.meta.arg);
-            if (!isSameCity) {
-                state.data.push({
+            const isSameCity = state.data?.find(city => city.nameCity === action.meta.arg);
+            if (!isSameCity ) {
+                state.data?.push({
                     nameCity: action.meta.arg,
                     icon: action.payload.icon,
                 });
