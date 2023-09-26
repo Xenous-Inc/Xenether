@@ -1,3 +1,5 @@
+import colors from "@styles/colors";
+
 export const LOCATIONS = 'locations';
 
 export enum UnitsType {
@@ -10,6 +12,8 @@ export enum ThemeType {
     Light = 'light',
     Dark = 'dark',
 }
+
+
 
 export enum SwitcherStatus {
     On = 'on',

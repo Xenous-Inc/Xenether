@@ -21,39 +21,69 @@ export const SettingsScreen: React.FC<
         NativeStackScreenProps<TAppStackParams>
     >
 > = props => {
-    const SystemTheme = useColorScheme();
-
     const dispatch = useAppDispatch();
 
-    const { deg, notice , theme } = useAppSelector(state => state.settings);
-   
+    const { deg, notice, theme } = useAppSelector(state => state.settings);
 
     const { navigation } = props;
 
     return (
-        <View style={styles.wrapper}>
+        <View
+            style={[
+                styles.wrapper,
+                {
+                    backgroundColor:
+                        theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
+                            ? theme.mode.backgroud
+                            : colors.EXTRA_LIGHT_GRAY,
+                },
+            ]}
+        >
             <View style={styles.headScreen}>
                 <TouchableOpacity style={styles.iconBack} onPress={() => navigation.goBack()}>
-                    <Image source={require('@assets/icons/back-icon.png')} />
+                    <Image
+                        source={
+                            theme.nameTheme === ThemeType.Light ||
+                            (theme.nameTheme === ThemeType.System && theme.systemMode === 'light')
+                                ? require('@assets/icons/back-icon.png')
+                                : require('@assets/icons/white-back-icon.png')
+                        }
+                    />
                 </TouchableOpacity>
-                <Text style={styles.head__title}>{SettingScreenTitles.SETTING}</Text>
+                <Text style={[styles.head__title, { color: theme.mode.color }]}>{SettingScreenTitles.SETTING}</Text>
             </View>
 
             <View style={styles.bodyScreen}>
                 <Text style={styles.titleOfCategory}>{SettingScreenTitles.WEATHER}</Text>
                 <View style={styles.sections}>
                     <TouchableOpacity
-                        style={styles.degrees}
+                        style={[
+                            styles.degrees,
+                            {
+                                backgroundColor:
+                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                            },
+                        ]}
                         onPress={() => {
                             dispatch(changeDeg());
                         }}
                     >
-                        <Text style={styles.contentText}>{SettingScreenContentText.DEGREES}</Text>
+                        <Text style={[styles.contentText, { color: theme.mode.color }]}>
+                            {SettingScreenContentText.DEGREES}
+                        </Text>
                         <View style={styles.buttonsDegreesContainer}>
                             <Text
                                 style={[
                                     styles.buttonsDegress,
-                                    { color: deg === UnitsType.Fahrenheits ? colors.BLACK : colors.GRAY },
+                                    {
+                                        color:
+                                            deg !== UnitsType.Fahrenheits &&
+                                            (theme.nameTheme === ThemeType.Light || theme.systemMode === 'light')
+                                                ? colors.GRAY
+                                                : theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
+                                                ? colors.WHITE
+                                                : colors.BLACK,
+                                    },
                                 ]}
                             >
                                 {Signs.CELSIUS + 'F'}
@@ -61,7 +91,15 @@ export const SettingsScreen: React.FC<
                             <Text
                                 style={[
                                     styles.buttonsDegress,
-                                    { color: deg === UnitsType.Celsius ? colors.BLACK : colors.GRAY },
+                                    {
+                                        color:
+                                            deg !== UnitsType.Celsius &&
+                                            (theme.nameTheme === ThemeType.Light || theme.systemMode === 'light')
+                                                ? colors.GRAY
+                                                : theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
+                                                ? colors.WHITE
+                                                : colors.BLACK,
+                                    },
                                 ]}
                             >
                                 {Signs.CELSIUS + 'C'}
@@ -70,19 +108,44 @@ export const SettingsScreen: React.FC<
                     </TouchableOpacity>
                     <View style={styles.divider} />
                     <TouchableOpacity
-                        style={styles.cities}
+                        style={[
+                            styles.cities,
+                            {
+                                backgroundColor:
+                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                            },
+                        ]}
                         onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.CITIES })}
                     >
-                        <Text style={styles.contentText}>{SettingScreenContentText.CITIES}</Text>
+                        <Text style={[styles.contentText, { color: theme.mode.color }]}>
+                            {SettingScreenContentText.CITIES}
+                        </Text>
                         <View style={styles.buttonsCities}>
-                            <Image source={require('@assets/icons/icon-button.png')} />
+                            <Image
+                                source={
+                                    theme.nameTheme === ThemeType.Light ||
+                                    (theme.nameTheme === ThemeType.System && theme.systemMode === 'light')
+                                        ? require('@assets/icons/icon-button.png')
+                                        : require('@assets/icons/white-icon-button.png')
+                                }
+                            />
                         </View>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.titleOfCategory}>{SettingScreenTitles.APP}</Text>
                 <View style={styles.sections}>
-                    <View style={styles.notifications}>
-                        <Text style={styles.contentText}>{SettingScreenContentText.NOTICE}</Text>
+                    <View
+                        style={[
+                            styles.notifications,
+                            {
+                                backgroundColor:
+                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                            },
+                        ]}
+                    >
+                        <Text style={[styles.contentText, , { color: theme.mode.color }]}>
+                            {SettingScreenContentText.NOTICE}
+                        </Text>
                         <SwitchToggle
                             switchOn={notice === SwitcherStatus.On}
                             onPress={() => {
@@ -109,55 +172,139 @@ export const SettingsScreen: React.FC<
                 </View>
                 <Text style={styles.titleOfCategory}>{SettingScreenTitles.DECOR}</Text>
                 <View style={styles.sections}>
-                    <View style={styles.buttonsDecoration}>
+                    <View
+                        style={[
+                            styles.buttonsDecoration,
+                            {
+                                backgroundColor:
+                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                            },
+                        ]}
+                    >
                         <View
                             style={[
                                 styles.buttonsSystem,
                                 {
-                                    borderColor: theme === ThemeType.System ? colors.LIGHT_ORANGE : colors.WHITE,
+                                    borderColor:
+                                        theme.nameTheme === ThemeType.System
+                                            ? colors.LIGHT_ORANGE
+                                            : theme.nameTheme === ThemeType.Light
+                                            ? colors.WHITE
+                                            : colors.BUTTONS_COLOR,
+                                },
+                                {
+                                    backgroundColor:
+                                        theme.nameTheme === ThemeType.Dark
+                                            ? colors.BUTTONS_COLOR
+                                            : colors.EXTRA_LIGHT_GRAY,
                                 },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    dispatch(changeTheme(ThemeType.System));
+                                    dispatch(changeTheme({ theme: ThemeType.System }));
                                 }}
                             >
-                                <Text style={styles.systemHead}>{SettingScreenTheme.SYSTEM}</Text>
-                                <Text style={styles.systemComment}>{SettingScreenTheme.SYSTEM_COMMENT}</Text>
+                                <Text
+                                    style={[
+                                        styles.systemHead,
+                                        {
+                                            color:
+                                                theme.nameTheme === ThemeType.System ? theme.mode.color : colors.GRAY,
+                                        },
+                                    ]}
+                                >
+                                    {SettingScreenTheme.SYSTEM}
+                                </Text>
+                                <Text style={[styles.systemComment]}>{SettingScreenTheme.SYSTEM_COMMENT}</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.buttonsThemeContainer}>
                             <View
                                 style={[
                                     styles.buttonsTheme,
-                                    { borderColor: theme === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE },
+                                    {
+                                        borderColor:
+                                            theme.nameTheme === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE,
+                                    },
+                                    {
+                                        backgroundColor:
+                                            theme.nameTheme === ThemeType.Dark
+                                                ? colors.BUTTONS_COLOR
+                                                : colors.EXTRA_LIGHT_GRAY,
+                                    },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        dispatch(changeTheme(ThemeType.Dark));
+                                        dispatch(changeTheme({ theme: ThemeType.Dark }));
                                     }}
                                 >
-                                    <Image style={styles.iconMoon} source={require('@assets/icons/icon-moon.png')} />
-                                    <Text style={styles.textTheme}>{SettingScreenTheme.BLACK}</Text>
+                                    <Image
+                                        style={[
+                                            styles.iconMoon,
+                                            { opacity: theme.nameTheme === ThemeType.Dark ? 1 : 0.5 },
+                                        ]}
+                                        source={
+                                            theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
+                                                ? require('@assets/icons/white-moon.png')
+                                                : require('@assets/icons/icon-moon.png')
+                                        }
+                                    />
+                                    <Text
+                                        style={[
+                                            styles.textTheme,
+                                            { color: theme.nameTheme === ThemeType.Dark ? colors.WHITE : colors.GRAY },
+                                        ]}
+                                    >
+                                        {SettingScreenTheme.BLACK}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                             <View
                                 style={[
                                     styles.buttonsTheme,
                                     {
-                                        borderColor: theme === ThemeType.Light ? colors.LIGHT_ORANGE : colors.WHITE,
+                                        borderColor:
+                                            theme.nameTheme === ThemeType.Light
+                                                ? colors.LIGHT_ORANGE
+                                                : theme.nameTheme === ThemeType.System && theme.systemMode === 'light'
+                                                ? colors.WHITE
+                                                : colors.BUTTONS_COLOR,
+                                    },
+                                    {
+                                        backgroundColor:
+                                            theme.nameTheme === ThemeType.Dark
+                                                ? colors.BUTTONS_COLOR
+                                                : colors.EXTRA_LIGHT_GRAY,
                                     },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        dispatch(changeTheme(ThemeType.Light));
+                                        dispatch(changeTheme({ theme: ThemeType.Light }));
                                     }}
                                 >
-                                    <Image style={styles.iconSun} source={require('@assets/icons/icon-sun.png')} />
-                                    <Text style={styles.textTheme}>{SettingScreenTheme.LIGHT}</Text>
+                                    <Image
+                                        style={[
+                                            styles.iconSun,
+                                            { opacity: theme.nameTheme === ThemeType.Light ? 1 : 0.5 },
+                                        ]}
+                                        source={
+                                            theme.nameTheme === ThemeType.Light ||
+                                            (theme.systemMode === 'light' && theme.nameTheme !== ThemeType.Dark)
+                                                ? require('@assets/icons/icon-sun.png')
+                                                : require('@assets/icons/white-sun.png')
+                                        }
+                                    />
+                                    <Text
+                                        style={[
+                                            styles.textTheme,
+                                            { color: theme.nameTheme === ThemeType.Light ? colors.BLACK : colors.GRAY },
+                                        ]}
+                                    >
+                                        {SettingScreenTheme.LIGHT}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -170,7 +317,6 @@ export const SettingsScreen: React.FC<
 
 const styles = StyleSheet.create({
     wrapper: {
-        backgroundColor: colors.EXTRA_LIGHT_GRAY,
         width: '100%',
         height: '100%',
     },
@@ -206,7 +352,6 @@ const styles = StyleSheet.create({
     },
     degrees: {
         height: 40,
-        backgroundColor: colors.WHITE,
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
         alignItems: 'center',
@@ -215,7 +360,6 @@ const styles = StyleSheet.create({
     },
     cities: {
         height: 40,
-        backgroundColor: colors.WHITE,
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 12,
         alignItems: 'center',
@@ -268,7 +412,6 @@ const styles = StyleSheet.create({
         width: '44%',
         height: 95,
         borderRadius: 15,
-        backgroundColor: colors.EXTRA_LIGHT_GRAY,
         borderWidth: 2,
         marginLeft: 15,
     },
@@ -290,7 +433,6 @@ const styles = StyleSheet.create({
         height: 98,
         alignItems: 'center',
         borderRadius: 15,
-        backgroundColor: colors.EXTRA_LIGHT_GRAY,
         borderWidth: 2,
     },
     buttonsThemeContainer: {
@@ -302,7 +444,6 @@ const styles = StyleSheet.create({
         marginBottom: 40,
         alignSelf: 'center',
         marginTop: 13,
-        opacity: 0.5,
         height: 19,
     },
     iconSun: {
@@ -315,7 +456,6 @@ const styles = StyleSheet.create({
     textTheme: {
         fontFamily: 'ExtendedSemiBold',
         fontSize: 11,
-        color: colors.GRAY,
     },
     divider: {
         height: 1,

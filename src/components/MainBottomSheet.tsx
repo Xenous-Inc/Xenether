@@ -4,6 +4,8 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { WeatherComponent } from '@components/WeatherComponent';
 import { ICityName } from '@storage/types';
 
+import { useAppSelector } from '../store/store';
+
 export interface IMainBottomSheetProps {
     nameCity: ICityName;
     index: number;
@@ -12,6 +14,7 @@ export interface IMainBottomSheetProps {
 
 export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
     const { index, selectedIndex, nameCity } = props;
+    const { theme } = useAppSelector(state => state.settings);
 
     const sheetRef = useRef<BottomSheet>(null);
 
@@ -26,14 +29,16 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
     return (
         <BottomSheet
             style={{ zIndex: 1 }}
+            backgroundStyle={{ backgroundColor: theme.mode.backgroud }}
             ref={sheetRef}
             snapPoints={snapPoints}
-            index={0}
-            enableHandlePanningGesture={true}
+            enablePanDownToClose={true}
             handleIndicatorStyle={styles.handleIndicator}
-           
         >
-            <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+            <BottomSheetScrollView
+                style={{ backgroundColor: theme.mode.backgroud }}
+                showsVerticalScrollIndicator={false}
+            >
                 <WeatherComponent name={nameCity} />
             </BottomSheetScrollView>
         </BottomSheet>
@@ -42,6 +47,6 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
 
 const styles = StyleSheet.create({
     handleIndicator: {
-        opacity: 10,
+        opacity: 0,
     },
 });

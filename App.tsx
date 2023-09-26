@@ -1,5 +1,4 @@
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { AppRegistry, Text } from 'react-native';
 import React, { useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -9,12 +8,11 @@ import store, { persistor } from './src/store/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from 'react-native';
-import SkeletonLoader from 'expo-skeleton-loader';
-import colors from '@styles/colors';
+import ThemeProvider from './src/providers/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function App() {
+export default gestureHandlerRootHOC(function App() {
     const [fontsLoaded] = useFonts({
         ExpandedBold: require('@assets/fonts/RFDewiExpanded-Bold.ttf'),
         ExpandedSemiBold: require('@assets/fonts/RFDewiExpanded-Semibold.ttf'),
@@ -39,14 +37,14 @@ export default function App() {
 
     return (
         <Provider store={store}>
-            <StatusBar backgroundColor='transparent' translucent={true} barStyle='dark-content' />
-            <PersistGate loading={null} persistor={persistor}>
-                <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
-                    <AppNavigator />
-                    
-                </SafeAreaProvider>
-            </PersistGate>
+            <ThemeProvider>
+                <StatusBar backgroundColor='transparent' translucent={true} barStyle='dark-content' />
+                <PersistGate loading={<></>} persistor={persistor}>
+                    <SafeAreaProvider style={{ flex: 1 }} onLayout={onLayoutRootView}>
+                        <AppNavigator />
+                    </SafeAreaProvider>
+                </PersistGate>
+            </ThemeProvider>
         </Provider>
-      
     );
-}
+});

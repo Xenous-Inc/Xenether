@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, TouchableOpacity, Image, useColorScheme , Text} from 'react-native';
 import colors from '@styles/colors';
 import PagerView from 'react-native-pager-view';
 import { CurrentScreen } from '@screens/CurrentScreen';
@@ -16,6 +16,8 @@ import { createGetCityAction } from '../store/slices/citySlice';
 import { createGetWeatherAction } from '../store/slices/weatherSlice';
 import SkeletonLoader from 'expo-skeleton-loader';
 import { PlaceSkeleton } from '@components/PlaceSkeleton';
+import { setSystemTheme } from '../store/slices/settingsSlice';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 // const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
 
@@ -25,6 +27,10 @@ export const MainScreen: React.FC<
         NativeStackScreenProps<TAppStackParams>
     >
 > = props => {
+    const sheetRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = useMemo(() => ['30%', '56%'], []);
+    
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const { navigation } = props;
@@ -32,6 +38,20 @@ export const MainScreen: React.FC<
     const insets = useSafeAreaInsets();
 
     const { error, status, data: cities } = useAppSelector(state => state.cities);
+
+    const dispatch = useAppDispatch();
+
+    const colorScheme = useColorScheme();
+
+    useEffect(()=> {
+        sheetRef.current?.present();
+    },[])
+    useEffect(()=>{
+
+        dispatch(setSystemTheme(colorScheme));
+        
+    },[colorScheme])
+   
 
     // const getCurrentLocation = async () => {
     //     try {
@@ -59,6 +79,9 @@ export const MainScreen: React.FC<
             >
                 <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
             </TouchableOpacity>
+           
+           
+         
             <PagerView
                 style={{ flex: 1 }}
                 initialPage={0}

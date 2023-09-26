@@ -7,7 +7,7 @@ import { settingsSlice } from './slices/settingsSlice';
 import { weatherSlice } from './slices/weatherSlice';
 
 const persistConfig = {
-    key: 'root',
+    key: 'roo8t',
     storage: AsyncStorage,
     blacklist: [weatherSlice.name],
     whitelist: [settingsSlice.name, citySlice.name],

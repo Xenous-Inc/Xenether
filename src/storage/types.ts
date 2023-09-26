@@ -1,5 +1,7 @@
 import { ExtraInfoType } from '@components/ExtraInfo';
 import { EntityState, SerializedError } from '@reduxjs/toolkit';
+import { ThemeType } from './constants';
+import { ColorSchemeName, ColorValue } from 'react-native';
 
 export interface ILocation {
     location: string;
@@ -47,7 +49,7 @@ export interface IDailyEl {
 }
 
 export interface IExtraEl {
-    visibility?: IExtraData;
+    visibility?: IExtraData ;
     humidity?: IExtraData;
     precipitation?: IExtraData;
     feels_like?: IExtraData;
@@ -56,6 +58,9 @@ export interface IExtraEl {
 export interface IExtraData {
     title?: ExtraInfoType;
     digitalValue?: number;
+    backgroundColor: ColorValue | undefined;
+    color: ColorValue | undefined;
+    themeMode: ThemeType | undefined;
 }
 
 export interface IApiState<T> {
@@ -74,4 +79,17 @@ export enum Status {
     Pending = 'pending',
     Success = 'success',
     Error = 'error',
+}
+
+export interface IThemMode {
+    color: string;
+    backgroud: string;
+
+}
+
+export interface ITheme {
+    nameTheme: ThemeType;
+    mode: IThemMode;
+    systemMode: ColorSchemeName;
+
 }

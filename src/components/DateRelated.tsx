@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ColorValue } from 'react-native';
 import colors from '@styles/colors';
 import { format, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -11,6 +11,8 @@ export interface IDateProps {
     weatherCode: number;
     dayTemp: number;
     nightTemp: number;
+    backgroundColor: ColorValue;
+    color: ColorValue;
 }
 
 const getWeekDay = (incomingDate: string) => {
@@ -21,10 +23,10 @@ const getWeekDay = (incomingDate: string) => {
 
 export const DateRelated: React.FC<IDateProps> = props => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: props.backgroundColor }]}>
             <View>
-                <Text style={styles.weekNumber}>{getWeekDay(props.date.slice(0, 10))}</Text>
-                <Text style={styles.dateNumber}>
+                <Text style={[styles.weekNumber, { color: props.color }]}>{getWeekDay(props.date.slice(0, 10))}</Text>
+                <Text style={[styles.dateNumber, { color: props.color }]}>
                     {format(new Date(props.date.slice(0, 10)), 'd MMMM', { locale: ru })}
                 </Text>
             </View>
@@ -32,7 +34,7 @@ export const DateRelated: React.FC<IDateProps> = props => {
                 <WeatherIcon weatherCode={props.weatherCode} />
             </View>
             <View style={styles.temperatureContainer}>
-                <Text style={styles.afternoon}>{props.dayTemp + Signs.CELSIUS}</Text>
+                <Text style={[styles.afternoon, { color: props.color }]}>{props.dayTemp + Signs.CELSIUS}</Text>
                 <Text style={styles.night}>{props.nightTemp + Signs.CELSIUS}</Text>
             </View>
         </View>

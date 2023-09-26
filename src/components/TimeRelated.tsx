@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ColorValue, StyleSheet, Text, View } from 'react-native';
 import { WeatherIcon } from '@components/WeatherIcon';
 import { format, isSameHour } from 'date-fns';
 import { Signs } from '@utils/constants';
@@ -8,6 +8,7 @@ export interface ITimeProps {
     weatherCode: number;
     time: string;
     mainTemp: number;
+    color: ColorValue;
 }
 
 const SetHours = (timeData: string) => {
@@ -19,9 +20,9 @@ const SetHours = (timeData: string) => {
 const TimeRelated: React.FC<ITimeProps> = props => {
     return (
         <View style={styles.wrapper}>
-            <Text style={styles.timeInfo}>{SetHours(props.time)}</Text>
+            <Text style={[styles.timeInfo, { color: props.color }]}>{SetHours(props.time)}</Text>
             <WeatherIcon weatherCode={props.weatherCode} style={styles.icon} />
-            <Text style={styles.temperatureInfo}>{props.mainTemp + Signs.CELSIUS}</Text>
+            <Text style={[styles.temperatureInfo, { color: props.color }]}>{props.mainTemp + Signs.CELSIUS}</Text>
         </View>
     );
 };
