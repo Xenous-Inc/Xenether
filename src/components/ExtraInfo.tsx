@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { Signs, ExtraInfoHead, UnitMeasure } from '@utils/constants';
 import { IExtraData } from '@storage/types';
-import { ThemeType } from '@storage/constants';
+import { Theme } from '@storage/constants';
+import { useTheme } from '../model/themeContext';
 
 export enum ExtraInfoType {
     Precipitation,
@@ -52,21 +53,22 @@ const Data: TypeToData = {
 };
 
 export const ExtraInfo: React.FC<IExtraData> = props => {
+    const { themeMode, colors } = useTheme();
     if (props.title !== undefined) {
         const extraInfoData = Data[props.title];
         return (
-            <View style={[styles.container, { backgroundColor: props.backgroundColor }]}>
+            <View style={[styles.container, { backgroundColor: colors.accentColor }]}>
                 <View style={styles.head}>
                     <Image
-                        source={props.themeMode === ThemeType.Dark ? extraInfoData.white_src : extraInfoData.dark_src}
+                        source={themeMode === Theme.DARK ? extraInfoData.white_src : extraInfoData.dark_src}
                         style={styles.icon}
                     />
-                    <Text style={[styles.category, { color: props.color }]}>{extraInfoData.title}</Text>
+                    <Text style={[styles.category, { color: colors.textcolor }]}>{extraInfoData.title}</Text>
                 </View>
-                <Text style={[styles.mainInfo, { color: props.color }]}>
+                <Text style={[styles.mainInfo, { color: colors.textcolor }]}>
                     {props.digitalValue + extraInfoData.unitMeasure}{' '}
                 </Text>
-                <Text style={[styles.nearestTime, { color: props.color }]}>{extraInfoData.additionalInfo}</Text>
+                <Text style={[styles.nearestTime, { color: colors.textcolor }]}>{extraInfoData.additionalInfo}</Text>
             </View>
         );
     }

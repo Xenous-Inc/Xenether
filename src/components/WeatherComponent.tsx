@@ -1,22 +1,22 @@
 import React, { useMemo } from 'react';
-import { ColorValue, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Warning } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { DateRelated } from '@components/DateRelated';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { ExtraInfo } from './ExtraInfo';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { ICityName, IDailyEl, IExtraData, IExtraEl, IHourlyEl, ITheme, Status } from '@storage/types';
+import { ICityName, IDailyEl, IExtraData, IExtraEl, IHourlyEl, Status } from '@storage/types';
 import { useAppSelector } from '../store/store';
 import { PlaceSkeleton } from './PlaceSkeleton';
-import { ThemeType } from '@storage/constants';
+import { useTheme } from '../model/themeContext';
 
 export interface IWeatherComponent {
     name: ICityName;
 }
 
-const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[] | undefined, color: ColorValue) => {
+const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[] | undefined) => {
     if (timeRelatedArray) {
         return timeRelatedArray.slice(0, 24).map((element, index) => {
             return (
@@ -25,14 +25,13 @@ const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[] | undefined, col
                     weatherCode={element.weatherCode}
                     mainTemp={element.mainTemp}
                     key={index}
-                    color={color}
                 />
             );
         });
     }
 };
 
-const getDateRelatedComponents = (dateRelatedArray: IDailyEl[], backgroundColor: ColorValue, color: ColorValue) => {
+const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
     return dateRelatedArray.map((element, index) => {
         return (
             <DateRelated
@@ -41,39 +40,17 @@ const getDateRelatedComponents = (dateRelatedArray: IDailyEl[], backgroundColor:
                 dayTemp={element.dayTemp}
                 nightTemp={element.nightTemp}
                 key={index}
-                backgroundColor={backgroundColor}
-                color={color}
             />
         );
     });
 };
-const getThemeMode = (theme: ITheme) => {
-    return theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark' ? ThemeType.Dark : ThemeType.Light;
-};
 
-const getExtraInfoComponents = (
-    extraInfoArray: (IExtraData | undefined)[],
-    backgroundColor: ColorValue,
-    color: ColorValue,
-    themeMode: ThemeType,
-) => {
+const getExtraInfoComponents = (extraInfoArray: (IExtraData | undefined)[]) => {
     return extraInfoArray.map((element, index) => {
         if (element) {
-            return (
-                <ExtraInfo
-                    title={element.title}
-                    digitalValue={element.digitalValue}
-                    key={index}
-                    backgroundColor={backgroundColor}
-                    color={color}
-                    themeMode={themeMode}
-                />
-            );
+            return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />;
         }
     });
-};
-const getBackgroundColor = (theme: ITheme) => {
-    return theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark' ? colors.SECTION_COLOR : colors.LIGHT_GRAY;
 };
 
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
@@ -83,7 +60,7 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
         data: weather,
     } = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
 
-    const { theme } = useAppSelector(state => state.settings);
+    const theme = useTheme();
 
     const extra = useMemo(() => {
         if (weather) {
@@ -114,15 +91,11 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
             </View>
 
             <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <View style={styles.timeRelatedContainer}>
-                    {getTimeRelatedComponents(weather.dataWeather.hourly, theme.mode.color)}
-                </View>
+                <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(weather.dataWeather.hourly)}</View>
             </BottomSheetScrollView>
-            <View style={styles.dateRelatedContainer}>
-                {getDateRelatedComponents(weather.dataWeather.daily, theme.mode.backgroud, theme.mode.color)}
-            </View>
-            <View style={[styles.extraInfoContainer, { backgroundColor: theme.mode.backgroud }]}>
-                {getExtraInfoComponents(extra, getBackgroundColor(theme), theme.mode.color, getThemeMode(theme))}
+            <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(weather.dataWeather.daily)}</View>
+            <View style={[styles.extraInfoContainer, { backgroundColor: theme.colors?.accentColor }]}>
+                {getExtraInfoComponents(extra)}
             </View>
         </View>
     );
@@ -154,7 +127,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     extraInfoContainer: {
-        backgroundColor: colors.WHITE,
+        backgroundColor: Colors.WHITE,
         paddingTop: 15,
         paddingBottom: 35,
         justifyContent: 'space-between',
@@ -165,20 +138,3 @@ const styles = StyleSheet.create({
         rowGap: 20,
     },
 });
-
-const skeletonStyles = {
-    time: {
-        width: 10,
-        height: 10, // FIXME:set normal values
-    },
-    warning: {
-        borderRadius: 15,
-        marginBottom: 10,
-    },
-    hourly: {
-        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
-        marginTop: 200,
-        flexDirection: 'row',
-        columnGap: 7,
-    },
-};

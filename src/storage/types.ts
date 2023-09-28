@@ -49,7 +49,7 @@ export interface IDailyEl {
 }
 
 export interface IExtraEl {
-    visibility?: IExtraData ;
+    visibility?: IExtraData;
     humidity?: IExtraData;
     precipitation?: IExtraData;
     feels_like?: IExtraData;
@@ -58,9 +58,6 @@ export interface IExtraEl {
 export interface IExtraData {
     title?: ExtraInfoType;
     digitalValue?: number;
-    backgroundColor: ColorValue | undefined;
-    color: ColorValue | undefined;
-    themeMode: ThemeType | undefined;
 }
 
 export interface IApiState<T> {
@@ -81,15 +78,14 @@ export enum Status {
     Error = 'error',
 }
 
-export interface IThemMode {
-    color: string;
-    backgroud: string;
-
+export interface IThemValues {
+    textcolor: string;
+    accentColor: string;
+    suppColor: string;
+    extraSuppColor: string;
 }
 
 export interface ITheme {
-    nameTheme: ThemeType;
-    mode: IThemMode;
-    systemMode: ColorSchemeName;
-
+    themeMode: ThemeType;
+    colors: IThemValues;
 }

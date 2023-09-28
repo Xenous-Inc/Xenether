@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 
 export const Warning: React.FC<{ warningType: string }> = props => {
     return (
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.LIGHT_ORANGE,
+        backgroundColor: Colors.LIGHT_ORANGE,
         width: '100%',
         height: 52,
         borderRadius: 15,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         fontFamily: 'ExpandedSemiBold',
-        color: colors.WHITE,
+        color: Colors.WHITE,
         transform: [{ scaleY: 1.1 }],
     },
 });

@@ -1,32 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UnitsType } from '@storage/constants';
+import { ReduxTheme, ReduxThemeType, UnitsType } from '@storage/constants';
 import { SwitcherStatus } from '@storage/constants';
-import { ThemeType } from '@storage/constants';
-import { ITheme } from '@storage/types';
-import colors from '@styles/colors';
-import { ColorSchemeName } from 'react-native';
 
 type SettingState = {
     deg: UnitsType;
     notice: SwitcherStatus;
-    theme: ITheme;
-};
-type ThemeAction = {
-    system?: ColorSchemeName;
-    theme: ThemeType;
-};
-const initialThemeMode = {
-    color: colors.BLACK,
-    backgroud: colors.WHITE,
+    theme: ReduxThemeType;
 };
 const initialState: SettingState = {
     deg: UnitsType.Celsius,
     notice: SwitcherStatus.On,
-    theme: {
-        nameTheme: ThemeType.System,
-        mode: initialThemeMode,
-        systemMode: undefined,
-    },
+    theme: ReduxTheme.SYSTEM as ReduxThemeType,
 };
 export const settingsSlice = createSlice({
     name: 'settings',
@@ -35,19 +19,8 @@ export const settingsSlice = createSlice({
         changeDeg(state) {
             state.deg !== UnitsType.Celsius ? (state.deg = UnitsType.Celsius) : (state.deg = UnitsType.Fahrenheits);
         },
-        setSystemTheme(state, action: PayloadAction<ColorSchemeName>) {
-            state.theme.systemMode = action.payload;
-        },
-        changeTheme(state, action: PayloadAction<ThemeAction>) {
-            state.theme.nameTheme = action.payload.theme;
-
-            state.theme.nameTheme === ThemeType.System && action.payload.system === 'light'
-                ? (state.theme.mode = { color: colors.BLACK, backgroud: colors.WHITE })
-                : (state.theme.mode = { color: colors.WHITE, backgroud: colors.BACKGROUND_COLOR });
-
-            state.theme.nameTheme === ThemeType.Dark
-                ? (state.theme.mode = { color: colors.WHITE, backgroud: colors.BACKGROUND_COLOR })
-                : (state.theme.mode = { color: colors.BLACK, backgroud: colors.WHITE });
+        changeTheme(state, action: PayloadAction<ReduxThemeType>) {
+            state.theme = action.payload;
         },
         switchToggle(state) {
             state.notice !== SwitcherStatus.On
@@ -57,5 +30,5 @@ export const settingsSlice = createSlice({
     },
 });
 
-export const { changeDeg, changeTheme, switchToggle, setSystemTheme } = settingsSlice.actions;
+export const { changeDeg, changeTheme, switchToggle } = settingsSlice.actions;
 export default settingsSlice.reducer;

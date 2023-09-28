@@ -8,7 +8,7 @@ import store, { persistor } from './src/store/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from 'react-native';
-import ThemeProvider from './src/providers/ThemeProvider';
+import { ThemeProvider } from './src/providers/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync();
 

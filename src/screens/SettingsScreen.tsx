@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, useColorScheme } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { Signs, SettingScreenTitles, SettingScreenContentText, SettingScreenTheme } from '@utils/constants';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { TAppStackParams } from '@navigation/AppNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -9,11 +9,12 @@ import { TSettingsStackParams } from '@navigation/stacks/SettingsStack';
 import { Screens, Stacks } from '@navigation/constants';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '../store/store';
-import { SwitcherStatus, UnitsType, ThemeType } from '@storage/constants';
+import { SwitcherStatus, UnitsType, Theme } from '@storage/constants';
 import { switchToggle } from '../store/slices/settingsSlice';
 import SwitchToggle from 'react-native-switch-toggle';
 import { changeTheme } from '../store/slices/settingsSlice';
 import { changeDeg } from '../store/slices/settingsSlice';
+import { useTheme } from '../model/themeContext';
 
 export const SettingsScreen: React.FC<
     CompositeScreenProps<
@@ -23,7 +24,9 @@ export const SettingsScreen: React.FC<
 > = props => {
     const dispatch = useAppDispatch();
 
-    const { deg, notice, theme } = useAppSelector(state => state.settings);
+    const { deg, notice, theme: reduxTheme } = useAppSelector(state => state.settings);
+
+    const theme = useTheme();
 
     const { navigation } = props;
 
@@ -33,9 +36,7 @@ export const SettingsScreen: React.FC<
                 styles.wrapper,
                 {
                     backgroundColor:
-                        theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
-                            ? theme.mode.backgroud
-                            : colors.EXTRA_LIGHT_GRAY,
+                        theme.themeMode === Theme.LIGHT ? Colors.EXTRA_LIGHT_GRAY : Colors.BACKGROUND_COLOR,
                 },
             ]}
         >
@@ -43,14 +44,15 @@ export const SettingsScreen: React.FC<
                 <TouchableOpacity style={styles.iconBack} onPress={() => navigation.goBack()}>
                     <Image
                         source={
-                            theme.nameTheme === ThemeType.Light ||
-                            (theme.nameTheme === ThemeType.System && theme.systemMode === 'light')
+                            theme.themeMode === Theme.LIGHT
                                 ? require('@assets/icons/back-icon.png')
                                 : require('@assets/icons/white-back-icon.png')
                         }
                     />
                 </TouchableOpacity>
-                <Text style={[styles.head__title, { color: theme.mode.color }]}>{SettingScreenTitles.SETTING}</Text>
+                <Text style={[styles.head__title, { color: theme.colors?.textcolor }]}>
+                    {SettingScreenTitles.SETTING}
+                </Text>
             </View>
 
             <View style={styles.bodyScreen}>
@@ -60,15 +62,14 @@ export const SettingsScreen: React.FC<
                         style={[
                             styles.degrees,
                             {
-                                backgroundColor:
-                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                                backgroundColor: theme.themeMode === Theme.LIGHT ? Colors.WHITE : Colors.SECTION_COLOR,
                             },
                         ]}
                         onPress={() => {
                             dispatch(changeDeg());
                         }}
                     >
-                        <Text style={[styles.contentText, { color: theme.mode.color }]}>
+                        <Text style={[styles.contentText, { color: theme.colors?.textcolor }]}>
                             {SettingScreenContentText.DEGREES}
                         </Text>
                         <View style={styles.buttonsDegreesContainer}>
@@ -77,12 +78,11 @@ export const SettingsScreen: React.FC<
                                     styles.buttonsDegress,
                                     {
                                         color:
-                                            deg !== UnitsType.Fahrenheits &&
-                                            (theme.nameTheme === ThemeType.Light || theme.systemMode === 'light')
-                                                ? colors.GRAY
-                                                : theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
-                                                ? colors.WHITE
-                                                : colors.BLACK,
+                                            deg !== UnitsType.Fahrenheits
+                                                ? Colors.GRAY
+                                                : theme.themeMode === Theme.DARK
+                                                ? Colors.WHITE
+                                                : Colors.BLACK,
                                     },
                                 ]}
                             >
@@ -93,12 +93,11 @@ export const SettingsScreen: React.FC<
                                     styles.buttonsDegress,
                                     {
                                         color:
-                                            deg !== UnitsType.Celsius &&
-                                            (theme.nameTheme === ThemeType.Light || theme.systemMode === 'light')
-                                                ? colors.GRAY
-                                                : theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
-                                                ? colors.WHITE
-                                                : colors.BLACK,
+                                            deg !== UnitsType.Celsius
+                                                ? Colors.GRAY
+                                                : theme.themeMode === Theme.DARK
+                                                ? Colors.WHITE
+                                                : Colors.BLACK,
                                     },
                                 ]}
                             >
@@ -111,20 +110,18 @@ export const SettingsScreen: React.FC<
                         style={[
                             styles.cities,
                             {
-                                backgroundColor:
-                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                                backgroundColor: theme.themeMode === Theme.LIGHT ? Colors.WHITE : Colors.SECTION_COLOR,
                             },
                         ]}
                         onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.CITIES })}
                     >
-                        <Text style={[styles.contentText, { color: theme.mode.color }]}>
+                        <Text style={[styles.contentText, { color: theme.colors?.textcolor }]}>
                             {SettingScreenContentText.CITIES}
                         </Text>
                         <View style={styles.buttonsCities}>
                             <Image
                                 source={
-                                    theme.nameTheme === ThemeType.Light ||
-                                    (theme.nameTheme === ThemeType.System && theme.systemMode === 'light')
+                                    theme.themeMode === Theme.LIGHT
                                         ? require('@assets/icons/icon-button.png')
                                         : require('@assets/icons/white-icon-button.png')
                                 }
@@ -138,12 +135,11 @@ export const SettingsScreen: React.FC<
                         style={[
                             styles.notifications,
                             {
-                                backgroundColor:
-                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                                backgroundColor: theme.themeMode === Theme.LIGHT ? Colors.WHITE : Colors.SECTION_COLOR,
                             },
                         ]}
                     >
-                        <Text style={[styles.contentText, , { color: theme.mode.color }]}>
+                        <Text style={[styles.contentText, { color: theme.colors?.textcolor }]}>
                             {SettingScreenContentText.NOTICE}
                         </Text>
                         <SwitchToggle
@@ -163,9 +159,9 @@ export const SettingsScreen: React.FC<
                                 height: 12,
                                 borderRadius: 20,
                             }}
-                            backgroundColorOn={colors.LIGHT_ORANGE}
-                            backgroundColorOff={colors.LIGHT_GRAY}
-                            circleColorOff={colors.WHITE}
+                            backgroundColorOn={Colors.LIGHT_ORANGE}
+                            backgroundColorOff={Colors.LIGHT_GRAY}
+                            circleColorOff={Colors.WHITE}
                             duration={50}
                         />
                     </View>
@@ -176,8 +172,7 @@ export const SettingsScreen: React.FC<
                         style={[
                             styles.buttonsDecoration,
                             {
-                                backgroundColor:
-                                    theme.nameTheme === ThemeType.Dark ? colors.SECTION_COLOR : colors.WHITE,
+                                backgroundColor: theme.themeMode === Theme.LIGHT ? Colors.WHITE : Colors.SECTION_COLOR,
                             },
                         ]}
                     >
@@ -186,31 +181,27 @@ export const SettingsScreen: React.FC<
                                 styles.buttonsSystem,
                                 {
                                     borderColor:
-                                        theme.nameTheme === ThemeType.System
-                                            ? colors.LIGHT_ORANGE
-                                            : theme.nameTheme === ThemeType.Light
-                                            ? colors.WHITE
-                                            : colors.BUTTONS_COLOR,
+                                        reduxTheme === 'system'
+                                            ? Colors.LIGHT_ORANGE
+                                            : reduxTheme === 'light'
+                                            ? Colors.WHITE
+                                            : Colors.BUTTONS_COLOR,
                                 },
                                 {
-                                    backgroundColor:
-                                        theme.nameTheme === ThemeType.Dark
-                                            ? colors.BUTTONS_COLOR
-                                            : colors.EXTRA_LIGHT_GRAY,
+                                    backgroundColor: theme.colors?.extraSuppColor,
                                 },
                             ]}
                         >
                             <TouchableOpacity
                                 onPress={() => {
-                                    dispatch(changeTheme({ theme: ThemeType.System }));
+                                    dispatch(changeTheme('system'));
                                 }}
                             >
                                 <Text
                                     style={[
                                         styles.systemHead,
                                         {
-                                            color:
-                                                theme.nameTheme === ThemeType.System ? theme.mode.color : colors.GRAY,
+                                            color: reduxTheme === 'system' ? theme.colors?.textcolor : Colors.GRAY,
                                         },
                                     ]}
                                 >
@@ -224,29 +215,22 @@ export const SettingsScreen: React.FC<
                                 style={[
                                     styles.buttonsTheme,
                                     {
-                                        borderColor:
-                                            theme.nameTheme === ThemeType.Dark ? colors.LIGHT_ORANGE : colors.WHITE,
+                                        borderColor: reduxTheme === 'dark' ? Colors.LIGHT_ORANGE : Colors.WHITE,
                                     },
                                     {
-                                        backgroundColor:
-                                            theme.nameTheme === ThemeType.Dark
-                                                ? colors.BUTTONS_COLOR
-                                                : colors.EXTRA_LIGHT_GRAY,
+                                        backgroundColor: theme.colors?.extraSuppColor,
                                     },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        dispatch(changeTheme({ theme: ThemeType.Dark }));
+                                        dispatch(changeTheme('dark'));
                                     }}
                                 >
                                     <Image
-                                        style={[
-                                            styles.iconMoon,
-                                            { opacity: theme.nameTheme === ThemeType.Dark ? 1 : 0.5 },
-                                        ]}
+                                        style={[styles.iconMoon, { opacity: reduxTheme === 'dark' ? 1 : 0.5 }]}
                                         source={
-                                            theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
+                                            reduxTheme === 'dark'
                                                 ? require('@assets/icons/white-moon.png')
                                                 : require('@assets/icons/icon-moon.png')
                                         }
@@ -254,7 +238,7 @@ export const SettingsScreen: React.FC<
                                     <Text
                                         style={[
                                             styles.textTheme,
-                                            { color: theme.nameTheme === ThemeType.Dark ? colors.WHITE : colors.GRAY },
+                                            { color: reduxTheme === 'dark' ? Colors.WHITE : Colors.GRAY },
                                         ]}
                                     >
                                         {SettingScreenTheme.BLACK}
@@ -266,33 +250,26 @@ export const SettingsScreen: React.FC<
                                     styles.buttonsTheme,
                                     {
                                         borderColor:
-                                            theme.nameTheme === ThemeType.Light
-                                                ? colors.LIGHT_ORANGE
-                                                : theme.nameTheme === ThemeType.System && theme.systemMode === 'light'
-                                                ? colors.WHITE
-                                                : colors.BUTTONS_COLOR,
+                                            reduxTheme === 'light'
+                                                ? Colors.LIGHT_ORANGE
+                                                : reduxTheme === 'system' && theme.themeMode === Theme.LIGHT
+                                                ? Colors.WHITE
+                                                : Colors.BUTTONS_COLOR,
                                     },
                                     {
-                                        backgroundColor:
-                                            theme.nameTheme === ThemeType.Dark
-                                                ? colors.BUTTONS_COLOR
-                                                : colors.EXTRA_LIGHT_GRAY,
+                                        backgroundColor: theme.colors?.extraSuppColor,
                                     },
                                 ]}
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        dispatch(changeTheme({ theme: ThemeType.Light }));
+                                        dispatch(changeTheme('light'));
                                     }}
                                 >
                                     <Image
-                                        style={[
-                                            styles.iconSun,
-                                            { opacity: theme.nameTheme === ThemeType.Light ? 1 : 0.5 },
-                                        ]}
+                                        style={[styles.iconSun, { opacity: reduxTheme === 'light' ? 1 : 0.5 }]}
                                         source={
-                                            theme.nameTheme === ThemeType.Light ||
-                                            (theme.systemMode === 'light' && theme.nameTheme !== ThemeType.Dark)
+                                            theme.themeMode === Theme.LIGHT
                                                 ? require('@assets/icons/icon-sun.png')
                                                 : require('@assets/icons/white-sun.png')
                                         }
@@ -300,7 +277,7 @@ export const SettingsScreen: React.FC<
                                     <Text
                                         style={[
                                             styles.textTheme,
-                                            { color: theme.nameTheme === ThemeType.Light ? colors.BLACK : colors.GRAY },
+                                            { color: reduxTheme === 'light' ? theme.colors?.textcolor : Colors.GRAY },
                                         ]}
                                     >
                                         {SettingScreenTheme.LIGHT}
@@ -368,7 +345,7 @@ const styles = StyleSheet.create({
     },
     notifications: {
         height: 50,
-        backgroundColor: colors.WHITE,
+        backgroundColor: Colors.WHITE,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -381,7 +358,7 @@ const styles = StyleSheet.create({
         columnGap: 10,
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
-        backgroundColor: colors.WHITE,
+        backgroundColor: Colors.WHITE,
     },
     buttonsDegreesContainer: {
         alignItems: 'center',
@@ -400,7 +377,7 @@ const styles = StyleSheet.create({
     titleOfCategory: {
         marginBottom: 20,
         fontFamily: 'ExpandedBold',
-        color: colors.GRAY,
+        color: Colors.GRAY,
         fontSize: 14,
         marginHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
@@ -426,7 +403,7 @@ const styles = StyleSheet.create({
         fontFamily: 'ExtendedSemiBold',
         fontSize: 11,
         marginLeft: 15,
-        color: colors.GRAY,
+        color: Colors.GRAY,
     },
     buttonsTheme: {
         width: '32%',

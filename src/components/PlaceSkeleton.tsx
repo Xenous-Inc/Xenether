@@ -1,6 +1,6 @@
-import colors from "@styles/colors";
-import SkeletonLoader from "expo-skeleton-loader";
-import { Dimensions, StyleSheet } from "react-native";
+import Colors from '@styles/colors';
+import SkeletonLoader from 'expo-skeleton-loader';
+import { Dimensions, StyleSheet } from 'react-native';
 
 export const PlaceSkeleton: React.FC = () => {
     const skeletonStyles = {
@@ -11,15 +11,8 @@ export const PlaceSkeleton: React.FC = () => {
     };
 
     return (
-        <SkeletonLoader
-            style={styles.wrapper}
-            boneColor={colors.GRAY}
-            highlightColor={colors.WHITE}
-            duration={1200}
-        >
-            
-         <SkeletonLoader.Item style={skeletonStyles.content} />
-          
+        <SkeletonLoader style={styles.wrapper} boneColor={Colors.GRAY} highlightColor={Colors.WHITE} duration={1200}>
+            <SkeletonLoader.Item style={skeletonStyles.content} />
         </SkeletonLoader>
     );
 };

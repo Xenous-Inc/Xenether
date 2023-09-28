@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { AutoComplate } from '../components/AutoComplate';
@@ -20,7 +20,8 @@ import {
 } from 'react-native';
 import { useAppSelector } from '../store/store';
 import { CityComponent } from '@components/CityComponent';
-import { ThemeType } from '@storage/constants';
+import { Theme } from '@storage/constants';
+import { useTheme } from '../model/themeContext';
 
 export const CitiesScreen: React.FC<
     NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.CITIES>
@@ -41,7 +42,7 @@ export const CitiesScreen: React.FC<
 
     const { data: cities } = useAppSelector(state => state.cities);
 
-    const { theme } = useAppSelector(state => state.settings);
+    const theme = useTheme();
 
     useEffect(() => {
         const backAction = () => {
@@ -60,7 +61,6 @@ export const CitiesScreen: React.FC<
         return () => backHandler.remove();
     }, [sheetRef, isOpen]);
 
-    // status, error
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View
@@ -68,18 +68,14 @@ export const CitiesScreen: React.FC<
                     styles.wrapper,
                     {
                         backgroundColor:
-                            theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
-                                ? theme.mode.backgroud
-                                : colors.EXTRA_LIGHT_GRAY,
+                            theme.themeMode === Theme.DARK ? theme.colors?.accentColor : Colors.EXTRA_LIGHT_GRAY,
                     },
                 ]}
             >
                 <View
                     style={{
                         backgroundColor:
-                            theme.nameTheme === ThemeType.Dark || theme.systemMode === 'dark'
-                                ? theme.mode.backgroud
-                                : colors.EXTRA_LIGHT_GRAY,
+                            theme.themeMode === Theme.DARK ? theme.colors?.accentColor : Colors.EXTRA_LIGHT_GRAY,
                     }}
                 >
                     <TouchableOpacity
@@ -89,15 +85,16 @@ export const CitiesScreen: React.FC<
                     >
                         <Image
                             source={
-                                theme.nameTheme === ThemeType.Light ||
-                                (theme.nameTheme === ThemeType.System && theme.systemMode === 'light')
+                                theme.themeMode === Theme.LIGHT
                                     ? require('@assets/icons/back-icon.png')
                                     : require('@assets/icons/white-back-icon.png')
                             }
                             style={styles.iconBack}
                         />
                     </TouchableOpacity>
-                    <Text style={[styles.head__title, { opacity: isOpen ? 0.3 : 1 }, { color: theme.mode.color }]}>
+                    <Text
+                        style={[styles.head__title, { opacity: isOpen ? 0.3 : 1 }, { color: theme.colors?.textcolor }]}
+                    >
                         Города
                     </Text>
                     <View style={styles.bodyScreen}>
@@ -108,10 +105,7 @@ export const CitiesScreen: React.FC<
                                 {
                                     opacity: isOpen ? 0.3 : 1,
                                     backgroundColor:
-                                        theme.nameTheme === ThemeType.Dark ||
-                                        (theme.nameTheme === ThemeType.System && theme.systemMode === 'dark')
-                                            ? colors.SECTION_COLOR
-                                            : colors.WHITE,
+                                        theme.themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.WHITE,
                                 },
                             ]}
                             onPress={() => {
@@ -121,8 +115,7 @@ export const CitiesScreen: React.FC<
                         >
                             <Image
                                 source={
-                                    theme.nameTheme === ThemeType.Light ||
-                                    (theme.nameTheme === ThemeType.System && theme.systemMode === 'light')
+                                    theme.themeMode === Theme.LIGHT
                                         ? require('@assets/icons/search-icon.png')
                                         : require('@assets/icons/white-search-icon.png')
                                 }
@@ -131,7 +124,7 @@ export const CitiesScreen: React.FC<
                             <Text style={styles.search_title}>Поиск города</Text>
                         </TouchableOpacity>
                         <ScrollView style={{ marginTop: 10 }}>
-                            {cities.map(city => (
+                            {cities?.map(city => (
                                 <CityComponent key={city.nameCity} name={city} />
                             ))}
                         </ScrollView>
@@ -139,11 +132,7 @@ export const CitiesScreen: React.FC<
                 </View>
                 <BottomSheet
                     backgroundStyle={{
-                        backgroundColor:
-                            theme.nameTheme === ThemeType.Dark ||
-                            (theme.nameTheme === ThemeType.System && theme.systemMode === 'dark')
-                                ? colors.SECTION_COLOR
-                                : colors.WHITE,
+                        backgroundColor: theme.themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.WHITE,
                     }}
                     ref={sheetRef}
                     handleIndicatorStyle={{ opacity: 0 }}
@@ -156,7 +145,7 @@ export const CitiesScreen: React.FC<
                     index={-1}
                 >
                     <BottomSheetView>
-                        <Text style={[styles.bottomSheet_title, { color: theme.mode.color }]}>Поиск города</Text>
+                        <Text style={[styles.bottomSheet_title, { color: theme.colors?.textcolor }]}>Поиск города</Text>
                         <AutoComplate refInput={refInput} />
                     </BottomSheetView>
                 </BottomSheet>
@@ -202,7 +191,7 @@ const styles = StyleSheet.create({
     search_title: {
         fontFamily: 'ExtendedSemiBold',
         fontSize: 16,
-        color: colors.GRAY,
+        color: Colors.GRAY,
     },
     search_icon: {
         alignSelf: 'center',

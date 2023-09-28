@@ -1,18 +1,17 @@
 import React from 'react';
-import { StyleSheet, View, Text, ColorValue } from 'react-native';
-import colors from '@styles/colors';
+import { StyleSheet, View, Text } from 'react-native';
+import Colors from '@styles/colors';
 import { format, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { WeatherIcon } from '@components/WeatherIcon';
 import { Signs } from '@utils/constants';
+import { useTheme } from '../model/themeContext';
 
 export interface IDateProps {
     date: string;
     weatherCode: number;
     dayTemp: number;
     nightTemp: number;
-    backgroundColor: ColorValue;
-    color: ColorValue;
 }
 
 const getWeekDay = (incomingDate: string) => {
@@ -22,11 +21,14 @@ const getWeekDay = (incomingDate: string) => {
 };
 
 export const DateRelated: React.FC<IDateProps> = props => {
+    const { colors } = useTheme();
     return (
-        <View style={[styles.container, { backgroundColor: props.backgroundColor }]}>
+        <View style={[styles.container, { backgroundColor: colors?.accentColor }]}>
             <View>
-                <Text style={[styles.weekNumber, { color: props.color }]}>{getWeekDay(props.date.slice(0, 10))}</Text>
-                <Text style={[styles.dateNumber, { color: props.color }]}>
+                <Text style={[styles.weekNumber, { color: colors.textcolor }]}>
+                    {getWeekDay(props.date.slice(0, 10))}
+                </Text>
+                <Text style={[styles.dateNumber, { color: colors.textcolor }]}>
                     {format(new Date(props.date.slice(0, 10)), 'd MMMM', { locale: ru })}
                 </Text>
             </View>
@@ -34,7 +36,7 @@ export const DateRelated: React.FC<IDateProps> = props => {
                 <WeatherIcon weatherCode={props.weatherCode} />
             </View>
             <View style={styles.temperatureContainer}>
-                <Text style={[styles.afternoon, { color: props.color }]}>{props.dayTemp + Signs.CELSIUS}</Text>
+                <Text style={[styles.afternoon, { color: colors.textcolor }]}>{props.dayTemp + Signs.CELSIUS}</Text>
                 <Text style={styles.night}>{props.nightTemp + Signs.CELSIUS}</Text>
             </View>
         </View>
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 60,
-        backgroundColor: colors.WHITE,
+        backgroundColor: Colors.WHITE,
         alignItems: 'center',
         flexDirection: 'row',
         position: 'relative',
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
         marginRight: 6,
     },
     night: {
-        color: colors.GRAY,
+        color: Colors.GRAY,
         fontSize: 16,
         fontFamily: 'ExtendedBold',
         marginTop: 5,

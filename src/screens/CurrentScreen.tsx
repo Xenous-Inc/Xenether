@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { Signs } from '@utils/constants';
 import { utcToZonedTime, format } from 'date-fns-tz';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { MainBottomSheet } from '@components/MainBottomSheet';
 import { ICityName, Status } from '@storage/types';
@@ -158,20 +158,20 @@ const styles = StyleSheet.create({
         marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
     locationContent: {
-        color: colors.WHITE,
+        color: Colors.WHITE,
         fontFamily: 'ExpandedBold',
         fontSize: 22,
     },
     timeContent: {
         marginTop: 10,
-        color: colors.WHITE,
+        color: Colors.WHITE,
         fontFamily: 'ExpandedSemiBold',
         fontSize: 14,
     },
     temperatureContent: {
         fontFamily: 'ExpandedBold',
         fontSize: 80,
-        color: colors.WHITE,
+        color: Colors.WHITE,
         marginTop: 18,
         marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
