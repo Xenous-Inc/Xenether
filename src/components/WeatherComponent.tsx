@@ -3,31 +3,32 @@ import { StyleSheet, View } from 'react-native';
 import { Warning } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { DateRelated } from '@components/DateRelated';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { ExtraInfo } from './ExtraInfo';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { ICityName, IDailyEl, IExtraData, IHourlyEl, Status } from '@storage/types';
+import { ICityName, IDailyEl, IExtraData, IExtraEl, IHourlyEl, Status } from '@storage/types';
 import { useAppSelector } from '../store/store';
 import { PlaceSkeleton } from './PlaceSkeleton';
-import SkeletonLoader from 'expo-skeleton-loader';
+import { useTheme } from '../model/themeContext';
 
 export interface IWeatherComponent {
     name: ICityName;
 }
 
 const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[] | undefined) => {
-   if(timeRelatedArray){ return timeRelatedArray.slice(0, 24).map((element, index) => {
-        return (
-            <TimeRelated
-                time={element.time}
-                weatherCode={element.weatherCode}
-                mainTemp={element.mainTemp}
-                key={index}
-            />
-        );
-    });}
-  
+    if (timeRelatedArray) {
+        return timeRelatedArray.slice(0, 24).map((element, index) => {
+            return (
+                <TimeRelated
+                    time={element.time}
+                    weatherCode={element.weatherCode}
+                    mainTemp={element.mainTemp}
+                    key={index}
+                />
+            );
+        });
+    }
 };
 
 const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
@@ -45,62 +46,59 @@ const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
 };
 
 const getExtraInfoComponents = (extraInfoArray: (IExtraData | undefined)[]) => {
-    return extraInfoArray.slice(0, 4).map((element, index) => {
-       if (element) { 
-        return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />
-    }
+    return extraInfoArray.map((element, index) => {
+        if (element) {
+            return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />;
+        }
     });
 };
 
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
-    const { status, error , data: weather}= useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
+    const {
+        status,
+        error,
+        data: weather,
+    } = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
+
+    const theme = useTheme();
 
     const extra = useMemo(() => {
-        if( weather ){
-        return weather.dataWeather.extra.map(el => {
-            if(el.precipitation)
-            {const extraData: IExtraData = {};
-            
-            extraData.title = el.precipitation.title;
-            extraData.digitalValue = el.precipitation.digitalValue;
-            // доделать логику вывода extra elements
+        if (weather) {
+            const currentExtra: IExtraEl = weather.dataWeather.extra[0];
+            console.log(currentExtra);
 
-            return extraData;}
-        
-        });
-    }
+            const extraData = Object.values(currentExtra) as Array<IExtraData>;
+            console.log(`Array is - ${extraData}`);
+            return extraData;
+        }
     }, [weather]);
 
-    if (status === Status.Idle || status === Status.Pending && !weather) {
+    if (status === Status.Idle || status === Status.Pending) {
         return <PlaceSkeleton />;
     }
 
-    if (status === Status.Error || !weather || !extra ) {
-        return (
-            <View style={styles.wrapper}>
-            </View>
-        );
+
+    if (status === Status.Error || !weather || !extra) {
+        return <View style={styles.wrapper} />;
     }
 
     return (
-
-        <View style={styles.scrollContainer}>
+        <View style={[styles.scrollContainer]}>
             <View style={styles.warningContainer}>
-                  <Warning warningType={weather.cityWeather.description.toUpperCase()}/>
+                <Warning
+                    warningType={
+                        weather.cityWeather.description[0].toUpperCase() + weather.cityWeather.description.slice(1)
+                    }
+                />
             </View>
-           
-                
-           <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                     <View style={styles.timeRelatedContainer}>
-                       { getTimeRelatedComponents(weather.dataWeather.hourly)}
-                    </View>
-                    </BottomSheetScrollView> 
-                  <View style={styles.dateRelatedContainer}>
-                        { getDateRelatedComponents(weather.dataWeather.daily)}
-                    </View>
-                 <View style={styles.extraInfoContainer}>{  getExtraInfoComponents(extra) }</View>
-              
-           
+
+            <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(weather.dataWeather.hourly)}</View>
+            </BottomSheetScrollView>
+            <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(weather.dataWeather.daily)}</View>
+            <View style={[styles.extraInfoContainer, { backgroundColor: theme.colors?.accentColor }]}>
+                {getExtraInfoComponents(extra)}
+            </View>
         </View>
     );
 };
@@ -131,7 +129,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     extraInfoContainer: {
-        backgroundColor: colors.WHITE,
+        backgroundColor: Colors.WHITE,
         paddingTop: 15,
         paddingBottom: 35,
         justifyContent: 'space-between',
@@ -142,22 +140,3 @@ const styles = StyleSheet.create({
         rowGap: 20,
     },
 });
-
-
-const skeletonStyles = {
-    time: {
-        width: 10,
-        height: 10, // FIXME:set normal values
-    },
-    warning: {
-        borderRadius: 15,
-        marginBottom: 10,
-    },
-    hourly: {
-        marginHorizontal: MAIN_HORIZONTAL_OFFSET,
-        marginTop: 200,
-        flexDirection: 'row',
-        columnGap: 7,
-    },
-
-};

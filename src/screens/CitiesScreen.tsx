@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { AutoComplate } from '../components/AutoComplate';
@@ -20,7 +20,8 @@ import {
 } from 'react-native';
 import { useAppSelector } from '../store/store';
 import { CityComponent } from '@components/CityComponent';
-import { IWeatherData, Status } from '@storage/types';
+import { Theme } from '@storage/constants';
+import { useTheme } from '../model/themeContext';
 
 export const CitiesScreen: React.FC<
     NativeStackScreenProps<TSettingsStackParams, typeof Screens.Settings.CITIES>
@@ -34,11 +35,17 @@ export const CitiesScreen: React.FC<
 
     const snapPoints = useMemo(() => ['81%'], []);
 
-    const handleSnapPress = useCallback( (index: number) => {
+    const handleSnapPress = useCallback((index: number) => {
         sheetRef.current?.snapToIndex(index);
         setIsOpen(true);
     }, []);
-    const { data: cities,status, error } = useAppSelector(state => state.cities);
+
+
+    const { data: cities } = useAppSelector(state => state.cities);
+
+    const theme = useTheme();
+
+
     useEffect(() => {
         const backAction = () => {
             if (isOpen) {
@@ -57,26 +64,64 @@ export const CitiesScreen: React.FC<
     }, [sheetRef, isOpen]);
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.wrapper}>
-                <View style={{ backgroundColor: isOpen ? colors.EXTRA_LIGHT_GRAY : colors.LIGHT_GRAY }}>
+            <View
+                style={[
+                    styles.wrapper,
+                    {
+                        backgroundColor:
+                            theme.themeMode === Theme.DARK ? theme.colors?.accentColor : Colors.EXTRA_LIGHT_GRAY,
+                    },
+                ]}
+            >
+                <View
+                    style={{
+                        backgroundColor:
+                            theme.themeMode === Theme.DARK ? theme.colors?.accentColor : Colors.EXTRA_LIGHT_GRAY,
+                    }}
+                >
                     <TouchableOpacity
                         disabled={isOpen}
                         style={[styles.wrapperIcon, { opacity: isOpen ? 0.3 : 1 }]}
                         onPress={() => navigation.goBack()}
                     >
-                        <Image source={require('@assets/icons/back-icon.png')} style={styles.iconBack} />
+                        <Image
+                            source={
+                                theme.themeMode === Theme.LIGHT
+                                    ? require('@assets/icons/back-icon.png')
+                                    : require('@assets/icons/white-back-icon.png')
+                            }
+                            style={styles.iconBack}
+                        />
                     </TouchableOpacity>
-                    <Text style={[styles.head__title, { opacity: isOpen ? 0.3 : 1 }]}>Города</Text>
+                    <Text
+                        style={[styles.head__title, { opacity: isOpen ? 0.3 : 1 }, { color: theme.colors?.textcolor }]}
+                    >
+                        Города
+                    </Text>
                     <View style={styles.bodyScreen}>
                         <TouchableOpacity
                             disabled={isOpen}
-                            style={[styles.buttonCities, { opacity: isOpen ? 0.3 : 1 }]}
+                            style={[
+                                styles.buttonCities,
+                                {
+                                    opacity: isOpen ? 0.3 : 1,
+                                    backgroundColor:
+                                        theme.themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.WHITE,
+                                },
+                            ]}
                             onPress={() => {
                                 handleSnapPress(0);
                                 refInput.current.focus();
                             }}
                         >
-                            <Image source={require('@assets/icons/search-icon.png')} style={styles.search_icon} />
+                            <Image
+                                source={
+                                    theme.themeMode === Theme.LIGHT
+                                        ? require('@assets/icons/search-icon.png')
+                                        : require('@assets/icons/white-search-icon.png')
+                                }
+                                style={styles.search_icon}
+                            />
                             <Text style={styles.search_title}>Поиск города</Text>
                         </TouchableOpacity>
                         <ScrollView style={{ marginTop: 10 }}>
@@ -87,7 +132,11 @@ export const CitiesScreen: React.FC<
                     </View>
                 </View>
                 <BottomSheet
+                    backgroundStyle={{
+                        backgroundColor: theme.themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.WHITE,
+                    }}
                     ref={sheetRef}
+                    handleIndicatorStyle={{ opacity: 0 }}
                     snapPoints={snapPoints}
                     enablePanDownToClose={true}
                     onClose={() => {
@@ -97,7 +146,7 @@ export const CitiesScreen: React.FC<
                     index={-1}
                 >
                     <BottomSheetView>
-                        <Text style={styles.bottomSheet_title}>Поиск города</Text>
+                        <Text style={[styles.bottomSheet_title, { color: theme.colors?.textcolor }]}>Поиск города</Text>
                         <AutoComplate refInput={refInput} />
                     </BottomSheetView>
                 </BottomSheet>
@@ -110,7 +159,6 @@ const styles = StyleSheet.create({
     wrapper: {
         width: '100%',
         height: '100%',
-        backgroundColor: colors.LIGHT_GRAY,
     },
     wrapperIcon: {
         marginTop: 59,
@@ -131,7 +179,6 @@ const styles = StyleSheet.create({
     buttonCities: {
         width: '90%',
         height: 40,
-        backgroundColor: colors.WHITE,
         borderRadius: 12,
         alignItems: 'center',
         flexDirection: 'row',
@@ -145,7 +192,7 @@ const styles = StyleSheet.create({
     search_title: {
         fontFamily: 'ExtendedSemiBold',
         fontSize: 16,
-        color: colors.GRAY,
+        color: Colors.GRAY,
     },
     search_icon: {
         alignSelf: 'center',

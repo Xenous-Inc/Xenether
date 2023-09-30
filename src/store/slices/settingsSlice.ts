@@ -1,34 +1,31 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UnitsType } from '@storage/constants';
+import { ReduxTheme, ReduxThemeType, UnitsType } from '@storage/constants';
 import { SwitcherStatus } from '@storage/constants';
-import { ThemeType } from '@storage/constants';
 
 type SettingState = {
     deg: UnitsType;
     notice: SwitcherStatus;
-    theme: ThemeType;
+    theme: ReduxThemeType;
 };
 const initialState: SettingState = {
     deg: UnitsType.Celsius,
     notice: SwitcherStatus.On,
-    theme: ThemeType.System,
+    theme: ReduxTheme.SYSTEM as ReduxThemeType,
 };
 export const settingsSlice = createSlice({
     name: 'settings',
     initialState,
     reducers: {
         changeDeg(state) {
-           state.deg !== UnitsType.Celsius?
-                state.deg = UnitsType.Celsius : state.deg = UnitsType.Fahrenheits
-            
+            state.deg !== UnitsType.Celsius ? (state.deg = UnitsType.Celsius) : (state.deg = UnitsType.Fahrenheits);
         },
-        changeTheme(state, action: PayloadAction<ThemeType>) {
+        changeTheme(state, action: PayloadAction<ReduxThemeType>) {
             state.theme = action.payload;
         },
         switchToggle(state) {
-           state.notice !== SwitcherStatus.On?
-                state.notice = SwitcherStatus.On : state.notice = SwitcherStatus.Off;
-            
+            state.notice !== SwitcherStatus.On
+                ? (state.notice = SwitcherStatus.On)
+                : (state.notice = SwitcherStatus.Off);
         },
     },
 });

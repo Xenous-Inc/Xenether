@@ -1,5 +1,7 @@
 import { ExtraInfoType } from '@components/ExtraInfo';
 import { EntityState, SerializedError } from '@reduxjs/toolkit';
+import { ThemeType } from './constants';
+import { ColorSchemeName, ColorValue } from 'react-native';
 
 export interface ILocation {
     location: string;
@@ -74,4 +76,16 @@ export enum Status {
     Pending = 'pending',
     Success = 'success',
     Error = 'error',
+}
+
+export interface IThemValues {
+    textcolor: string;
+    accentColor: string;
+    suppColor: string;
+    extraSuppColor: string;
+}
+
+export interface ITheme {
+    themeMode: ThemeType;
+    colors: IThemValues;
 }

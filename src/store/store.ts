@@ -34,6 +34,7 @@ export type TRootState = ReturnType<typeof store.getState>;
 export type TDispatch = typeof store.dispatch;
 export const useAppDispatch: () => TDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<TRootState> = useSelector;
+export const selectStore = (state: TRootState) => state;
 
 export const persistor = persistStore(store);
 export default store;

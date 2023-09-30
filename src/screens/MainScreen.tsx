@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import PagerView from 'react-native-pager-view';
 import { CurrentScreen } from '@screens/CurrentScreen';
 import * as Location from 'expo-location';
@@ -10,11 +10,7 @@ import { TAppStackParams } from '@navigation/AppNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { TMainStackParams } from '@navigation/stacks/MainStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAppDispatch, useAppSelector } from '../store/store';
-import { Status } from '@storage/types';
-import { createGetCityAction } from '../store/slices/citySlice';
-import { createGetWeatherAction } from '../store/slices/weatherSlice';
-import SkeletonLoader from 'expo-skeleton-loader';
+import { useAppSelector } from '../store/store';
 import { PlaceSkeleton } from '@components/PlaceSkeleton';
 
 // const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
@@ -31,7 +27,7 @@ export const MainScreen: React.FC<
 
     const insets = useSafeAreaInsets();
 
-    const { error, status, data: cities } = useAppSelector(state => state.cities);
+    const { data: cities } = useAppSelector(state => state.cities);
 
     // const getCurrentLocation = async () => {
     //     try {
@@ -59,14 +55,19 @@ export const MainScreen: React.FC<
             >
                 <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
             </TouchableOpacity>
+
             <PagerView
                 style={{ flex: 1 }}
                 initialPage={0}
                 onPageSelected={event => setCurrentIndex(event.nativeEvent.position)}
             >
-                { cities? cities.map((city, index) => (
-                    <CurrentScreen key={city.nameCity} name={city} index={index} selectedIndex={currentIndex} />
-                )) :  <PlaceSkeleton/>}
+                {cities ? (
+                    cities.map((city, index) => (
+                        <CurrentScreen key={city.nameCity} name={city} index={index} selectedIndex={currentIndex} />
+                    ))
+                ) : (
+                    <PlaceSkeleton />
+                )}
             </PagerView>
         </>
     );
@@ -75,7 +76,7 @@ export const MainScreen: React.FC<
 const styles = StyleSheet.create({
     containerButton: {
         alignItems: 'center',
-        backgroundColor: colors.LIGHT_WHITE,
+        backgroundColor: Colors.LIGHT_WHITE,
         width: 52,
         height: 52,
         borderRadius: 15,

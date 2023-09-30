@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { Signs } from '@utils/constants';
 import { utcToZonedTime, format } from 'date-fns-tz';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { MainBottomSheet } from '@components/MainBottomSheet';
 import { ICityName, Status } from '@storage/types';
 import { isSameMinute } from 'date-fns';
 import { useAppDispatch, useAppSelector } from '../store/store';
-import { createGetCityAction } from '../store/slices/citySlice';
 import { createGetWeatherAction } from '../store/slices/weatherSlice';
-import SkeletonLoader from 'expo-skeleton-loader';
 import { PlaceSkeleton } from '@components/PlaceSkeleton';
 
 const image = {
@@ -73,75 +71,71 @@ interface ICurrentScreenProps {
 export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     // const [weatherData, setWeatherData] = useState(initialArgument);
 
-    const {status, error, data:weather} = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
+    const {
+        status,
+        error,
+        data: weather,
+    } = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
 
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if(status ===Status.Idle){
-            dispatch(createGetWeatherAction(props.name.nameCity))
+        if (status === Status.Idle) {
+            dispatch(createGetWeatherAction(props.name.nameCity));
         }
     }, [status]);
 
-    const [currentTime, setCurrentDate] = useState<number | undefined>( weather? createCurrentDate(weather?.cityWeather.timeZone): undefined);
-
-    useEffect(()=>{
-        if(weather){
-            setCurrentDate( createCurrentDate(weather.cityWeather.timeZone));
-        }
-    },[weather]);
+    const [currentTime, setCurrentDate] = useState<number | undefined>(
+        weather ? createCurrentDate(weather?.cityWeather.timeZone) : undefined,
+    );
 
     useEffect(() => {
-        if(currentTime && weather){
-        const intervalId = setInterval(() => {
-            if (!isSameMinute(currentTime, createCurrentDate(weather.cityWeather.timeZone))) {
-                setCurrentDate(createCurrentDate(weather.cityWeather.timeZone));
-            }
-        }, 1000);
-        return () => {
-            clearInterval(intervalId);
-        };
-    }
+        if (weather) {
+            setCurrentDate(createCurrentDate(weather.cityWeather.timeZone));
+        }
+    }, [weather]);
+
+    useEffect(() => {
+        if (currentTime && weather) {
+            const intervalId = setInterval(() => {
+                if (!isSameMinute(currentTime, createCurrentDate(weather.cityWeather.timeZone))) {
+                    setCurrentDate(createCurrentDate(weather.cityWeather.timeZone));
+                }
+            }, 1000);
+            return () => {
+                clearInterval(intervalId);
+            };
+        }
     });
-    
-    if (status === Status.Idle || status === Status.Pending && !(weather && currentTime)) {
+
+    if (status === Status.Idle || status === Status.Pending) {
         return (
             <View style={styles.wrapper}>
-                <PlaceSkeleton /> 
-                <MainBottomSheet
-                    index={props.index}
-                    selectedIndex={props.selectedIndex}
-                    nameCity={props.name}
-                />
-            </View> 
-        );
-    }
+                <PlaceSkeleton />
 
-    if (status === Status.Error ) {
-
-        return (
-            <View style={[styles.wrapper,{alignItems: 'center',  justifyContent: "center" }]}>
-               <Text>{error?.message}</Text>
+                <MainBottomSheet index={props.index} selectedIndex={props.selectedIndex} nameCity={props.name} />
             </View>
         );
     }
 
-    if(weather && currentTime)
- 
+    if (status === Status.Error || !weather || !currentTime) {
+        return (
+            <View style={[styles.wrapper, { alignItems: 'center', justifyContent: 'center' }]}>
+                <Text>{error?.message}</Text>
+            </View>
+        );
+    }
+
     return (
-       <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
+        <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
             <View style={styles.wrapperHeader}>
                 <View style={styles.wrapperOfLocalInfo}>
                     <Text style={styles.locationContent}>{props.name.nameCity}</Text>
-                     <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
+                    <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
                 </View>
             </View>
-            <Text style={styles.temperatureContent}>{weather.cityWeather.mainTemp + Signs.CELSIUS}</Text> 
-              <MainBottomSheet
-                index={props.index}
-                selectedIndex={props.selectedIndex}
-                nameCity={props.name}
-            /> 
+            <Text style={styles.temperatureContent}>{weather.cityWeather.mainTemp + Signs.CELSIUS}</Text>
+            <MainBottomSheet index={props.index} selectedIndex={props.selectedIndex} nameCity={props.name} />
         </ImageBackground>
     );
 };
@@ -164,33 +158,31 @@ const styles = StyleSheet.create({
         marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
     locationContent: {
-        color: colors.WHITE,
+        color: Colors.WHITE,
         fontFamily: 'ExpandedBold',
         fontSize: 22,
     },
     timeContent: {
         marginTop: 10,
-        color: colors.WHITE,
+        color: Colors.WHITE,
         fontFamily: 'ExpandedSemiBold',
         fontSize: 14,
     },
     temperatureContent: {
         fontFamily: 'ExpandedBold',
         fontSize: 80,
-        color: colors.WHITE,
+        color: Colors.WHITE,
         marginTop: 18,
         marginLeft: MAIN_HORIZONTAL_OFFSET,
     },
 });
 
-
 const skeletonStyles = {
-    time : {
+    time: {
         marginTop: 5,
         width: 100,
         height: 20,
         borderRadius: 12,
-        
     },
     mainTemp: {
         marginLeft: MAIN_HORIZONTAL_OFFSET,
@@ -199,5 +191,4 @@ const skeletonStyles = {
         height: 100,
         borderRadius: 12,
     },
-
 };

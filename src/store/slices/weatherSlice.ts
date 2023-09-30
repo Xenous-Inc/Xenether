@@ -1,18 +1,11 @@
-import {
-    createAsyncThunk,
-    createSlice,
-    PayloadAction,
-    SerializedError,
-    createEntityAdapter,
-    EntityId,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICity, IDailyEl, IWeatherData, IExtraEl, IHourlyEl, IWeatherByTime, IApiState, Status } from '@storage/types';
 import { ExtraInfoType } from '@components/ExtraInfo';
 
 const apiKeyForWeather = 'IESUMaLag1rb2QxUNf3AcRqb36ixx3E2';
-const apiKeyForCity = 'f467ce1b7a6266168a069f38c99d7029';
- //const apiKeyForCity = 'fd21a78310975f8a355d1eb33cb75bea';
- //const apiKeyForCity = 'e526cddbe4485914980205c2136171e6';
+//const apiKeyForCity = 'f467ce1b7a6266168a069f38c99d7029';
+//const apiKeyForCity = 'fd21a78310975f8a355d1eb33cb75bea';
+const apiKeyForCity = 'e526cddbe4485914980205c2136171e6';
 
 export type WeatherState = { [key: string]: IApiState<IWeatherData> };
 
@@ -55,7 +48,7 @@ export const createGetWeatherAction = createAsyncThunk('weatherSheet/fetchData',
     const mainData = await responseForMain.json();
     const cityData = await responseForCity.json();
 
-    const dailyData = mainData.timelines.daily.map(el  => {
+    const dailyData = mainData.timelines.daily.map(el => {
         return {
             date: el.time,
             weatherCode: el.values.weatherCodeMax,
@@ -89,6 +82,8 @@ export const createGetWeatherAction = createAsyncThunk('weatherSheet/fetchData',
         } as IExtraEl;
     });
 
+    console.log(extraData);
+
     const dataWeather: IWeatherByTime = {
         hourly: hourlyData,
         daily: dailyData,
@@ -106,7 +101,7 @@ export const createGetWeatherAction = createAsyncThunk('weatherSheet/fetchData',
         dataWeather: dataWeather,
         cityWeather: cityWeather,
     };
-    return data ;
+    return data;
 });
 
 export const { removeCity } = weatherSlice.actions;

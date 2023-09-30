@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { WeatherComponent } from '@components/WeatherComponent';
 import { ICityName } from '@storage/types';
+import { useTheme } from '../model/themeContext';
 
 export interface IMainBottomSheetProps {
     nameCity: ICityName;
@@ -12,6 +13,7 @@ export interface IMainBottomSheetProps {
 
 export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
     const { index, selectedIndex, nameCity } = props;
+    const theme = useTheme();
 
     const sheetRef = useRef<BottomSheet>(null);
 
@@ -26,14 +28,16 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
     return (
         <BottomSheet
             style={{ zIndex: 1 }}
+            backgroundStyle={{ backgroundColor: theme.colors?.accentColor }}
             ref={sheetRef}
             snapPoints={snapPoints}
-            index={0}
-            enableHandlePanningGesture={true}
+            enablePanDownToClose={true}
             handleIndicatorStyle={styles.handleIndicator}
-           
         >
-            <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+            <BottomSheetScrollView
+                style={{ backgroundColor: theme.colors?.accentColor }}
+                showsVerticalScrollIndicator={false}
+            >
                 <WeatherComponent name={nameCity} />
             </BottomSheetScrollView>
         </BottomSheet>
@@ -42,6 +46,6 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
 
 const styles = StyleSheet.create({
     handleIndicator: {
-        opacity: 10,
+        opacity: 0,
     },
 });
