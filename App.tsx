@@ -37,6 +37,7 @@ export default gestureHandlerRootHOC(function App() {
 
     return (
         <Provider store={store}>
+
             <ThemeProvider>
                 <StatusBar backgroundColor='transparent' translucent={true} barStyle='dark-content' />
                 <PersistGate loading={<></>} persistor={persistor}>

@@ -77,9 +77,11 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
         return <PlaceSkeleton />;
     }
 
+
     if (status === Status.Error || !weather || !extra) {
         return <View style={styles.wrapper} />;
     }
+
     return (
         <View style={[styles.scrollContainer]}>
             <View style={styles.warningContainer}>

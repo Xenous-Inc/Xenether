@@ -40,9 +40,11 @@ export const CitiesScreen: React.FC<
         setIsOpen(true);
     }, []);
 
+
     const { data: cities } = useAppSelector(state => state.cities);
 
     const theme = useTheme();
+
 
     useEffect(() => {
         const backAction = () => {
@@ -60,7 +62,6 @@ export const CitiesScreen: React.FC<
 
         return () => backHandler.remove();
     }, [sheetRef, isOpen]);
-
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View

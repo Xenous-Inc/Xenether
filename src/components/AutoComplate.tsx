@@ -51,7 +51,7 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
     }, [inputText]);
 
     useEffect(() => {
-        if (!cities.some(city => city.nameCity === selectedValue.toString())) {
+        if (!cities?.some(city => city.nameCity === selectedValue.toString())) {
             dispatch(createGetCityAction(selectedValue.toString()));
         }
     }, [selectedValue]);
