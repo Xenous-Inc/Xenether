@@ -4,6 +4,7 @@ import { Signs, ExtraInfoHead, UnitMeasure } from '@utils/constants';
 import { IExtraData } from '@storage/types';
 import { Theme } from '@storage/constants';
 import { useTheme } from '../model/themeContext';
+import Colors from '@styles/colors';
 
 export enum ExtraInfoType {
     Precipitation,
@@ -57,7 +58,12 @@ export const ExtraInfo: React.FC<IExtraData> = props => {
     if (props.title !== undefined) {
         const extraInfoData = Data[props.title];
         return (
-            <View style={[styles.container, { backgroundColor: colors.accentColor }]}>
+            <View
+                style={[
+                    styles.container,
+                    { backgroundColor: themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.LIGHT_GRAY },
+                ]}
+            >
                 <View style={styles.head}>
                     <Image
                         source={themeMode === Theme.DARK ? extraInfoData.white_src : extraInfoData.dark_src}

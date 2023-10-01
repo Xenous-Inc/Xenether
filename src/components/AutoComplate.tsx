@@ -1,11 +1,11 @@
 import React, { useState, useEffect, MutableRefObject } from 'react';
-import Colors from '@styles/colors';
+import colors from '@styles/colors';
 import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, Platform } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { createGetCityAction } from '../store/slices/citySlice';
-import { Theme } from '@storage/constants';
-import { useTheme } from '../model/themeContext';
+import { createGetWeatherAction, WeatherState } from '../store/slices/weatherSlice';
+import { ICityName } from '@storage/types';
 
 const apiKey = 'oZUoTGcJocTndXbE8RTnMmHAgJVU3wZF';
 
@@ -21,8 +21,6 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
         'Аляска',
         'Новосибирск',
         'Дубай',
-        'Махачкала',
-        'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch',
     ]); // exp.for testrequest
 
     const [filteredData, setFilteredData] = useState([]);
@@ -54,7 +52,7 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
         if (!cities?.some(city => city.nameCity === selectedValue.toString())) {
             dispatch(createGetCityAction(selectedValue.toString()));
         }
-    }, [selectedValue]);
+    }, [cities, dispatch, selectedValue]);
 
     const findDataWeather = (query: string) => {
         if (query) {
@@ -64,41 +62,18 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
             setFilteredData([]);
         }
     };
-    const theme = useTheme();
+
     return (
         <View>
-            <Image
-                style={styles.iconSearch}
-                source={
-                    theme.themeMode === Theme.DARK
-                        ? require('@assets/icons/white-search-icon.png')
-                        : require('@assets/icons/search-icon.png')
-                }
-            />
+            <Image style={styles.iconSearch} source={require('@assets/icons/search-icon.png')} />
             <Autocomplete
                 ref={props.refInput}
                 autoCapitalize='none'
                 autoCorrect={false}
-                style={[
-                    styles.textInput,
-                    {
-                        backgroundColor: theme.themeMode === Theme.DARK ? Colors.BUTTONS_COLOR : Colors.LIGHT_GRAY,
-                        color: theme.colors?.textcolor,
-                    },
-                ]}
-                containerStyle={[
-                    styles.autocompleteContainer,
-                    {
-                        backgroundColor: theme.themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.WHITE,
-                    },
-                ]}
-                inputContainerStyle={[styles.containerInput]}
-                listContainerStyle={[
-                    styles.containerFlatList,
-                    {
-                        backgroundColor: theme.themeMode === Theme.DARK ? Colors.SECTION_COLOR : Colors.WHITE,
-                    },
-                ]}
+                style={styles.textInput}
+                containerStyle={styles.autocompleteContainer}
+                inputContainerStyle={styles.containerInput}
+                listContainerStyle={styles.containerFlatList}
                 data={filteredData}
                 defaultValue={JSON.stringify(selectedValue) === '{}' ? '' : selectedValue}
                 onChangeText={text => {
@@ -106,16 +81,10 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                     setInputText(text);
                 }}
                 placeholder='Введите название города'
-                placeholderTextColor={theme.colors?.textcolor}
+                placeholderTextColor={colors.GRAY}
                 flatListProps={{
                     scrollEnabled: false,
-                    style: [
-                        styles.customList,
-                        {
-                            backgroundColor:
-                                theme.themeMode === Theme.DARK ? Colors.BUTTONS_COLOR : Colors.EXTRA_LIGHT_GRAY,
-                        },
-                    ],
+                    style: styles.customList,
                     keyboardShouldPersistTaps: 'always',
                     renderItem: ({ item }) => (
                         <TouchableOpacity
@@ -125,7 +94,7 @@ export const AutoComplate: React.FC<IAutoComplate> = props => {
                                 setFilteredData([]);
                             }}
                         >
-                            <Text style={[styles.itemText, { color: theme.colors?.textcolor }]}>{item}</Text>
+                            <Text style={styles.itemText}>{item}</Text>
                         </TouchableOpacity>
                     ),
                 }}
@@ -142,7 +111,7 @@ const styles = StyleSheet.create({
         zIndex: 2,
     },
     containerFlatList: {
-        marginTop: 80,
+        marginTop: 16,
         zIndex: Platform.OS === 'android' ? 1 : 0,
         position: Platform.OS === 'android' ? 'absolute' : 'relative',
         width: Platform.OS === 'ios' ? '100%' : '111%',
@@ -151,6 +120,7 @@ const styles = StyleSheet.create({
         borderWidth: 0,
     },
     textInput: {
+        backgroundColor: colors.LIGHT_GRAY,
         borderRadius: 12,
         paddingLeft: 35,
     },
@@ -165,8 +135,10 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     customList: {
+        marginTop: Platform.OS === 'ios' ? 0 : 59,
         marginHorizontal: Platform.OS === 'ios' ? 0 : 20,
         borderWidth: 0,
+        backgroundColor: colors.LIGHT_GRAY,
         borderRadius: 12,
     },
 });

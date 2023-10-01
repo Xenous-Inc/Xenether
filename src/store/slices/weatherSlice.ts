@@ -4,8 +4,8 @@ import { ExtraInfoType } from '@components/ExtraInfo';
 
 const apiKeyForWeather = 'IESUMaLag1rb2QxUNf3AcRqb36ixx3E2';
 //const apiKeyForCity = 'f467ce1b7a6266168a069f38c99d7029';
-//const apiKeyForCity = 'fd21a78310975f8a355d1eb33cb75bea';
-const apiKeyForCity = 'e526cddbe4485914980205c2136171e6';
+const apiKeyForCity = 'fd21a78310975f8a355d1eb33cb75bea';
+//const apiKeyForCity = 'e526cddbe4485914980205c2136171e6';
 
 export type WeatherState = { [key: string]: IApiState<IWeatherData> };
 
@@ -101,6 +101,7 @@ export const createGetWeatherAction = createAsyncThunk('weatherSheet/fetchData',
         dataWeather: dataWeather,
         cityWeather: cityWeather,
     };
+    console.log(data);
     return data;
 });
 

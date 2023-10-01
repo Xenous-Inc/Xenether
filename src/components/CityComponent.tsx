@@ -73,7 +73,7 @@ export const CityComponent: React.FC<ICityComponentProps> = props => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (status === Status.Idle) {
+        if (status === Status.Idle || !weather) {
             dispatch(createGetWeatherAction(props.name.nameCity));
         }
     }, [status]);
@@ -97,7 +97,7 @@ export const CityComponent: React.FC<ICityComponentProps> = props => {
                 clearInterval(intervalId);
             };
         }
-    });
+    }, [currentTime]);
     if (weather && currentTime) {
         return (
             <ImageBackground

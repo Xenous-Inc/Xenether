@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground, Dimensions } from 'react-native';
 import { Signs } from '@utils/constants';
 import { utcToZonedTime, format } from 'date-fns-tz';
 import Colors from '@styles/colors';
@@ -10,6 +10,9 @@ import { isSameMinute } from 'date-fns';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { createGetWeatherAction } from '../store/slices/weatherSlice';
 import { PlaceSkeleton } from '@components/PlaceSkeleton';
+import SkeletonLoader from 'expo-skeleton-loader';
+import { useTheme } from '../model/themeContext';
+import { Theme } from '@storage/constants';
 
 const image = {
     src: require('@assets/icons/background-image.png'),
@@ -68,6 +71,56 @@ interface ICurrentScreenProps {
     index: number;
     selectedIndex: number;
 }
+
+const PlaceCurruntScreenSkeleton: React.FC = () => {
+    const theme = useTheme();
+    const skeletonStyles = {
+        wrapper: {
+            height: Dimensions.get('window').height,
+            width: Dimensions.get('window').width,
+        },
+        localInfoContent: {
+            marginLeft: MAIN_HORIZONTAL_OFFSET,
+        },
+        cityNameSkeleton: {
+            borderRadius: 14,
+            marginTop: 80,
+            height: Dimensions.get('window').height * 0.03,
+            width: Dimensions.get('window').width * 0.45,
+        },
+        timeSkeleton: {
+            borderRadius: 14,
+            marginTop: 10,
+            height: Dimensions.get('window').height * 0.03,
+            width: Dimensions.get('window').width * 0.25,
+        },
+        tempSkeleton: {
+            borderRadius: 22,
+            marginLeft: MAIN_HORIZONTAL_OFFSET + 50,
+            marginTop: 30,
+            height: Dimensions.get('window').height * 0.12,
+            width: Dimensions.get('window').width * 0.28,
+        },
+    };
+
+    return (
+        <SkeletonLoader
+            style={{ backgroundColor: theme.themeMode === Theme.DARK ? Colors.BLACK : Colors.WHITE }}
+            boneColor={Colors.LIGHT_WHITE}
+            highlightColor={Colors.LIGHT_GRAY}
+            duration={1200}
+        >
+            <SkeletonLoader.Container style={skeletonStyles.wrapper}>
+                <SkeletonLoader.Container style={skeletonStyles.localInfoContent}>
+                    <SkeletonLoader.Item style={skeletonStyles.cityNameSkeleton} />
+                    <SkeletonLoader.Item style={skeletonStyles.timeSkeleton} />
+                </SkeletonLoader.Container>
+                <SkeletonLoader.Item style={skeletonStyles.tempSkeleton} />
+            </SkeletonLoader.Container>
+        </SkeletonLoader>
+    );
+};
+
 export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     // const [weatherData, setWeatherData] = useState(initialArgument);
 
@@ -80,7 +133,7 @@ export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (status === Status.Idle) {
+        if (status === Status.Idle || !weather) {
             dispatch(createGetWeatherAction(props.name.nameCity));
         }
     }, [status]);
@@ -106,12 +159,12 @@ export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
                 clearInterval(intervalId);
             };
         }
-    });
+    }, [currentTime]);
 
     if (status === Status.Idle || status === Status.Pending) {
         return (
             <View style={styles.wrapper}>
-                <PlaceSkeleton />
+                <PlaceCurruntScreenSkeleton />
 
                 <MainBottomSheet index={props.index} selectedIndex={props.selectedIndex} nameCity={props.name} />
             </View>

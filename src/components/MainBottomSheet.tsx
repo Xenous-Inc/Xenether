@@ -31,7 +31,7 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
             backgroundStyle={{ backgroundColor: theme.colors?.accentColor }}
             ref={sheetRef}
             snapPoints={snapPoints}
-            enablePanDownToClose={true}
+            enablePanDownToClose={false}
             handleIndicatorStyle={styles.handleIndicator}
         >
             <BottomSheetScrollView

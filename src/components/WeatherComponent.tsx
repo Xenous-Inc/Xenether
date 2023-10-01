@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { Warning } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { DateRelated } from '@components/DateRelated';
@@ -11,6 +11,8 @@ import { ICityName, IDailyEl, IExtraData, IExtraEl, IHourlyEl, Status } from '@s
 import { useAppSelector } from '../store/store';
 import { PlaceSkeleton } from './PlaceSkeleton';
 import { useTheme } from '../model/themeContext';
+import SkeletonLoader from 'expo-skeleton-loader';
+import { Theme } from '@storage/constants';
 
 export interface IWeatherComponent {
     name: ICityName;
@@ -53,6 +55,71 @@ const getExtraInfoComponents = (extraInfoArray: (IExtraData | undefined)[]) => {
     });
 };
 
+const PlaceBottomSheetSkeleton: React.FC = () => {
+    const theme = useTheme();
+    const skeletonStyles = {
+        warningSkeleton: {
+            borderRadius: 22,
+            marginBottom: 35,
+            marginTop: 10,
+            marginHorizontal: MAIN_HORIZONTAL_OFFSET,
+            height: Dimensions.get('window').height * 0.07,
+            width: Dimensions.get('window').width * 0.8,
+        },
+        timeRelatedSkeleton: {
+            borderRadius: 16,
+            width: 55,
+            height: 81,
+        },
+        dateRelatedSkeleton: {
+            borderRadius: 16,
+            width: Dimensions.get('window').width * 0.85,
+            marginTop: 10,
+            height: 60,
+        },
+        expoInfoSkeleton: {
+            width: Dimensions.get('window').width * 0.4,
+            height: 152,
+            borderRadius: 16,
+        },
+    };
+    return (
+        <SkeletonLoader
+            style={{ backgroundColor: theme.colors.accentColor }}
+            boneColor={Colors.LIGHT_WHITE}
+            highlightColor={Colors.LIGHT_GRAY}
+            duration={1200}
+        >
+            <SkeletonLoader.Item style={skeletonStyles.warningSkeleton} />
+            <SkeletonLoader.Container style={styles.timeRelatedContainer}>
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+            </SkeletonLoader.Container>
+            <SkeletonLoader.Container style={styles.dateRelatedContainer}>
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+            </SkeletonLoader.Container>
+            <SkeletonLoader.Container
+                style={[styles.extraInfoContainer, { backgroundColor: theme.colors.accentColor }]}
+            >
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+            </SkeletonLoader.Container>
+        </SkeletonLoader>
+    );
+};
+
 export const WeatherComponent: React.FC<IWeatherComponent> = props => {
     const {
         status,
@@ -74,9 +141,8 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
     }, [weather]);
 
     if (status === Status.Idle || status === Status.Pending) {
-        return <PlaceSkeleton />;
+        return <PlaceBottomSheetSkeleton />;
     }
-
 
     if (status === Status.Error || !weather || !extra) {
         return <View style={styles.wrapper} />;
