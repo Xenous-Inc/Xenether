@@ -49,13 +49,6 @@ export const MainScreen: React.FC<
 
     return (
         <>
-            <TouchableOpacity
-                style={[styles.containerButton, { top: insets.top + 32 }]}
-                onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.MAIN })}
-            >
-                <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
-            </TouchableOpacity>
-
             <PagerView
                 style={{ flex: 1 }}
                 initialPage={0}
@@ -63,7 +56,13 @@ export const MainScreen: React.FC<
             >
                 {cities ? (
                     cities.map((city, index) => (
-                        <CurrentScreen key={city.nameCity} name={city} index={index} selectedIndex={currentIndex} />
+                        <CurrentScreen
+                            key={city.nameCity}
+                            name={city}
+                            index={index}
+                            selectedIndex={currentIndex}
+                            onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.MAIN })}
+                        />
                     ))
                 ) : (
                     <PlaceSkeleton />
