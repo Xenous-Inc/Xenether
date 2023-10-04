@@ -23,10 +23,19 @@ import SkeletonLoader from 'expo-skeleton-loader';
 import { useTheme } from '../model/themeContext';
 import { Theme } from '@storage/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TAppStackParams } from '@navigation/AppNavigator';
+import { Screens, Stacks } from '@navigation/constants';
+import { TMainStackParams } from '@navigation/stacks/MainStack';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const image = {
     src: require('@assets/icons/background-image.png'),
 };
+type CurrentScreenNavigationProps = CompositeScreenProps<
+    NativeStackScreenProps<TMainStackParams, typeof Screens.Main.MAIN>,
+    NativeStackScreenProps<TAppStackParams>
+>;
 
 // const initialArgument: IWeatherComponent = {
 //     warningType: WarningType.Thunderstorm,
@@ -80,7 +89,6 @@ interface ICurrentScreenProps {
     name: ICityName;
     index: number;
     selectedIndex: number;
-    onPress?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
 const PlaceCurruntScreenSkeleton: React.FC = () => {
@@ -135,7 +143,8 @@ const PlaceCurruntScreenSkeleton: React.FC = () => {
 export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     // const [weatherData, setWeatherData] = useState(initialArgument);
     const insets = useSafeAreaInsets();
-    const { onPress } = props;
+    const navigation = useNavigation<CurrentScreenNavigationProps['navigation']>();
+
     const {
         status,
         error,
@@ -192,19 +201,26 @@ export const CurrentScreen: React.FC<ICurrentScreenProps> = props => {
     }
 
     return (
-        <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
-            <TouchableOpacity style={[styles.containerButton, { top: insets.top + 32 }]} onPress={onPress}>
-                <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
-            </TouchableOpacity>
-            <View style={styles.wrapperHeader}>
-                <View style={styles.wrapperOfLocalInfo}>
-                    <Text style={styles.locationContent}>{props.name.nameCity}</Text>
-                    <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
+        <>
+            <ImageBackground source={image.src} style={styles.wrapper} imageStyle={styles.backgroundImage}>
+                <TouchableOpacity
+                    style={[styles.containerButton, { top: insets.top + 32 }]}
+                    onPress={() => {
+                        navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.MAIN });
+                    }}
+                >
+                    <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
+                </TouchableOpacity>
+                <View style={styles.wrapperHeader}>
+                    <View style={styles.wrapperOfLocalInfo}>
+                        <Text style={styles.locationContent}>{props.name.nameCity}</Text>
+                        <Text style={styles.timeContent}>{format(currentTime, 'HH:mm')}</Text>
+                    </View>
                 </View>
-            </View>
-            <Text style={styles.temperatureContent}>{weather.cityWeather.mainTemp + Signs.CELSIUS}</Text>
+                <Text style={styles.temperatureContent}>{weather.cityWeather.mainTemp + Signs.CELSIUS}</Text>
+            </ImageBackground>
             <MainBottomSheet index={props.index} selectedIndex={props.selectedIndex} nameCity={props.name} />
-        </ImageBackground>
+        </>
     );
 };
 
@@ -250,7 +266,7 @@ const styles = StyleSheet.create({
         height: 52,
         borderRadius: 15,
         position: 'absolute',
-        zIndex: 0,
+        zIndex: 1,
         right: 20,
     },
     iconSettings: {

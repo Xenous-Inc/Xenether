@@ -20,15 +20,9 @@ export const MainScreen: React.FC<
         NativeStackScreenProps<TMainStackParams, typeof Screens.Main.MAIN>,
         NativeStackScreenProps<TAppStackParams>
     >
-> = props => {
+> = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    const { navigation } = props;
-
-    const insets = useSafeAreaInsets();
-
     const { data: cities } = useAppSelector(state => state.cities);
-
     // const getCurrentLocation = async () => {
     //     try {
     //         await Location.requestForegroundPermissionsAsync();
@@ -56,13 +50,7 @@ export const MainScreen: React.FC<
             >
                 {cities ? (
                     cities.map((city, index) => (
-                        <CurrentScreen
-                            key={city.nameCity}
-                            name={city}
-                            index={index}
-                            selectedIndex={currentIndex}
-                            onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.MAIN })}
-                        />
+                        <CurrentScreen key={city.nameCity} name={city} index={index} selectedIndex={currentIndex} />
                     ))
                 ) : (
                     <PlaceSkeleton />
