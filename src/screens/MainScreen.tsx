@@ -20,15 +20,9 @@ export const MainScreen: React.FC<
         NativeStackScreenProps<TMainStackParams, typeof Screens.Main.MAIN>,
         NativeStackScreenProps<TAppStackParams>
     >
-> = props => {
+> = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    const { navigation } = props;
-
-    const insets = useSafeAreaInsets();
-
     const { data: cities } = useAppSelector(state => state.cities);
-
     // const getCurrentLocation = async () => {
     //     try {
     //         await Location.requestForegroundPermissionsAsync();
@@ -49,13 +43,6 @@ export const MainScreen: React.FC<
 
     return (
         <>
-            <TouchableOpacity
-                style={[styles.containerButton, { top: insets.top + 32 }]}
-                onPress={() => navigation.navigate(Stacks.SETTINGS, { screen: Screens.Settings.MAIN })}
-            >
-                <Image source={require('@assets/icons/settings_icon.png')} style={styles.iconSettings} />
-            </TouchableOpacity>
-
             <PagerView
                 style={{ flex: 1 }}
                 initialPage={0}
