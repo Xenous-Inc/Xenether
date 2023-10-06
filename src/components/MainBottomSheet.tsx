@@ -27,7 +27,6 @@ export const MainBottomSheet: React.FC<IMainBottomSheetProps> = props => {
 
     return (
         <BottomSheet
-            style={{ zIndex: 1 }}
             backgroundStyle={{ backgroundColor: theme.colors?.accentColor }}
             ref={sheetRef}
             snapPoints={snapPoints}
