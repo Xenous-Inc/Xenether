@@ -82,8 +82,6 @@ export const createGetWeatherAction = createAsyncThunk('weatherSheet/fetchData',
         } as IExtraEl;
     });
 
-    console.log(extraData);
-
     const dataWeather: IWeatherByTime = {
         hourly: hourlyData,
         daily: dailyData,
@@ -101,7 +99,6 @@ export const createGetWeatherAction = createAsyncThunk('weatherSheet/fetchData',
         dataWeather: dataWeather,
         cityWeather: cityWeather,
     };
-    console.log(data);
     return data;
 });
 

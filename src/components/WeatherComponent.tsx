@@ -132,10 +132,9 @@ export const WeatherComponent: React.FC<IWeatherComponent> = props => {
     const extra = useMemo(() => {
         if (weather) {
             const currentExtra: IExtraEl = weather.dataWeather.extra[0];
-            console.log(currentExtra);
 
             const extraData = Object.values(currentExtra) as Array<IExtraData>;
-            console.log(`Array is - ${extraData}`);
+
             return extraData;
         }
     }, [weather]);

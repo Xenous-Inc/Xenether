@@ -1,11 +1,16 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore, Dispatch, Action } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useSelector, useDispatch } from 'react-redux';
 import { citySlice } from './slices/citySlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { settingsSlice } from './slices/settingsSlice';
 import { weatherSlice } from './slices/weatherSlice';
+import logs from '@utils/logs';
 
+const logMiddleware = () => (next: Dispatch) => (action: Action) => {
+    logs.hooks.debug(`Dispatch ${action.type}`);
+    return next(action);
+};
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
@@ -27,7 +32,7 @@ const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }),
+        }).concat(logMiddleware),
 });
 
 export type TRootState = ReturnType<typeof store.getState>;
