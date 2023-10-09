@@ -10,10 +10,13 @@ import { TAppStackParams } from '@navigation/AppNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { TMainStackParams } from '@navigation/stacks/MainStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAppSelector } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import { PlaceSkeleton } from '@components/PlaceSkeleton';
+import { Status } from '@storage/types';
+import { createGetWeatherAction } from '../store/slices/weatherSlice';
+import { createGetCityAction } from '../store/slices/citySlice';
 
-// const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
+const apiKey = 'f467ce1b7a6266168a069f38c99d7029';
 
 export const MainScreen: React.FC<
     CompositeScreenProps<
@@ -22,24 +25,45 @@ export const MainScreen: React.FC<
     >
 > = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const { data: cities } = useAppSelector(state => state.cities);
-    // const getCurrentLocation = async () => {
-    //     try {
-    //         await Location.requestForegroundPermissionsAsync();
-    //         const response = await Location.getCurrentPositionAsync({});
-    //         return { long: response.coords.longitude, lat: response.coords.latitude };
-    //     } catch (error) {
-    //         return null;
-    //     }
-    // };
+    const { data: cities, status } = useAppSelector(state => state.cities);
+    type TCoords = {
+        long: number;
+        lat: number;
+    };
+    const dispatch = useAppDispatch();
+    const getCurrentLocation = async () => {
+        try {
+            await Location.requestForegroundPermissionsAsync();
+            const response = await Location.getCurrentPositionAsync({});
+            const coords: TCoords = { long: response.coords.longitude, lat: response.coords.latitude };
+            return coords;
+        } catch (error) {
+            return null;
+        }
+    };
 
-    // const getWeather = async result => {
-    //     const weather = await fetch(
-    //         `https://api.openweathermap.org/data/2.5/weather?lat=${result.lat}&lon=${result.long}&appid=${apiKey}&units=metric&lang=ru`,
-    //     );
-    //     const data = await weather.json();
-    //     return data;
-    // };
+    const getWeather = async (result: TCoords | null) => {
+        const coords = await result;
+        if (coords) {
+            const weather = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.long}&appid=${apiKey}&units=metric&lang=ru`,
+            );
+            const data = await weather.json();
+            console.log(data);
+            return data;
+        }
+    };
+
+    const getDataByLocation = async () => {
+        const coords: TCoords | null = await getCurrentLocation();
+        const data = await getWeather(coords);
+        dispatch(createGetWeatherAction(data.name));
+        dispatch(createGetCityAction(data.name));
+    };
+
+    if (status === Status.Idle) {
+        getDataByLocation();
+    }
 
     return (
         <>
