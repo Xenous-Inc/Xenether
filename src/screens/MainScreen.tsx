@@ -74,7 +74,7 @@ export const MainScreen: React.FC<
     if (city_status === Status.Idle && status?.status === PermissionStatus.GRANTED) {
         getDataByLocation();
     }
-    if (status?.status !== PermissionStatus.GRANTED || cities?.length === 0) {
+    if ( cities?.length === 0) {
         return (
             <View style={[styles.empty_cities_wrapper, { backgroundColor: theme.colors.accentColor }]}>
                 <Image
