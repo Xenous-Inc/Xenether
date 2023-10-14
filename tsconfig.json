@@ -10,7 +10,8 @@
       "@screens/*": ["src/screens/*"],
       "@utils/*": ["src/utils/*"],
       "@storage/*":["src/storage/*"],
-    }
+    },
+    "strict": true
   },
   "extends": "expo/tsconfig.base"
 }

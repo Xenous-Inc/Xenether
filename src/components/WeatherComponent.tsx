@@ -1,31 +1,36 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Warning, WarningType } from '@components/Warning';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { Warning } from '@components/Warning';
 import TimeRelated from '@components/TimeRelated';
 import { DateRelated } from '@components/DateRelated';
-import colors from '@styles/colors';
+import Colors from '@styles/colors';
 import { ExtraInfo } from './ExtraInfo';
 import { MAIN_HORIZONTAL_OFFSET } from '@styles/constants';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { IDailyEl, IExtraData, IHourlyEl, IWeatherData } from '@storage/types';
+import { ICityName, IDailyEl, IExtraData, IExtraEl, IHourlyEl, Status } from '@storage/types';
 import { useAppSelector } from '../store/store';
+import { PlaceSkeleton } from './PlaceSkeleton';
+import { useTheme } from '../model/themeContext';
+import SkeletonLoader from 'expo-skeleton-loader';
+import { Theme } from '@storage/constants';
 
 export interface IWeatherComponent {
-    warningType: WarningType;
-    nameCity: string;
+    name: ICityName;
 }
 
-const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[]) => {
-    return timeRelatedArray.slice(0, 24).map((element, index) => {
-        return (
-            <TimeRelated
-                time={element.time}
-                weatherCode={element.weatherCode}
-                mainTemp={element.mainTemp}
-                key={index}
-            />
-        );
-    });
+const getTimeRelatedComponents = (timeRelatedArray: IHourlyEl[] | undefined) => {
+    if (timeRelatedArray) {
+        return timeRelatedArray.slice(0, 24).map((element, index) => {
+            return (
+                <TimeRelated
+                    time={element.time}
+                    weatherCode={element.weatherCode}
+                    mainTemp={element.mainTemp}
+                    key={index}
+                />
+            );
+        });
+    }
 };
 
 const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
@@ -42,50 +47,132 @@ const getDateRelatedComponents = (dateRelatedArray: IDailyEl[]) => {
     });
 };
 
-const getExtraInfoComponents = (extraInfoArray: IExtraData[]) => {
-    return extraInfoArray.slice(0, 4).map((element, index) => {
-        return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />;
+const getExtraInfoComponents = (extraInfoArray: (IExtraData | undefined)[]) => {
+    return extraInfoArray.map((element, index) => {
+        if (element) {
+            return <ExtraInfo title={element.title} digitalValue={element.digitalValue} key={index} />;
+        }
     });
 };
 
-export const WeatherComponent: React.FC<IWeatherComponent> = props => {
-    const { error, status, ids, entities } = useAppSelector(state => state.weatherSheet);
+const PlaceBottomSheetSkeleton: React.FC = () => {
+    const theme = useTheme();
+    const skeletonStyles = {
+        warningSkeleton: {
+            borderRadius: 22,
+            marginBottom: 35,
+            marginTop: 10,
+            marginHorizontal: MAIN_HORIZONTAL_OFFSET,
+            height: Dimensions.get('window').height * 0.07,
+            width: Dimensions.get('window').width * 0.8,
+        },
+        timeRelatedSkeleton: {
+            borderRadius: 16,
+            width: 55,
+            height: 81,
+        },
+        dateRelatedSkeleton: {
+            borderRadius: 16,
+            width: Dimensions.get('window').width * 0.85,
+            marginTop: 10,
+            height: 60,
+        },
+        expoInfoSkeleton: {
+            width: Dimensions.get('window').width * 0.4,
+            height: 152,
+            borderRadius: 16,
+        },
+    };
+    return (
+        <SkeletonLoader
+            style={{ backgroundColor: theme.colors.accentColor }}
+            boneColor={Colors.LIGHT_WHITE}
+            highlightColor={Colors.LIGHT_GRAY}
+            duration={1200}
+        >
+            <SkeletonLoader.Item style={skeletonStyles.warningSkeleton} />
+            <SkeletonLoader.Container style={styles.timeRelatedContainer}>
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.timeRelatedSkeleton} />
+            </SkeletonLoader.Container>
+            <SkeletonLoader.Container style={styles.dateRelatedContainer}>
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.dateRelatedSkeleton} />
+            </SkeletonLoader.Container>
+            <SkeletonLoader.Container
+                style={[styles.extraInfoContainer, { backgroundColor: theme.colors.accentColor }]}
+            >
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+                <SkeletonLoader.Item style={skeletonStyles.expoInfoSkeleton} />
+            </SkeletonLoader.Container>
+        </SkeletonLoader>
+    );
+};
 
-    const weather = useMemo<IWeatherData>(() => {
-        return entities[props.nameCity];
-    }, [entities, props.nameCity]);
+export const WeatherComponent: React.FC<IWeatherComponent> = props => {
+    const {
+        status,
+        error,
+        data: weather,
+    } = useAppSelector(store => store.weather[props.name.nameCity] ?? { status: Status.Idle });
+
+    const theme = useTheme();
 
     const extra = useMemo(() => {
-        return weather?.extra.map(el => {
-            const extraData: IExtraData = {};
+        if (weather) {
+            const currentExtra: IExtraEl = weather.dataWeather.extra[0];
 
-            extraData.title = el.precipitation.title;
-            extraData.digitalValue = el.precipitation.digitalValue;
-            // доделать логику вывода extra elements
+            const extraData = Object.values(currentExtra) as Array<IExtraData>;
 
             return extraData;
-        });
+        }
     }, [weather]);
 
+    if (status === Status.Idle || status === Status.Pending) {
+        return <PlaceBottomSheetSkeleton />;
+    }
+
+    if (status === Status.Error || !weather || !extra) {
+        return <View style={styles.wrapper} />;
+    }
+
     return (
-        <View style={styles.scrollContainer}>
+        <View style={[styles.scrollContainer]}>
             <View style={styles.warningContainer}>
-                <Warning warningType={props.warningType} />
+                <Warning
+                    warningType={
+                        weather.cityWeather.description[0].toUpperCase() + weather.cityWeather.description.slice(1)
+                    }
+                />
             </View>
-            {status === 'success' && weather && extra && (
-                <>
-                    <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(weather.hourly)}</View>
-                    </BottomSheetScrollView>
-                    <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(weather.daily)}</View>
-                    <View style={styles.extraInfoContainer}>{getExtraInfoComponents(extra)}</View>
-                </>
-            )}
+
+            <BottomSheetScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                <View style={styles.timeRelatedContainer}>{getTimeRelatedComponents(weather.dataWeather.hourly)}</View>
+            </BottomSheetScrollView>
+            <View style={styles.dateRelatedContainer}>{getDateRelatedComponents(weather.dataWeather.daily)}</View>
+            <View style={[styles.extraInfoContainer, { backgroundColor: theme.colors?.accentColor }]}>
+                {getExtraInfoComponents(extra)}
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    wrapper: {
+        width: '100%',
+        height: '100%',
+    },
     scrollContainer: {
         paddingVertical: 10,
         width: '100%',
@@ -107,7 +194,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: MAIN_HORIZONTAL_OFFSET,
     },
     extraInfoContainer: {
-        backgroundColor: colors.WHITE,
+        backgroundColor: Colors.WHITE,
         paddingTop: 15,
         paddingBottom: 35,
         justifyContent: 'space-between',
